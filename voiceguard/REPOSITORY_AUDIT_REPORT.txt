@@ -1,0 +1,1675 @@
+==================================================
+REPOSITORY AUDIT REPORT
+VoiceGuard — Audio Deepfake Detector
+==================================================
+Audit Date   : 2026-07-25
+Auditor Role : Principal Engineer · Security · Architecture · Performance · SRE · QA
+Repository   : /Users/kanish/AMIT KRISHNA/voiceguard
+Source Repo  : https://github.com/imsoumya18/audio_deepfake_detector (fork/rebrand)
+==================================================
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+1. EXECUTIVE SUMMARY
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+VoiceGuard is a well-structured ML research project repurposed as a
+production-facing tool. The ML core is solid — clean architecture, correct
+implementations of LCNN and RawNet2, good experiment tooling, and a
+competitive 7.07% EER against the published baseline. The documentation is
+thorough and the codebase reflects thoughtful engineering.
+
+However, the transition from research to production has left a set of
+critical and high-severity gaps that would prevent responsible deployment:
+
+PRODUCTION BLOCKERS (must fix before any public exposure):
+  - Unsafe model deserialization in 6 locations (RCE via crafted .pt file)
+  - No authentication or rate limiting on the inference API (free compute abuse + DoS)
+  - Full HTTP body buffered before size check (memory exhaustion DoS)
+  - Model checkpoint loaded without hash verification (supply-chain attack path)
+  - CI/CD pipeline contains a TODO placeholder repo_id that will cause
+    push failure — or worse, overwrite the original author's HF Space
+
+SIGNIFICANT GAPS:
+  - Zero test coverage (no unit, integration, or e2e tests)
+  - Massive code duplication between app.py and demo/app.py (~250 lines)
+  - Missing runtime dependency (pandas) not declared in pyproject.toml
+  - Python version stated in 4 places with 3 different values
+  - Matplotlib figures not closed after each inference (memory leak under load)
+  - GradCAM always targets spoof class regardless of actual prediction (UX bug)
+
+The project is production-ready from an ML correctness standpoint but
+requires 2–4 engineering days of hardening before any public deployment.
+
+Overall Health Score: 58 / 100
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+2. PROJECT OVERVIEW
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Project Purpose
+---------------
+Binary audio classification system: determines whether a speech clip is
+real human speech ("bonafide") or AI-generated ("spoof"). Trained on the
+ASVspoof 2019 Logical Access benchmark, achieving 7.07% EER. Intended as
+a portfolio project demonstrating ML, deployment, and explainability skills.
+
+Detected Technology Stack
+--------------------------
+Layer             | Technology                | Entry Point
+------------------|---------------------------|---------------------------
+ML Models         | PyTorch — LCNN, RawNet2   | src/models/
+Inference Engine  | Custom Python pipeline    | src/inference/predict.py
+Explainability    | Grad-CAM (hooks)          | src/explainability/gradcam.py
+Data Pipeline     | torchaudio, soundfile     | src/data/
+REST API          | FastAPI + Uvicorn         | api/main.py
+Gradio UI         | Gradio 5.29.0             | app.py, demo/app.py
+Containerization  | Docker                    | Dockerfile
+CI/CD             | GitHub Actions → HF Spaces | .github/workflows/sync_to_hf.yml
+Config            | YAML                      | configs/lcnn.yaml, rawnet2.yaml
+Package Mgmt      | setuptools + pyproject    | pyproject.toml, requirements.txt
+Model Hosting     | HuggingFace Hub           | imsoumya18/audio-deepfake-detector
+Python Version    | 3.11 (venv), 3.12 (Docker)| .venv, Dockerfile
+
+Architecture Overview
+---------------------
+Two independent deployment surfaces share a single ML inference core:
+
+  Surface A — HuggingFace Spaces (Gradio)
+    app.py → src/inference/predict.py → LCNN → result + GradCAM
+
+  Surface B — Docker Container (FastAPI REST API)
+    POST /predict → api/main.py → src/inference/predict.py → LCNN → JSON
+
+  Shared ML Core
+    src/data/     → audio loading, protocol parsing, transforms
+    src/models/   → LCNN, RawNet2, ensemble fusion
+    src/training/ → trainer loop, loss, TensorBoard
+    src/evaluation/ → EER computation
+    src/explainability/ → GradCAM
+
+Repository Structure (63 non-generated files)
+----------------------------------------------
+  app.py                   Root Gradio entry point (HF Spaces)
+  demo/app.py              Local Gradio runner (near-duplicate of app.py)
+  api/main.py              FastAPI REST API (71 lines)
+  api/schemas.py           Pydantic response models
+  src/                     Core ML library (16 Python files)
+  scripts/                 8 training/evaluation/utility scripts
+  configs/                 2 YAML config files (training only)
+  Dockerfile               FastAPI container spec
+  .github/workflows/       1 CI/CD workflow (HF sync)
+  docs/                    9 markdown documentation files
+  notebooks/               4 GradCAM visualization PNGs
+  pyproject.toml           Package manifest
+  requirements.txt         HF Spaces pinned dependencies
+
+Major Components
+----------------
+1. LCNN  — Light CNN with Max-Feature-Map activation. 699,938 params.
+           Input: log mel-spectrogram [B, 1, 128, 251]
+           Output: logits [B, 2]
+2. RawNet2 — End-to-end model with SincConv + ResBlocks + GRU. 4.9M params.
+           Input: raw waveform [B, 1, 64000]
+           Output: logits [B, 2]
+3. GradCAM — Hooks into LCNN features[9] to produce heatmaps.
+4. FastAPI  — Single endpoint /predict, single worker, no auth.
+5. Gradio   — Blocks-based UI with custom CSS dark theme.
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+3. ARCHITECTURE AUDIT
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+STRENGTHS
+---------
+- Clean layered separation: data → models → inference → API/UI
+- FastAPI lifespan hook correctly loads model once at startup
+- Config-driven training (YAML) with sensible defaults
+- GradCAM cleanly abstracted into its own class with forward/backward hooks
+- Trainer class follows single-responsibility principle
+- EER computation correctly isolated in its own module
+
+WEAKNESSES
+----------
+
+A3-01: Massive Code Duplication — app.py vs demo/app.py
+  The two Gradio app files are 90%+ identical. Both contain:
+    - Identical 200+ line _CSS block
+    - Identical _HEAD block
+    - Identical run_inference() function (only docstring differs)
+    - Identical gr.Blocks layout
+    - Same _HF_REPO constant
+  This means any styling change requires two edits and any logic fix
+  requires two edits — a violation of DRY at the file level.
+  Files: app.py:1-329, demo/app.py:1-273
+
+A3-02: GradCAM Always Targets Spoof Class Regardless of Prediction
+  In both app.py and demo/app.py, GradCAM is always called with
+  target_class=1 (spoof) even when the model predicts bonafide.
+  Files: app.py:50, demo/app.py:52
+  Effect: For a bonafide audio clip, the heatmap shows "what the model
+  would attend to if classifying as spoof" rather than the features
+  supporting the actual bonafide prediction. This is semantically
+  incorrect and potentially misleading to users.
+
+A3-03: Model Initialization at Module Level (Blocking Import)
+  In app.py lines 25-37:
+    CHECKPOINT = Path(hf_hub_download(...))  # network call at import time
+    device = get_device()
+    model = load_model(CHECKPOINT, device)   # model load at import time
+  These execute during Python import, not inside a lifecycle hook.
+  Any failure (network down, missing checkpoint, corrupt file) crashes
+  the process at startup with no structured error message, no retry,
+  and no graceful degradation.
+  By contrast, api/main.py correctly uses a lifespan hook.
+  Files: app.py:25-37, demo/app.py:24-38
+
+A3-04: Configs Not Used at Inference Time
+  configs/lcnn.yaml contains model hyperparameters (batch_size, lr,
+  scheduler, etc.) but nothing in the inference path reads these files.
+  The production model (LCNN()) uses hardcoded architecture constants.
+  The YAML files only affect training scripts. This means a training-time
+  config change is not automatically reflected in inference, creating a
+  potential drift between training and serving configurations.
+  Files: configs/lcnn.yaml, src/inference/predict.py
+
+A3-05: get_device() Logic Duplicated 4 Times
+  The same device detection function is independently defined in:
+    app.py:28-31       (no MPS branch)
+    api/main.py:17-23  (has MPS branch)
+    demo/app.py:28-33  (has MPS branch)
+    scripts/train.py:20-26 (has MPS branch)
+  The app.py version is missing the MPS branch, silently falling back
+  to CPU on Apple Silicon — a performance regression for that platform.
+  Files: app.py:28-31
+
+A3-06: PredictionResponse.label Has No Enum Validation
+  api/schemas.py defines label as plain str with no validation constraint.
+  The valid values are "bonafide" and "spoof" but nothing enforces this
+  in the schema. A future modification to predict.py that returns a
+  different string would silently pass schema validation.
+  Files: api/schemas.py:10, src/inference/predict.py:7
+
+A3-07: No tests/ Directory
+  README.md references a tests/ directory in the project structure but
+  no such directory exists. There are zero automated tests.
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+4. CODE QUALITY AUDIT
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+STRENGTHS
+---------
+- Concise, well-named functions and classes throughout
+- Type hints used consistently (Python 3.10+ union syntax)
+- Docstrings on all public functions
+- LCNN and RawNet2 implementations have inline shape annotations on
+  every layer — excellent for maintainability
+- ConvBlock correctly documents the MFM channel doubling behavior
+- trainer.py correctly identifies the NaN behavior (x != x), even if
+  math.isnan() would be more idiomatic
+
+WEAKNESSES
+----------
+
+CQ-01: Incorrect Comment in transforms.py
+  transforms.py line 42 says: `return mel  # [1, 128, 313]`
+  The actual output shape is [1, 128, 251] for 64000-sample input at
+  hop_length=256. This is confirmed by:
+    - predict.py:24 comment: `# [1, 1, 128, 251]`
+    - LCNN classifier Linear(32 * 8 * 15, 160) — only valid for width=251
+      (after 4x MaxPool2d(2,2): 251 → 125 → 62 → 31 → 15)
+  The 313 figure corresponds to 80000 samples (5 seconds), not 64000.
+  Files: src/data/transforms.py:42
+
+CQ-02: Non-Idiomatic NaN Check
+  trainer.py line 94: `if dev_eer != dev_eer:`
+  While this is valid Python (NaN != NaN), the standard idiom is
+  `import math; if math.isnan(dev_eer):` which is immediately readable.
+  Files: src/training/trainer.py:94
+
+CQ-03: fuse_scores() Silent Failure Path
+  ensemble.py lines 48-62: If fusion="learned" is passed but lr_model
+  is None, the function raises ValueError. But the default parameter is
+  lr_model=None, meaning any call with fusion="learned" and no lr_model
+  will fail at runtime rather than at function definition.
+  A better signature would make lr_model required when fusion="learned"
+  or use overloads.
+  Files: src/models/ensemble.py:43-62
+
+CQ-04: Matplotlib Figure Memory Leak
+  In both app.py:run_inference() and demo/app.py:run_inference(),
+  plt.tight_layout() is called and the figure is returned. There is no
+  plt.close(fig) call. In Gradio's execution model, this means each
+  inference request accumulates a matplotlib figure in memory.
+  Under any non-trivial load, this will cause memory to grow unboundedly.
+  Note: gradcam.py:visualize() DOES correctly call plt.close() but
+  the inference handlers in app.py/demo/app.py do not.
+  Files: app.py:93, demo/app.py:95
+
+CQ-05: Large Inline CSS Blocks in Python Files
+  Both app.py and demo/app.py embed a ~200-line CSS string directly in
+  Python source. This makes the Python files harder to read and prevents
+  CSS tooling (linters, formatters) from working on the styles.
+  Stylesheets should be extracted to a .css file and loaded at runtime
+  (with Gradio's css= parameter accepting a file path in some versions)
+  or at minimum to a shared Python module.
+  Files: app.py:98-289, demo/app.py:101-237
+
+CQ-06: Hardcoded Evaluation Results in evaluate_ensemble.py
+  evaluate_ensemble.py lines 76-82 contain hardcoded per-attack EER
+  values as Python dicts rather than reading them from stored evaluation
+  artifacts. This creates a maintenance burden — if models are retrained,
+  these numbers must be manually updated.
+  Files: scripts/evaluate_ensemble.py:76-82
+
+CQ-07: Missing __all__ in All __init__.py Files
+  All src/__init__.py files are empty, providing no public API surface
+  and no control over what `from src.models import *` would export.
+  Files: src/__init__.py, src/models/__init__.py, all module __init__.py
+
+CQ-08: No Input Normalization Documentation
+  The LCNN and RawNet2 training pipeline applies log-mel transformation
+  and SpecAugment, but there is no normalization (mean subtraction,
+  per-feature standardization). While this may be intentional, it is
+  undocumented. Inference-time inputs could have very different amplitude
+  characteristics than training data, affecting confidence scores.
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+5. SECURITY AUDIT
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+NOTE: A prior security review exists at "Vulnerability Test Results/security_review.md"
+covering findings F-01 through F-13. All those findings are confirmed and
+incorporated here with cross-references. Additional findings are added below.
+
+--- Previously Identified (Confirmed) ---
+
+----------------------------------------
+Severity: HIGH
+Category: Unsafe Deserialization / RCE
+Location: src/inference/predict.py:13
+          scripts/evaluate.py:40
+          scripts/evaluate_rawnet2.py:38
+          scripts/evaluate_ensemble.py:19
+          scripts/train_rawnet2.py:62
+          scripts/run_gradcam.py:13
+Description:
+  torch.load() is called without weights_only=True at 6 locations.
+  PyTorch uses pickle internally, allowing arbitrary code execution via
+  a crafted .pt file.
+Evidence:
+  model.load_state_dict(torch.load(checkpoint_path, map_location=device))
+  All 6 occurrences follow this pattern with no weights_only argument.
+Impact:
+  Full RCE on inference server if checkpoint is replaced by an attacker.
+  Combined with F-05 (no hash check after HF download), the attack surface
+  extends to supply-chain compromise.
+Recommendation:
+  torch.load(checkpoint_path, map_location=device, weights_only=True)
+  Apply to all 6 locations. This is the PyTorch-recommended default since 2.4+.
+Estimated Effort: Small (5 minutes — 6 one-line changes)
+----------------------------------------
+
+----------------------------------------
+Severity: HIGH
+Category: Denial of Service / Input Validation
+Location: api/main.py:52-54
+Description:
+  The file size gate fires after await audio_file.read() has already
+  loaded the entire request body into server memory. An attacker can
+  send a 1GB+ multipart body; the server allocates it before rejecting.
+Evidence:
+  contents = await audio_file.read()           # full body in RAM
+  if len(contents) > MAX_FILE_SIZE:            # too late
+      raise HTTPException(status_code=413, ...)
+Impact:
+  OOM kill or swap exhaustion with a handful of concurrent oversized
+  requests. Single-worker Uvicorn is particularly vulnerable.
+Recommendation:
+  Enforce limit via Starlette middleware BEFORE the handler, or use
+  streaming chunked read with a running total check.
+Estimated Effort: Small (30 minutes)
+----------------------------------------
+
+----------------------------------------
+Severity: HIGH
+Category: Missing Authentication
+Location: api/main.py (entire file)
+Description:
+  /predict and /health are fully public. No API key, no OAuth, no
+  credential of any kind. The Dockerfile binds to 0.0.0.0.
+Evidence:
+  No auth dependency in @app.post("/predict", ...) decorator.
+Impact:
+  Unauthenticated ML inference, free compute abuse, no accountability.
+Recommendation:
+  Add API key header authentication using secrets.compare_digest().
+  Gate /predict endpoint. /health can remain public.
+Estimated Effort: Small (1 hour)
+----------------------------------------
+
+----------------------------------------
+Severity: HIGH
+Category: Denial of Service / Missing Rate Limiting
+Location: api/main.py
+Description:
+  No per-IP rate limiting on the inference endpoint. Each call triggers
+  CPU-intensive model forward pass (~500ms–2s).
+Evidence:
+  @app.post("/predict", response_model=PredictionResponse)
+  async def predict_endpoint(...)  # no rate limiter decorator
+Impact:
+  Concurrent inference requests saturate CPU and starve legitimate users.
+Recommendation:
+  Add slowapi rate limiter (10/minute per IP for this use case).
+  Additionally enforce at reverse-proxy level.
+Estimated Effort: Small (30 minutes)
+----------------------------------------
+
+----------------------------------------
+Severity: HIGH
+Category: Supply Chain / Unsafe Deserialization Precondition
+Location: app.py:24-25, demo/app.py:22-26
+Description:
+  Model checkpoint is downloaded from HuggingFace Hub at startup with no
+  SHA-256 hash verification. If the HF repo is compromised, the next
+  cold-start loads and executes the attacker's payload via torch.load.
+Evidence:
+  _HF_REPO = "imsoumya18/audio-deepfake-detector"
+  CHECKPOINT = Path(hf_hub_download(repo_id=_HF_REPO, filename="lcnn_best.pt"))
+  (No hash check follows)
+Impact:
+  Combined with F-01: full RCE via supply-chain attack without any
+  network intrusion — only HF repo write access is needed.
+Recommendation:
+  Pin CHECKPOINT_SHA256 in source and verify immediately after download.
+Estimated Effort: Small (20 minutes)
+----------------------------------------
+
+----------------------------------------
+Severity: MEDIUM
+Category: Unsafe File Upload / Input Validation
+Location: api/main.py:57-59
+Description:
+  File type validated by client-controlled filename extension only.
+  A binary renamed to payload.wav bypasses this check.
+Evidence:
+  suffix = Path(audio_file.filename).suffix.lower()
+  if suffix not in {".wav", ".flac", ".mp3", ...}:
+Impact:
+  A crafted binary could trigger CVEs in libsndfile/ffmpeg (multiple
+  historical heap overflow CVEs exist in both libraries).
+Recommendation:
+  Validate magic bytes (file header) before passing to audio parsers.
+Estimated Effort: Small (30 minutes)
+----------------------------------------
+
+----------------------------------------
+Severity: LOW
+Category: Resource Leak
+Location: api/main.py:62-69
+Description:
+  Temporary file created with delete=False. If tmp.write(contents)
+  raises (e.g., disk full), the try/finally block that deletes the file
+  never executes, leaving orphaned temp files on disk indefinitely.
+Evidence:
+  with tempfile.NamedTemporaryFile(suffix=suffix, delete=False) as tmp:
+      tmp.write(contents)   # ← exception here skips finally
+      tmp_path = Path(tmp.name)
+  try:
+      result = predict(tmp_path, ...)
+  finally:
+      tmp_path.unlink(missing_ok=True)  # never reached on write failure
+Recommendation:
+  Wrap the entire block including the write in try/finally with tmp_path=None.
+Estimated Effort: Small (10 minutes)
+----------------------------------------
+
+----------------------------------------
+Severity: MEDIUM
+Category: Information Disclosure
+Location: api/main.py:36-41
+Description:
+  FastAPI auto-enables /docs (Swagger UI) and /redoc with no auth gate.
+  Full API schema, endpoint details, and example payloads are publicly
+  accessible, simplifying reconnaissance.
+Evidence:
+  app = FastAPI(title="Audio Deepfake Detector", ...)
+  # docs_url and redoc_url default to "/docs" and "/redoc"
+Recommendation:
+  Set docs_url=None, redoc_url=None in production.
+Estimated Effort: Small (2 minutes)
+----------------------------------------
+
+----------------------------------------
+Severity: MEDIUM
+Category: Insecure Configuration / Cleartext Transport
+Location: Dockerfile:66-69
+Description:
+  Uvicorn bound to 0.0.0.0 with no TLS. Audio files (voice recordings)
+  transmitted in cleartext.
+Evidence:
+  CMD ["uvicorn", "api.main:app", "--host", "0.0.0.0", "--port", "8000"]
+Recommendation:
+  Bind to 127.0.0.1 internally; place TLS-terminating reverse proxy
+  (Caddy, nginx) in front.
+Estimated Effort: Medium (infrastructure change, 2–4 hours)
+----------------------------------------
+
+----------------------------------------
+Severity: MEDIUM
+Category: CORS Misconfiguration
+Location: api/main.py
+Description:
+  No CORSMiddleware declared. While the default (no headers) is
+  restrictive, the absence of an explicit policy means future developers
+  will add allow_origins=["*"] as a quick fix when browser calls fail.
+Evidence:
+  No CORSMiddleware import or app.add_middleware(CORSMiddleware, ...) call.
+Recommendation:
+  Declare an explicit, restrictive CORS policy now.
+Estimated Effort: Small (5 minutes)
+----------------------------------------
+
+----------------------------------------
+Severity: LOW
+Category: Insecure Logging / Information Disclosure
+Location: api/main.py:31
+Description:
+  print(f"Model loaded on {device}") reveals hardware configuration
+  to anyone with Docker log access or a log aggregation pipeline.
+Evidence:
+  print(f"Model loaded on {device}")
+Recommendation:
+  Replace print() with logging.getLogger(__name__).info().
+Estimated Effort: Small (5 minutes)
+----------------------------------------
+
+----------------------------------------
+Severity: LOW
+Category: Insecure Dependency Management
+Location: pyproject.toml:9-27, requirements.txt
+Description:
+  All pyproject.toml dependencies use >= lower bounds with no upper
+  bounds. fastapi, uvicorn, pydantic, gradio have no version pins at all.
+  requirements.txt leaves numpy, soundfile, librosa, scipy, pydub unpinned.
+Evidence:
+  "torch>=2.2",      # no upper bound
+  "fastapi",         # completely unpinned
+  "uvicorn[standard]",  # completely unpinned
+Recommendation:
+  Pin all production dependencies to exact versions. Use pip-compile
+  with --generate-hashes to produce a verifiable lockfile.
+Estimated Effort: Small (1 hour)
+----------------------------------------
+
+----------------------------------------
+Severity: LOW
+Category: Insecure Configuration
+Location: api/main.py:13, scripts/run_gradcam.py:13
+Description:
+  Checkpoint path is a relative string "checkpoints/best.pt" that depends
+  on process working directory. Fails with a cryptic FileNotFoundError
+  if server starts from a different directory.
+Evidence:
+  CHECKPOINT = Path("checkpoints/best.pt")
+Recommendation:
+  Read from MODEL_CHECKPOINT environment variable with a startup-time
+  assertion and an absolute path via Path(...).resolve().
+Estimated Effort: Small (15 minutes)
+----------------------------------------
+
+--- New Findings (Not in Prior Review) ---
+
+----------------------------------------
+Severity: CRITICAL
+Category: CI/CD Misconfiguration / Supply Chain
+Location: .github/workflows/sync_to_hf.yml:31
+Description:
+  The CI/CD workflow's target repo_id is set to a literal TODO placeholder:
+    repo_id="TODO_YOUR_HF_USERNAME/voiceguard"
+  If this placeholder is pushed to GitHub without being updated, the
+  Action will fail. However, if a developer hastily copies the original
+  value "imsoumya18/audio_deepfake_detector", a push to main would
+  OVERWRITE THE ORIGINAL AUTHOR's live HuggingFace Space.
+  This is flagged as Critical because the consequence is irreversible
+  harm to a third party. The fork_rebrand_guide.txt itself says:
+  "THE SINGLE MOST CRITICAL STEP BEFORE ANY PUSH."
+Evidence:
+  repo_id="TODO_YOUR_HF_USERNAME/voiceguard",  # sync_to_hf.yml:31
+Impact:
+  If misconfigured: overwrites original author's production deployment.
+  If unconfigured: pipeline fails on every push to main.
+Recommendation:
+  Replace TODO placeholder with the actual HF username before any push.
+  Add a pre-push hook or CI job that verifies this value is not a TODO.
+Estimated Effort: Small (2 minutes — but requires external account setup)
+----------------------------------------
+
+----------------------------------------
+Severity: MEDIUM
+Category: Concurrency / Thread Safety
+Location: app.py:34-36, api/main.py:50-71
+Description:
+  The LCNN model is shared across concurrent async requests with no
+  mutex. app.py uses a global module-level model; api/main.py shares
+  via app.state.model. PyTorch's model.eval() is generally safe for
+  concurrent reads on CPU, but is NOT safe under MPS (Apple Silicon)
+  which is one of the target deployment devices. Additionally, GradCAM
+  in app.py calls model.zero_grad() and score.backward() — these mutate
+  model state and are definitely not safe under concurrent access.
+Evidence:
+  model = load_model(CHECKPOINT, device)     # app.py:35, module-level
+  gradcam = GradCAM(model, device)           # app.py:36, same model ref
+  GradCAM.compute() calls model.zero_grad() and score.backward()
+Impact:
+  Concurrent Gradio users could trigger simultaneous backward passes on
+  the same model, causing corrupted gradient state, incorrect heatmaps,
+  or crashes under MPS.
+Recommendation:
+  Use asyncio.Lock() around the backward pass in GradCAM.compute(), or
+  maintain a separate model instance per request for GradCAM calls.
+Estimated Effort: Small (45 minutes)
+----------------------------------------
+
+----------------------------------------
+Severity: LOW
+Category: Missing Runtime Startup Validation
+Location: app.py:25-26 (hf_hub_download at module level)
+Description:
+  The HuggingFace checkpoint download executes unconditionally at import
+  time with no timeout, no retry limit, and no fallback path. If the
+  network is unavailable, HF is down, or the repo has been deleted,
+  the app raises an unhandled exception at startup with no helpful message.
+Evidence:
+  CHECKPOINT = Path(hf_hub_download(repo_id=_HF_REPO, filename="lcnn_best.pt"))
+  (no try/except, no timeout parameter)
+Impact:
+  Hard crash on startup if network is unavailable. The .venv/bin/huggingface-cli
+  shows HF CLI is installed but no token/auth is configured in code.
+Recommendation:
+  Wrap in try/except with a clear error message and allow a local
+  fallback path via environment variable CHECKPOINT_PATH.
+Estimated Effort: Small (20 minutes)
+----------------------------------------
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+6. PERFORMANCE AUDIT
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+----------------------------------------
+Severity: High
+Category: Memory Leak
+Location: app.py:93, demo/app.py:95
+Description:
+  run_inference() creates a matplotlib figure (plt.subplots) but never
+  closes it. plt.close(fig) is absent. Each inference call adds a figure
+  to matplotlib's figure manager. Under sustained Gradio usage, memory
+  grows without bound until the process is killed.
+Evidence:
+  fig, axes = plt.subplots(1, 2, figsize=(12, 3.2))  # app.py:64
+  ...
+  return label, round(confidence, 4), fig              # app.py:93
+  # No plt.close(fig) anywhere in run_inference()
+  Compare: gradcam.py:97 DOES correctly call plt.close()
+Impact:
+  Memory exhaustion under load. A busy HF Space demo will OOM and
+  restart. Even low-frequency usage will slowly leak.
+Recommendation:
+  Add plt.close(fig) after the return value is captured, or restructure
+  to use a context manager. Since fig is returned to Gradio, close after
+  Gradio renders it (this requires Gradio lifecycle hooks or just accepting
+  that the figure is closed by caller — Gradio handles this).
+  At minimum, limit the number of open figures:
+    import matplotlib
+    matplotlib.rcParams['figure.max_open_warning'] = 5
+  Or: add plt.close('all') at the top of run_inference() before creating
+  a new figure.
+Estimated Effort: Small (10 minutes)
+----------------------------------------
+
+----------------------------------------
+Severity: Medium
+Category: Blocking I/O in Async Handler
+Location: api/main.py:67
+Description:
+  predict() in src/inference/predict.py is a synchronous CPU-bound
+  function. It is called directly from an async FastAPI handler without
+  running in a thread pool executor. This blocks the asyncio event loop
+  for the entire inference duration (~500ms–2s on CPU), preventing the
+  server from processing any other request during that time.
+Evidence:
+  result = predict(tmp_path, app.state.model, app.state.device)
+  # Called directly in async def predict_endpoint()
+  # predict() calls: load_waveform() → MelSpectrogramTransform → LCNN forward
+  # All synchronous operations
+Impact:
+  Under any concurrency, the server stalls. Second request waits for
+  first inference to complete. --workers 1 makes this worse.
+Recommendation:
+  from fastapi.concurrency import run_in_threadpool
+  result = await run_in_threadpool(predict, tmp_path, ...)
+Estimated Effort: Small (5 minutes)
+----------------------------------------
+
+----------------------------------------
+Severity: Medium
+Category: Unnecessary Computation
+Location: app.py:48-51, demo/app.py:50-53
+Description:
+  GradCAM requires a full backward pass through the model. This is
+  computed on EVERY inference call regardless of whether the user wants
+  the visualization. For the deployed Gradio app, GradCAM is always
+  shown — this is intentional — but it means every call does:
+    1. Forward pass (predict)
+    2. Full backward pass (GradCAM)
+  The waveform is also loaded twice: once in predict() and once in
+  run_inference() for the mel computation.
+Evidence:
+  result = predict(audio_path, model, device)   # forward pass
+  waveform = load_waveform(audio_path)           # second file read
+  mel = transform(waveform).unsqueeze(0)
+  cam = gradcam.compute(mel, target_class=1)     # backward pass
+Impact:
+  ~2x inference time vs. forward-pass-only, and double disk I/O.
+Recommendation:
+  Make GradCAM optional (user toggle). Refactor predict() to accept
+  an already-loaded waveform so the file is read once. Or combine
+  predict + gradcam into a single function that does one forward pass
+  and one backward pass while reusing intermediate tensors.
+Estimated Effort: Medium (2 hours)
+----------------------------------------
+
+----------------------------------------
+Severity: Low
+Category: Docker Image Size
+Location: Dockerfile
+Description:
+  The image installs CPU-only PyTorch (800MB) via a separate pip call,
+  then installs the project. No multi-stage build is used. The final
+  image contains pip cache (--no-cache-dir is used, so this is OK),
+  but includes all build dependencies of all packages.
+Evidence:
+  RUN pip install torch==2.2.* torchaudio==2.2.*
+  RUN pip install -e .
+  COPY src/ src/
+  COPY api/ api/
+Impact:
+  Large image (~1.5GB) slows cold-starts on cloud platforms, increases
+  registry storage costs, and extends CI/CD pipeline duration.
+Recommendation:
+  Consider a multi-stage build or use COPY --exclude pattern to reduce
+  unnecessary files. For HF Spaces (Gradio), requirements.txt already
+  pins a smaller set of packages.
+Estimated Effort: Medium (2 hours)
+----------------------------------------
+
+----------------------------------------
+Severity: Low
+Category: No Response Caching
+Location: api/main.py
+Description:
+  Identical audio files submitted multiple times will each trigger a
+  full inference pass. There is no content-addressable cache (e.g.,
+  hash of audio bytes → cached result). For a research/demo service
+  this may be acceptable, but it's worth noting for production.
+Evidence:
+  No caching middleware or LRU cache in api/main.py or predict.py.
+Estimated Effort: Medium (cache design + implementation, 4 hours)
+----------------------------------------
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+7. RELIABILITY AUDIT
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+----------------------------------------
+Severity: High
+Category: No Error Handling on Startup (Gradio)
+Location: app.py:25-37
+Description:
+  hf_hub_download, load_model, GradCAM() all run at module level with
+  no exception handling. Any failure produces an unhandled traceback
+  and terminates the process. There is no retry for network failures,
+  no fallback to a local checkpoint, and no graceful error display to
+  the user.
+Evidence:
+  CHECKPOINT = Path(hf_hub_download(...))  # network failure → crash
+  model = load_model(CHECKPOINT, device)   # corrupt file → crash
+Impact:
+  Any transient HF Hub outage causes a complete Gradio app crash.
+  Cold-starts on HF Spaces will fail if HF Hub is experiencing issues.
+Recommendation:
+  Wrap startup in try/except. Display an error state in the Gradio UI
+  rather than crashing the process.
+Estimated Effort: Small (30 minutes)
+----------------------------------------
+
+----------------------------------------
+Severity: Medium
+Category: No Inference Timeout
+Location: src/inference/predict.py, src/data/dataset.py
+Description:
+  No timeout is set on audio loading or inference. A deliberately
+  crafted audio file could stall soundfile or ffmpeg indefinitely,
+  holding the request open and consuming a server connection forever.
+Evidence:
+  data, sr = sf.read(file_path, ...)     # no timeout
+  audio = AudioSegment.from_file(...)    # ffmpeg subprocess, no timeout
+Impact:
+  Slow-loris style resource exhaustion via stalled audio parsing.
+Recommendation:
+  Wrap inference in asyncio.wait_for() with a timeout (e.g., 30s).
+  Use subprocess timeout for ffmpeg invocations in pydub.
+Estimated Effort: Medium (2 hours)
+----------------------------------------
+
+----------------------------------------
+Severity: Medium
+Category: Broad Exception Catch Masks Real Errors
+Location: src/data/dataset.py:39
+Description:
+  load_waveform() catches a bare `except Exception` when soundfile fails,
+  then attempts pydub conversion. This swallows all exceptions including
+  MemoryError, SystemExit, and KeyboardInterrupt. If soundfile fails for
+  a reason other than unsupported format (e.g., memory exhaustion), the
+  code silently attempts a pydub conversion that will also fail.
+Evidence:
+  try:
+      data, sr = sf.read(file_path, dtype="float32", always_2d=True)
+  except Exception:    # ← catches everything, including MemoryError
+      try:
+          tmp_path = _convert_to_wav(file_path)
+Impact:
+  Memory errors masked as format errors. Difficult to debug OOM
+  conditions during batch processing.
+Recommendation:
+  Catch specific exceptions: `except (SoundFileError, RuntimeError):`
+  Re-raise MemoryError and SystemExit immediately.
+Estimated Effort: Small (15 minutes)
+----------------------------------------
+
+----------------------------------------
+Severity: Low
+Category: Shallow Health Check
+Location: api/main.py:44-46
+Description:
+  /health returns {"status": "ok"} unconditionally. It does not verify
+  that app.state.model is loaded, that the device is available, or that
+  inference is actually functional. A load balancer or container
+  orchestrator using this endpoint would consider the service healthy
+  even if model loading failed silently.
+Evidence:
+  @app.get("/health")
+  def health():
+      return {"status": "ok"}
+Recommendation:
+  Check model readiness: verify app.state.model is not None and perform
+  a synthetic forward pass with a zero tensor on startup to confirm
+  inference works end-to-end before marking healthy.
+Estimated Effort: Small (30 minutes)
+----------------------------------------
+
+----------------------------------------
+Severity: Low
+Category: No Structured Logging
+Location: api/main.py, src/inference/predict.py
+Description:
+  print() is used for operational messages. No structured logging
+  (logging module, JSON logs, log levels). Makes log aggregation,
+  filtering, and alerting impossible without text parsing.
+Evidence:
+  print(f"Model loaded on {device}")  # api/main.py:31
+  (No logging configuration anywhere in the codebase)
+Recommendation:
+  Add logging.basicConfig() at application entry point. Replace all
+  print() calls with appropriate log level calls.
+Estimated Effort: Small (1 hour)
+----------------------------------------
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+8. API REVIEW
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+STRENGTHS
+---------
+- Pydantic response model ensures consistent JSON structure
+- Correct use of lifespan hook for model loading
+- Appropriate HTTP status codes (400, 413, 500)
+- File extension allowlist uses a set (O(1) lookup)
+- UploadFile with File(...) is idiomatic FastAPI
+
+WEAKNESSES
+----------
+
+API-01: No API Versioning
+  /predict has no version prefix (/v1/predict). Any breaking change to
+  the response schema will immediately affect all existing clients.
+  Recommendation: prefix routes with /v1/ from the start.
+
+API-02: Unstructured ML Errors Return 500
+  If predict() raises an exception (e.g., audio too short, corrupt file
+  that passes extension check), FastAPI returns an unstructured 500 error.
+  Clients receive a generic internal server error with no actionable
+  information. Add a try/except around predict() that returns 422
+  Unprocessable Entity with a descriptive message.
+
+API-03: /health Does Not Reflect Model State
+  See Reliability finding above. Health endpoint is always healthy.
+
+API-04: No Request/Response Logging or Correlation IDs
+  No request IDs, no timing headers, no access logging. Impossible to
+  correlate client reports with server logs.
+
+API-05: label Field Not Constrained in Response Model
+  PredictionResponse.label is str. Should be Literal["bonafide", "spoof"]
+  or an Enum to make the contract explicit and self-documenting.
+
+API-06: confidence Has No Calibration Warning
+  The model's confidence score is not calibrated (no temperature scaling
+  or Platt scaling was performed). Values near 0.5 are genuinely uncertain
+  but the API returns them without any uncertainty indicator. Consider
+  adding an "uncertain" flag or confidence_threshold field.
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+9. DATABASE REVIEW
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+No database exists in this codebase. Data persistence is entirely via
+filesystem: audio files (gitignored), YAML configs, and model checkpoint
+files (.pt). The protocol files are parsed from flat text files into
+Pandas DataFrames in memory. No SQL, NoSQL, ORM, or cache store is used.
+
+The protocol parsing (src/data/protocol.py) is correct:
+- Clean Pandas-based parsing with no injection surface
+- File paths constructed via Path(), not string concatenation
+- No user input reaches the file system traversal
+
+One observation: DataFrame's iloc[idx] access in dataset.py:89 is safe,
+but a KeyError from missing "label" or "file_path" columns would surface
+as an unhelpful IndexError at runtime. Consider explicit column validation
+at dataset construction time.
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+10. FRONTEND / UI REVIEW
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+STRENGTHS
+---------
+- Professional dark design system with consistent color tokens (CSS vars)
+- Smooth reveal animations on output elements
+- Appropriate use of gr.Column scale for layout balance
+- JetBrains Mono for monospace output — good typography choice
+- Minimal interface — no unnecessary UI elements
+
+WEAKNESSES
+----------
+
+UI-01: GradCAM Always Shows Spoof Attention (Incorrect for Bonafide)
+  The GradCAM heatmap always highlights regions that push toward
+  "spoof" prediction (target_class=1), even when the model predicts
+  "bonafide." This is misleading: users see high-attention regions
+  highlighted red for an audio clip that the model classified as real.
+  The heatmap should target the predicted class:
+    target_class = 0 if result["label"] == "bonafide" else 1
+  Files: app.py:50, demo/app.py:52
+
+UI-02: No Loading/Processing State During Inference
+  Clicking "Analyze" triggers inference that may take 1–3 seconds.
+  There is no spinner or "Processing..." indicator during this period.
+  Gradio's built-in loading state on buttons may partially handle this
+  but no explicit loading UX is designed.
+
+UI-03: No Error State in UI
+  If run_inference() raises an exception, Gradio displays a raw error
+  traceback to the user. There is no user-friendly error message for
+  common failure cases (unsupported format, too short, corrupt file).
+
+UI-04: No Accessibility Considerations
+  No ARIA labels, no keyboard navigation hints, no alt text on the
+  spectrogram plot output. The color scheme (dark on dark) may have
+  low contrast for some elements. The Gradio framework provides some
+  accessibility defaults but none are explicitly configured here.
+
+UI-05: External Font Loading (Privacy/Availability Risk)
+  The CSS imports from Google Fonts at runtime:
+    @import url('https://fonts.googleapis.com/css2?...')
+  This loads fonts from Google's CDN on every page visit, sending the
+  user's IP to Google. If Google Fonts is unavailable, the app falls
+  back to system fonts (functionally OK but visually degraded).
+  For privacy-sensitive deployments, bundle fonts locally.
+
+UI-06: Confidence as Raw Float
+  Confidence is displayed as a raw float (e.g., 0.9734). Users
+  unfamiliar with probability would benefit from a percentage display
+  or a colored confidence bar. More importantly, the known 36.8% EER
+  on A17 attacks means a 97% "spoof" confidence could still be wrong —
+  no uncertainty disclaimer is shown.
+
+UI-07: demo/app.py vs app.py Are Duplicate Deployment Targets
+  Two near-identical files serve no technical purpose. demo/app.py adds
+  only `server_port=7860, share=False` to the launch() call. This should
+  be a single file with launch() parameters configurable via env vars.
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+11. TESTING REVIEW
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+CRITICAL: Zero automated test coverage.
+
+The README explicitly lists a `tests/` directory but no such directory
+exists. There are no:
+  - Unit tests for any function
+  - Integration tests for the API
+  - E2E tests for the Gradio interface
+  - Model smoke tests (forward pass shape checks)
+  - Data pipeline tests
+  - EER regression tests
+
+Missing Critical Test Coverage
+-------------------------------
+1. load_waveform() — boundary conditions (empty file, mono, stereo,
+   sub-second clip, 4-second clip, >4 second clip, unsupported format)
+2. MelSpectrogramTransform — output shape verification ([1, 128, 251])
+3. LCNN forward pass — shape contract verification ([B, 2] output)
+4. predict() — integration test with a known audio file
+5. parse_protocol() — malformed protocol file edge cases
+6. EER computation — edge cases (all same label, empty labels)
+7. FastAPI /predict endpoint — status codes, response schema validation
+8. FastAPI /predict — error cases (oversized file, wrong extension)
+9. GradCAM — output shape and value range [0, 1]
+10. ensemble.fuse_scores() — both fusion modes
+
+Available Utility Scripts (Not Tests)
+--------------------------------------
+scripts/check_env.py   — verifies library versions (manual run only)
+scripts/check_dataset.py — verifies data layout (requires dataset)
+scripts/check_dataset_loader.py — spot-checks DataLoader (requires data)
+
+These are manual verification scripts, not automated tests. They require
+the training dataset to be present and cannot run in CI.
+
+Testing Score: 2/100 (only non-zero because manual check scripts exist)
+
+Recommendation
+--------------
+Immediately add:
+1. pytest with pytest-asyncio for FastAPI endpoint tests
+2. httpx.AsyncClient for API integration tests
+3. pytest fixtures that generate synthetic audio tensors (no real data needed)
+4. Model shape smoke tests that run in <1 second with zero-tensor inputs
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+12. DEVOPS & INFRASTRUCTURE REVIEW
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+STRENGTHS
+---------
+- Dockerfile correctly separates dependency installation (cacheable layer)
+  from source code copy — layer ordering is optimal
+- CPU-only torch install reduces image size from ~2.5GB to ~800MB
+- .dockerignore is comprehensive — correctly excludes data, checkpoints,
+  notebooks, scripts, configs, and dev tooling
+- Model checkpoint deliberately excluded from Docker image (correct
+  separation of model data from code)
+- Single worker is the right choice for the current architecture
+- Explicit EXPOSE 8000 documents the container's port
+
+WEAKNESSES
+----------
+
+DO-01: CI/CD TODO Placeholder (Critical)
+  .github/workflows/sync_to_hf.yml:31 contains a literal TODO that
+  must be replaced before any push. See Security finding above.
+
+DO-02: No Dockerfile HEALTHCHECK Directive
+  Docker has a native HEALTHCHECK instruction that orchestrators use.
+  Without it, Docker/Kubernetes mark the container as healthy as soon
+  as it starts, even if model loading fails.
+  Evidence: No HEALTHCHECK in Dockerfile.
+  Recommendation: Add
+    HEALTHCHECK --interval=30s --timeout=5s \
+      CMD curl -f http://localhost:8000/health || exit 1
+
+DO-03: Unpinned Base Image
+  FROM python:3.12-slim uses a floating tag. The image content changes
+  with every Debian/Python security update, making builds non-reproducible.
+  Recommendation: Pin to a specific digest:
+    FROM python:3.12-slim@sha256:<digest>
+
+DO-04: ffmpeg Version Unpinned in Dockerfile
+  apt-get install -y ffmpeg installs whatever Debian's repo serves.
+  ffmpeg has a history of CVEs. A pinned version or a trusted security
+  feed would be more appropriate for production.
+
+DO-05: No Docker Compose File
+  No docker-compose.yml exists for local development or multi-service
+  orchestration. Running the full system locally requires manual docker
+  commands. A compose file would simplify onboarding.
+
+DO-06: No Kubernetes / Helm Configuration
+  For production deployment, no K8s manifests exist. This is acceptable
+  for a research demo but limits production options.
+
+DO-07: GitHub Actions Workflow Has No Environment Protection
+  The sync_to_hf.yml workflow runs on every push to main with no
+  environment gate, required reviewers, or deployment approval step.
+  A force-push or accidental merge to main immediately triggers
+  production deployment.
+
+DO-08: No CI for Testing
+  There is no GitHub Actions workflow that runs tests, linting, or type
+  checking. The only CI workflow is the HF deployment sync.
+  Recommendation: Add a separate test.yml workflow that runs pytest
+  and ruff/mypy on every PR.
+
+DO-09: Python Version Inconsistency (3-Way)
+  .venv/lib/python3.11/ — installed with Python 3.11
+  pyproject.toml: requires-python = ">=3.12"
+  Dockerfile: python:3.12-slim
+  README badge: Python 3.14
+  The venv was built with Python 3.11, which is older than the
+  declared minimum (3.12) and much older than the README badge (3.14).
+  Python 3.14 is in development as of this audit date.
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+13. DEPENDENCY ANALYSIS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+CRITICAL: Missing Declared Dependency
+--------------------------------------
+pandas is imported in:
+  src/data/protocol.py:2       — import pandas as pd
+  src/data/dataset.py:9        — import pandas as pd
+  src/training/losses.py:2     — import pandas as pd
+  src/models/ensemble.py:5     — (indirectly via collect_scores → DataLoader)
+
+pandas is NOT listed in pyproject.toml or requirements.txt.
+This is a critical gap. The project currently runs because pandas is
+installed as a transitive dependency of something in the .venv, but
+any clean install (`pip install -e .`) will fail at import time.
+
+pydub is imported in dataset.py but only listed in requirements.txt,
+not pyproject.toml. Clean editable installs of the FastAPI server
+will fail for non-wav audio formats.
+
+huggingface_hub is imported in app.py and demo/app.py but not in
+pyproject.toml. HF Spaces installations from pyproject.toml will fail.
+
+Unused Runtime Dependencies in pyproject.toml
+----------------------------------------------
+httpx      — not imported anywhere in src/, api/, app.py, or demo/app.py
+python-dotenv — not imported anywhere (no load_dotenv() call)
+librosa    — only imported in scripts/check_env.py (dev utility)
+tensorboard — only needed for training (src/training/trainer.py)
+pyyaml     — only needed for training scripts (scripts/train.py)
+
+These inflate the production Docker image unnecessarily.
+Consider splitting into [runtime] and [dev] extras in pyproject.toml.
+
+Version Inconsistencies
+------------------------
+requirements.txt:  torch==2.9.1
+pyproject.toml:    torch>=2.2
+README badge:      PyTorch 2.11
+.venv installed:   (check via pip list — shown as 2.9.1 in requirements)
+
+FastAPI version: completely unpinned in pyproject.toml.
+Gradio version: 5.29.0 in requirements.txt, "5.x" in README badge.
+
+Missing [dev] Extras
+---------------------
+fork_rebrand_guide.txt and README suggest `pip install -e ".[dev]"` but
+pyproject.toml has no [project.optional-dependencies.dev] section.
+This will silently succeed (the flag is ignored) rather than installing
+dev dependencies, which is confusing.
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+14. DOCUMENTATION REVIEW
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+STRENGTHS
+---------
+- 9 detailed documentation files in docs/ covering: problem motivation,
+  dataset, architecture, data pipeline, training, evaluation,
+  explainability, serving, and conclusions
+- NEXT_STEPS.md provides clear, numbered onboarding for a new developer
+- fork_rebrand_guide.txt is comprehensive with a master checklist
+- README.md contains detailed architecture diagrams, layer shapes,
+  results tables, and failure analysis
+- Inline shape annotations on every layer in LCNN and RawNet2 are
+  excellent for maintainability
+- GradCAM findings are thoroughly documented with per-attack analysis
+
+WEAKNESSES
+----------
+
+DOC-01: README Python Badge Shows 3.14 (Future Version)
+  Python 3.14 badge in README. As of 2026-07-25, Python 3.14 is in
+  alpha/beta development. The venv uses 3.11. This exaggerates currency.
+
+DOC-02: README PyTorch Badge Shows 2.11 (Does Not Match Code)
+  README shows PyTorch 2.11 but requirements.txt pins torch==2.9.1.
+  The badge is aspirational rather than accurate.
+
+DOC-03: transforms.py Comment is Wrong
+  `return mel  # [1, 128, 313]` — actual shape is [1, 128, 251].
+  This contradicts predict.py's own comment and the LCNN linear layer.
+
+DOC-04: Referenced tests/ Directory Does Not Exist
+  README project structure shows a `tests/` directory that was never
+  created. Misleads contributors about test coverage.
+
+DOC-05: audio_deepfake_detector.md Documents Unimplemented Feature
+  Training section says: "Augmentation (Model B): Additive noise + RIR"
+  Examining train_rawnet2.py and ASVspoofDataset: RawNet2 uses
+  transform=None — no augmentation is applied. This planned feature
+  was never implemented.
+
+DOC-06: Both app.py and demo/app.py Still Reference Original Author
+  Despite NEXT_STEPS.md instructions to update _HF_REPO, both files
+  still have `_HF_REPO = "imsoumya18/audio-deepfake-detector"`. The
+  deployment guide says this was supposed to be updated.
+
+DOC-07: No CONTRIBUTING.md or Developer Setup Guide
+  Beyond NEXT_STEPS.md (deployment-focused), there is no document
+  explaining the codebase structure for contributors, how to add a
+  new model, or how to run the test suite (because there isn't one).
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+15. TECHNICAL DEBT ANALYSIS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+HIGH DEBT (impacts all future development)
+------------------------------------------
+1. Zero test coverage — every future change is a leap of faith.
+   Adding tests retroactively is harder than writing them concurrently.
+
+2. app.py / demo/app.py duplication — every UI change requires two
+   identical edits. Each divergence adds bug surface.
+
+3. Missing declared dependencies (pandas, pydub, huggingface_hub) —
+   any CI environment or clean install will fail.
+
+MEDIUM DEBT (impacts specific features)
+-----------------------------------------
+4. GradCAM always targets spoof class — a known incorrect behavior
+   that affects the explainability value proposition of the tool.
+
+5. get_device() duplicated 4 times with inconsistent MPS support.
+
+6. Hardcoded EER results in evaluate_ensemble.py — will diverge on
+   model retraining.
+
+7. transforms.py comment wrong — will confuse future developers
+   modifying the data pipeline.
+
+LOW DEBT (aesthetic/polish)
+----------------------------
+8. NaN check idiom (x != x vs math.isnan).
+9. No __all__ in __init__.py files.
+10. No [dev] extras in pyproject.toml despite being referenced.
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+16. PRODUCTION READINESS ASSESSMENT
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+VERDICT: NOT READY FOR PRODUCTION
+
+Blockers:
+---------
+[BLOCKER 1] torch.load without weights_only=True → RCE via checkpoint
+[BLOCKER 2] No authentication on /predict → free compute abuse
+[BLOCKER 3] No rate limiting → DoS vulnerability
+[BLOCKER 4] Full body read before size check → memory exhaustion DoS
+[BLOCKER 5] No checkpoint hash verification → supply chain attack
+[BLOCKER 6] CI/CD TODO placeholder → pipeline failure or third-party harm
+[BLOCKER 7] Zero tests → no regression safety net for changes
+
+Optional-but-Recommended Before Launch:
+-----------------------------------------
+- Matplotlib figure memory leak fix
+- Structured logging
+- API versioning (/v1/predict)
+- Docker HEALTHCHECK directive
+- Explicit CORS policy
+- Missing dependency declarations (pandas, pydub, huggingface_hub)
+- Python version consistency
+
+Each blocker can be resolved independently. Total estimated fix time:
+  Security blockers: 4–6 hours
+  Infrastructure blockers: 2–4 hours
+  Minimum test suite: 8–12 hours
+  Total: 2–3 engineering days for production readiness
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+17. REPOSITORY METRICS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Files (excluding .venv, .git, __pycache__, egg-info): 63
+Python source files (production): ~25
+Documentation files: 11 (.md + .txt)
+Config files: 4 (2 YAML, 1 TOML, 1 requirements.txt)
+Infrastructure files: 3 (Dockerfile, .dockerignore, .github/workflows/)
+
+Largest Files by Lines:
+  app.py                    329 lines (200 are CSS)
+  demo/app.py               273 lines (190 are CSS)
+  src/training/trainer.py   111 lines
+  src/models/rawnet2.py     122 lines
+  src/explainability/gradcam.py  98 lines
+
+Production ML Core (src/): ~500 lines
+API layer (api/):            ~85 lines
+Inference surface (app.py):  ~330 lines
+
+Model Parameters:
+  LCNN:    699,938 parameters
+  RawNet2: 4,908,026 parameters
+
+Complexity Observations:
+- Codebase is appropriately sized for its scope
+- No single function exceeds 60 lines (good)
+- All modules have clear single responsibilities
+- The only complexity hotspot is app.py/demo/app.py which conflates
+  business logic (run_inference), visualization, and UI layout
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+18. OVERALL SCORES
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Overall Health Score:        58 / 100
+
+Architecture Score:          72 / 100
+  Clean separation of concerns, well-structured ML pipeline, clear
+  module boundaries. Loses points for app.py duplication, module-level
+  init, and configs not wired to inference.
+
+Security Score:              35 / 100
+  Multiple HIGH severity findings including RCE path, DoS, no auth,
+  no rate limiting. Gains points for no hardcoded credentials, correct
+  use of Pydantic response models, and a prior security review that
+  identified key issues. Does not pass production bar.
+
+Performance Score:           62 / 100
+  Efficient ML pipeline, correct single-worker decision, good Docker
+  layer caching. Loses points for matplotlib memory leak, blocking
+  sync call in async handler, and double file read per inference.
+
+Maintainability Score:       55 / 100
+  Well-named code, good inline documentation in models. Loses points
+  for app.py/demo/app.py duplication, wrong comment in transforms.py,
+  zero tests, and multiple documentation inconsistencies.
+
+Reliability Score:           50 / 100
+  Correct error handling in the happy path, proper temp file cleanup,
+  good early stopping in trainer. Loses points for no startup error
+  handling in Gradio app, no inference timeout, broad exception catch,
+  and matplotlib memory leak.
+
+Testing Score:               2 / 100
+  Zero automated test coverage. Manual utility scripts exist but do not
+  constitute tests. This is the single largest risk for ongoing development.
+
+Documentation Score:         72 / 100
+  Excellent technical documentation in docs/, thorough README, good
+  inline code comments. Loses points for version badge inaccuracies,
+  wrong shape comment in transforms.py, unimplemented features documented
+  as present, and referenced tests/ directory that doesn't exist.
+
+Production Readiness Score:  28 / 100
+  Multiple production blockers across security, reliability, and testing
+  dimensions. Suitable only for local experimentation and portfolio demo
+  on a trusted/closed network. Not suitable for public internet exposure.
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+19. COMPLETE FINDINGS INDEX
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+SEC  = Security    ARCH = Architecture    PERF = Performance
+REL  = Reliability  CQ  = Code Quality    API  = API Design
+DEP  = Dependency   DO  = DevOps           UI   = Frontend/UI
+
+ID      | Sev      | Category | Location
+--------|----------|----------|------------------------------------------
+SEC-01  | HIGH     | SEC      | src/inference/predict.py:13 + 5 others
+SEC-02  | HIGH     | SEC      | api/main.py:52-54
+SEC-03  | HIGH     | SEC      | api/main.py (entire file)
+SEC-04  | HIGH     | SEC      | api/main.py (entire file)
+SEC-05  | HIGH     | SEC      | app.py:24-25, demo/app.py:22-26
+SEC-06  | CRITICAL | SEC/DO   | .github/workflows/sync_to_hf.yml:31
+SEC-07  | MEDIUM   | SEC      | api/main.py:57-59
+SEC-08  | MEDIUM   | SEC      | api/main.py:36-41
+SEC-09  | MEDIUM   | SEC      | Dockerfile:66-69
+SEC-10  | MEDIUM   | SEC      | api/main.py (no CORSMiddleware)
+SEC-11  | MEDIUM   | SEC      | app.py:35-36 + api/main.py (concurrency)
+SEC-12  | LOW      | SEC      | api/main.py:62-69
+SEC-13  | LOW      | SEC      | api/main.py:31
+SEC-14  | LOW      | SEC      | pyproject.toml, requirements.txt
+SEC-15  | LOW      | SEC      | api/main.py:13
+ARCH-01 | MEDIUM   | ARCH     | app.py vs demo/app.py (full duplication)
+ARCH-02 | MEDIUM   | ARCH     | app.py:50, demo/app.py:52
+ARCH-03 | MEDIUM   | ARCH     | app.py:25-37
+ARCH-04 | LOW      | ARCH     | configs/ vs src/inference/predict.py
+ARCH-05 | LOW      | ARCH     | app.py:28-31 (MPS missing)
+ARCH-06 | LOW      | ARCH     | api/schemas.py:10
+CQ-01   | LOW      | CQ       | src/data/transforms.py:42
+CQ-02   | LOW      | CQ       | src/training/trainer.py:94
+CQ-03   | LOW      | CQ       | src/models/ensemble.py:43-62
+CQ-04   | HIGH     | PERF     | app.py:93, demo/app.py:95
+CQ-05   | LOW      | CQ       | app.py:98-289, demo/app.py:101-237
+CQ-06   | LOW      | CQ       | scripts/evaluate_ensemble.py:76-82
+PERF-01 | HIGH     | PERF     | app.py:93, demo/app.py:95 (matplotlib)
+PERF-02 | MEDIUM   | PERF     | api/main.py:67
+PERF-03 | MEDIUM   | PERF     | app.py:44-51, demo/app.py:45-53
+REL-01  | HIGH     | REL      | app.py:25-37
+REL-02  | MEDIUM   | REL      | src/inference/predict.py, dataset.py
+REL-03  | MEDIUM   | REL      | src/data/dataset.py:39
+REL-04  | LOW      | REL      | api/main.py:44-46
+DEP-01  | HIGH     | DEP      | pyproject.toml (pandas missing)
+DEP-02  | MEDIUM   | DEP      | pyproject.toml (pydub, huggingface_hub)
+DEP-03  | LOW      | DEP      | pyproject.toml (httpx, dotenv unused)
+DO-01   | CRITICAL | DO/SEC   | .github/workflows/sync_to_hf.yml:31
+DO-02   | LOW      | DO       | Dockerfile (no HEALTHCHECK)
+DO-03   | LOW      | DO       | Dockerfile (unpinned base image)
+DO-04   | LOW      | DO       | Dockerfile (ffmpeg unpinned)
+DO-05   | LOW      | DO       | (no docker-compose.yml)
+DO-06   | MEDIUM   | DO       | (no CI test workflow)
+DO-07   | MEDIUM   | DO       | Python version 3-way inconsistency
+TEST-01 | CRITICAL | TEST     | (zero automated test coverage)
+UI-01   | MEDIUM   | UI       | app.py:50, demo/app.py:52
+UI-02   | LOW      | UI       | app.py, demo/app.py
+UI-03   | LOW      | UI       | app.py, demo/app.py
+UI-04   | LOW      | UI       | app.py, demo/app.py
+UI-05   | LOW      | UI       | app.py:99, demo/app.py:102
+DOC-01  | LOW      | DOC      | README.md Python badge
+DOC-02  | LOW      | DOC      | README.md PyTorch badge
+DOC-03  | LOW      | DOC      | src/data/transforms.py:42
+DOC-04  | MEDIUM   | DOC      | README.md (tests/ directory)
+DOC-05  | LOW      | DOC      | audio_deepfake_detector.md
+DOC-06  | MEDIUM   | DOC      | app.py:24, demo/app.py:23
+
+Total: 51 findings
+  Critical: 3
+  High:     8
+  Medium:  17
+  Low:     23
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+20. TOP 20 HIGHEST PRIORITY FIXES
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+MOST CRITICAL (Do immediately — production blockers)
+------------------------------------------------------
+
+#1  SEC-06 / DO-01 — Fix CI/CD TODO Placeholder
+    File: .github/workflows/sync_to_hf.yml:31
+    Risk: Overwriting original author's live HF Space on next push.
+    Fix: Replace TODO_YOUR_HF_USERNAME with actual username. 2 minutes.
+
+#2  SEC-01 — Add weights_only=True to All torch.load() Calls
+    Files: 6 locations across src/ and scripts/
+    Risk: RCE via malicious checkpoint file.
+    Fix: Add weights_only=True parameter. 5 minutes.
+
+#3  TEST-01 — Add Minimum Viable Test Suite
+    Risk: Zero confidence in every code change; no regression protection.
+    Fix: Create tests/test_api.py with httpx AsyncClient tests,
+    tests/test_inference.py with synthetic tensor smoke tests.
+    10–12 hours, but the most impactful investment.
+
+#4  SEC-03 — Add API Key Authentication to /predict
+    File: api/main.py
+    Risk: Unauthenticated free compute, abuse.
+    Fix: Add Depends(require_api_key) with env-var-configured key. 1 hour.
+
+#5  SEC-04 — Add Rate Limiting to /predict
+    File: api/main.py
+    Risk: DoS via concurrent inference requests.
+    Fix: Add slowapi limiter. 30 minutes.
+
+#6  SEC-02 — Fix Pre-read Size Check (Memory DoS)
+    File: api/main.py:52-54
+    Risk: Memory exhaustion via oversized multipart requests.
+    Fix: Move size check to Starlette middleware. 30 minutes.
+
+#7  SEC-05 — Pin Checkpoint SHA-256 Hash
+    Files: app.py:24-25, demo/app.py:22-26
+    Risk: Supply chain compromise via HF Hub repo takeover.
+    Fix: Add hash verification after hf_hub_download(). 20 minutes.
+
+#8  PERF-01 / CQ-04 — Fix Matplotlib Figure Memory Leak
+    Files: app.py:run_inference(), demo/app.py:run_inference()
+    Risk: Memory exhaustion under sustained Gradio usage.
+    Fix: Add plt.close(fig) or plt.close('all'). 5 minutes.
+
+#9  DEP-01 — Add pandas to pyproject.toml Dependencies
+    Risk: Clean installs fail at import time. Silent CI failure.
+    Fix: Add "pandas" to pyproject.toml dependencies. 1 minute.
+
+#10 ARCH-02 / UI-01 — Fix GradCAM Target Class
+    Files: app.py:50, demo/app.py:52
+    Risk: Misleading heatmaps for bonafide predictions.
+    Fix: target_class = 0 if result["label"] == "bonafide" else 1. 2 minutes.
+
+HIGH PRIORITY (Complete within 1 week)
+----------------------------------------
+
+#11 ARCH-01 — Eliminate app.py / demo/app.py Duplication
+    Extract shared run_inference(), _CSS, layout into voiceguard_ui.py.
+    Both files import and launch. 2 hours.
+
+#12 ARCH-03 — Move Model Loading to Startup Hook (Gradio)
+    Wrap hf_hub_download + load_model in a function called from
+    demo.load(startup_fn) or an on_start callback. Add error handling. 1 hour.
+
+#13 ARCH-05 — Unify get_device() and Add MPS to app.py
+    Create src/utils/device.py with a single get_device() implementation
+    that includes MPS. Import everywhere. 30 minutes.
+
+#14 DO-06 — Add CI Test Workflow
+    Create .github/workflows/test.yml that runs pytest on every PR.
+    30 minutes to wire up (requires tests to exist first).
+
+#15 SEC-09 — Add TLS Reverse Proxy
+    Add Caddyfile or nginx.conf + docker-compose.yml. Bind Uvicorn to
+    127.0.0.1; expose only 443 externally. 2–4 hours.
+
+MEDIUM PRIORITY (Complete before any public deployment)
+--------------------------------------------------------
+
+#16 DO-02 — Add Dockerfile HEALTHCHECK
+    One-line addition. Immediately improves container orchestration. 5 minutes.
+
+#17 SEC-10 — Add Explicit CORS Policy
+    Add CORSMiddleware with explicit allow_origins. 5 minutes.
+
+#18 DEP-02 — Add pydub and huggingface_hub to pyproject.toml
+    Two-line addition. Prevents clean install failures. 2 minutes.
+
+#19 REL-03 — Narrow Exception Catch in load_waveform()
+    Catch specific soundfile exceptions instead of bare Exception. 15 minutes.
+
+#20 CQ-01 — Fix Wrong Comment in transforms.py
+    Change `# [1, 128, 313]` to `# [1, 128, 251]`. 1 minute.
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+21. QUICK WINS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+The following fixes can each be completed in under 15 minutes and
+collectively close the most critical attack surface:
+
+  1. Add weights_only=True to all torch.load() calls (6 files, 5 min)
+  2. Fix matplotlib plt.close() leak (2 files, 2 min each)
+  3. Fix GradCAM target_class to respect predicted label (2 files, 2 min)
+  4. Add pandas to pyproject.toml (1 line)
+  5. Add pydub and huggingface_hub to pyproject.toml (2 lines)
+  6. Disable /docs and /redoc in production (2 lines in api/main.py)
+  7. Add explicit CORS policy (5 lines)
+  8. Fix transforms.py shape comment (1 word)
+  9. Update README Python/PyTorch version badges to match actual versions
+  10. Update both app.py and demo/app.py _HF_REPO to YOUR HF repo
+
+Total time for all quick wins: ~1–2 hours.
+Immediately closes: 1 memory leak, 1 UX bug, 2 supply-chain risks,
+3 missing deps, 2 information disclosure issues, 3 documentation errors.
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+22. LONG-TERM IMPROVEMENTS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+ML Model Improvements
+----------------------
+1. Train on ASVspoof 2021/2024 data to address the A17/A18 neural
+   codec blind spot (36.8% EER — near-random performance).
+2. Implement AASIST (graph attention on spectro-temporal features)
+   which is state-of-the-art for this task as of 2022.
+3. Add confidence calibration (temperature scaling) so displayed
+   confidence scores are statistically meaningful.
+4. Add explicit uncertainty flag in API response when confidence < 0.7.
+
+Architecture Improvements
+--------------------------
+5. Split app.py into: ui/gradio_layout.py (layout), ui/gradio_handlers.py
+   (event handlers), and shared/inference_service.py (inference logic).
+6. Wire configs/*.yaml to inference path so a single config controls
+   both training and serving.
+7. Build a proper service layer: inference_service.py that both the
+   FastAPI and Gradio surfaces use — eliminating any remaining divergence.
+8. Add a model registry abstraction so switching from LCNN to AASIST
+   requires no API changes.
+
+Operational Improvements
+--------------------------
+9. Add Prometheus metrics (inference latency p50/p95/p99, request count,
+   error rate) via prometheus-fastapi-instrumentator.
+10. Replace print() logging with structured JSON logs (structlog or
+    python-logging-json).
+11. Add distributed tracing (OpenTelemetry) for request correlation.
+12. Consider a model warm-up call at startup to pre-JIT compile the
+    model graph before the first user request.
+
+Testing Roadmap
+----------------
+13. Week 1: Unit tests for data pipeline (load_waveform, transforms)
+14. Week 1: Model smoke tests (shape contracts, forward pass)
+15. Week 2: API integration tests (all endpoints, all error cases)
+16. Week 3: Property-based tests for EER computation (hypothesis library)
+17. Week 4: Performance regression tests (inference latency budget)
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+23. TECHNICAL DEBT ROADMAP
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+SPRINT 1 (Days 1–2): Security Hardening
+-----------------------------------------
+[ ] Add weights_only=True to all 6 torch.load() calls             5 min
+[ ] Add checkpoint SHA-256 hash verification                       20 min
+[ ] Add API key authentication to /predict                         1 hr
+[ ] Add rate limiting (slowapi) to /predict                       30 min
+[ ] Move size check to middleware (pre-read)                      30 min
+[ ] Disable /docs and /redoc                                       2 min
+[ ] Add CORS policy                                                5 min
+[ ] Fix temp file cleanup on write failure                        10 min
+[ ] Update CI/CD TODO placeholder                                  2 min
+
+SPRINT 2 (Days 3–4): Testing Foundation
+------------------------------------------
+[ ] Add pytest, pytest-asyncio, httpx to dev dependencies
+[ ] Write API tests: /health, /predict success, /predict errors
+[ ] Write model smoke tests with synthetic tensors
+[ ] Write data pipeline shape tests
+[ ] Wire tests into GitHub Actions CI workflow
+
+SPRINT 3 (Days 5–7): Code Quality & Architecture
+--------------------------------------------------
+[ ] Extract shared CSS/UI into voiceguard_ui.py module
+[ ] Consolidate app.py and demo/app.py to single entry point
+[ ] Fix GradCAM target_class to use predicted label
+[ ] Move model loading to lifecycle hook in Gradio app
+[ ] Unify get_device() into src/utils/device.py
+[ ] Fix matplotlib memory leak (plt.close)
+[ ] Add pandas, pydub, huggingface_hub to pyproject.toml
+[ ] Remove unused dependencies (httpx, python-dotenv from runtime)
+[ ] Fix transforms.py comment ([1, 128, 251])
+[ ] Align Python version across .venv, pyproject.toml, Dockerfile, README
+[ ] Add [dev] extras section to pyproject.toml
+
+SPRINT 4 (Week 2): Reliability & Operations
+---------------------------------------------
+[ ] Add structured logging (replace print() throughout)
+[ ] Add Docker HEALTHCHECK directive
+[ ] Pin Docker base image digest
+[ ] Add inference timeout (asyncio.wait_for)
+[ ] Add deep health check (/health checks model readiness)
+[ ] Add Prometheus metrics endpoint
+[ ] Add API versioning (/v1/predict)
+[ ] Narrow exception handling in load_waveform()
+[ ] Add error states to Gradio UI (user-friendly error messages)
+
+ONGOING:
+[ ] Dependency lockfile (pip-compile with hashes)
+[ ] Monthly dependency update reviews
+[ ] Annual security audit of ML supply chain (torch, soundfile, ffmpeg)
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+24. FINAL RECOMMENDATION
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+APPROVE FOR: Local development, portfolio demonstration on trusted network,
+             closed HF Spaces deployment with known audience
+
+DO NOT APPROVE FOR: Public internet exposure, enterprise API deployment,
+                    production use without security hardening sprint
+
+The core ML work is strong. The LCNN implementation is clean and correct,
+the training pipeline is well-engineered, the evaluation is rigorous, and
+the 7.07% EER result is legitimately competitive. The documentation depth
+is well above average for a project of this size. This is a high-quality
+research-to-demo pipeline.
+
+The production gap is not technical complexity — every fix on the Top 20
+list is straightforward. The gap is entirely in the security hardening and
+testing layers that are standard for a production API but non-critical for
+research code. Two engineering days of focused work on the items in Sprint 1
+and Sprint 2 would bring this system to a defensible production baseline.
+
+The most important single action before any push to GitHub: update the
+repo_id in .github/workflows/sync_to_hf.yml. This is the only finding
+that can cause immediate, irreversible harm to a third party.
+
+The second most important action before any network exposure: add
+weights_only=True to all torch.load() calls and verify the checkpoint
+hash. These are the two lines between the current state and an RCE path.
+
+Everything else is quality, reliability, and scale.
+
+==================================================
+END OF AUDIT REPORT
+Findings: 51  |  Critical: 3  |  High: 8  |  Medium: 17  |  Low: 23
+Overall Health: 58/100  |  Security: 35/100  |  Testing: 2/100
+==================================================

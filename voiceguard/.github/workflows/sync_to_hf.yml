@@ -1,0 +1,48 @@
+name: Sync to Hugging Face Spaces
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:  # allow manual trigger from GitHub Actions tab
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Install huggingface_hub
+        run: pip install huggingface_hub
+
+      - name: Push to HF Space
+        env:
+          HF_TOKEN: ${{ secrets.HF_TOKEN }}
+        run: |
+          python - <<'EOF'
+          import os
+          from huggingface_hub import HfApi
+
+          api = HfApi(token=os.environ["HF_TOKEN"])
+          api.upload_folder(
+              folder_path=".",
+              # TODO: Replace with YOUR_HF_USERNAME/your-space-name before pushing.
+              # See NEXT_STEPS.md — Step 5. Pushing with the original value
+              # will overwrite the original author's live HF Space.
+              repo_id="TODO_YOUR_HF_USERNAME/voiceguard",
+              repo_type="space",
+              ignore_patterns=[
+                  ".git*",
+                  "checkpoints/",
+                  "notebooks/",      # PNG images — not needed by the Space
+                  "runs/",
+                  ".venv/",
+                  "__pycache__/",
+                  "*.pyc",
+                  "*.egg-info/",
+                  ".claude/",
+              ],
+          )
+          print("Upload complete!")
+          EOF

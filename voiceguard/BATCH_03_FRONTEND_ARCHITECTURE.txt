@@ -1,0 +1,3305 @@
+================================================================================
+VOICEGUARD — BATCH 03: FRONTEND ARCHITECTURE
+Complete Engineering Blueprint for Frontend Implementation
+================================================================================
+Version:        3.0
+Date:           2026-07-25
+Classification: Internal — Engineering Reference
+Status:         Approved for Frontend Implementation
+Depends On:     VOICEGUARD_PRODUCT_ARCHITECTURE.md (Batch 01)
+                BATCH_02_UX_UI_DESIGN_SYSTEM.txt (Batch 02)
+================================================================================
+
+TABLE OF CONTENTS
+─────────────────
+ 1. Executive Summary
+ 2. Frontend Vision
+ 3. Project Structure
+ 4. Module Architecture
+ 5. Routing Architecture
+ 6. Layout Architecture
+ 7. Component Architecture
+ 8. State Management Architecture
+ 9. Data Flow Architecture
+10. API Integration Strategy
+11. Theme Architecture
+12. Navigation Architecture
+13. Performance Strategy
+14. Accessibility Strategy
+15. Error Handling Strategy
+16. Engineering Standards
+17. Frontend Scalability Plan
+18. Architecture Self Audit
+19. Risks & Mitigations
+20. Final Recommendations
+
+================================================================================
+SECTION 1 — EXECUTIVE SUMMARY
+================================================================================
+
+This document is the complete frontend engineering blueprint for VoiceGuard.
+It converts the approved UX specification (Batch 02) into a scalable,
+maintainable frontend architecture that a senior engineering team can
+implement immediately without architectural clarification.
+
+Batch 01 defined WHAT the product does and WHY.
+Batch 02 defined HOW it looks and HOW users interact with it.
+Batch 03 defines HOW the frontend is engineered.
+
+SCOPE
+─────
+  • Complete project folder structure with module boundaries
+  • Routing architecture for all 22 screens with guards and lazy loading
+  • Component architecture — every component, its props contract, and
+    its relationship to parent/child components
+  • State management strategy — global, feature, and local state
+  • Data flow diagrams for every major user action
+  • API integration layer — request, response, caching, retry
+  • Theme architecture — token system, dark/light switching, persistence
+  • Performance strategy — code splitting, memoization, virtualization
+  • Accessibility architecture — focus management, ARIA, keyboard nav
+  • Error handling strategy — boundaries, recovery, crash reporting
+  • Engineering standards — naming, testing, documentation, imports
+  • Self-audit with resolved issues
+  • Risks and mitigations
+
+OUT OF SCOPE
+────────────
+  • React / TypeScript / CSS implementation code
+  • Backend API contracts (defined in Batch 01)
+  • Database schemas
+  • Deployment and DevOps configuration
+  • CI/CD pipeline details
+
+DOCUMENT AUTHORITY
+──────────────────
+This document supersedes any informal architecture decisions made before it
+existed. Any deviation from this blueprint requires an Architecture Decision
+Record (ADR) filed before implementation begins.
+
+================================================================================
+SECTION 2 — FRONTEND VISION
+================================================================================
+
+GUIDING STATEMENT
+─────────────────
+The VoiceGuard frontend must feel like a product built at Stripe or Linear —
+not because of visual polish alone, but because every interaction is deliberate,
+every state is handled, every edge case is accounted for, and the code
+architecture supports rapid, confident iteration for years to come.
+
+TECHNOLOGY STACK RATIONALE
+───────────────────────────
+
+Framework: React (with Next.js App Router)
+  Why: Server-side rendering for S01 (landing) and S20 (shared result) — both
+  are public, SEO-relevant pages that benefit from SSR. The App Router's
+  layouts, loading.tsx, and error.tsx conventions map directly to this
+  architecture's layout and error boundary strategy.
+
+Styling: CSS Custom Properties (design tokens) + CSS Modules
+  Why: Batch 02 mandates a design token system implemented as CSS custom
+  properties. CSS Modules provide component-level scoping without a
+  runtime CSS-in-JS performance penalty. This combination gives:
+    — Zero-cost dark/light theme switching (swap the token values at :root)
+    — No style injection overhead at runtime
+    — Full tree-shaking (dead styles are never shipped)
+
+State: Zustand (global) + React Query (server state) + React Hook Form (forms)
+  Why: Zustand for lightweight global UI state (auth, theme, notifications,
+  upload state). React Query for all server-fetched data (scan history,
+  user profile) — it handles caching, deduplication, background refetch,
+  and optimistic updates natively. React Hook Form for all forms — no
+  re-renders on every keystroke, built-in validation, integrates with Zod.
+
+Routing: Next.js App Router
+  Why: File-system routing maps cleanly to the 22-screen sitemap. Parallel
+  routes handle the scan processing overlay. Route groups separate public
+  from authenticated layouts.
+
+ARCHITECTURE PRINCIPLES
+────────────────────────
+
+  P1 — Feature-first, not file-type-first
+     Code is organized by product feature (auth, detection, history),
+     not by type (components/, hooks/, utils/). This ensures the entire
+     code for a feature lives together and can be deleted or extracted
+     as a unit.
+
+  P2 — Every module has an explicit public API
+     Each feature module exports only what other modules need. Internal
+     components, hooks, and utilities are not exported from the module
+     barrel. Cross-module coupling is always explicit and reviewable.
+
+  P3 — Design tokens are infrastructure, not styling
+     The token system is established before the first component is written.
+     All values flow from tokens to components. No raw values in component
+     files.
+
+  P4 — Components are stateless by default
+     A component receives data via props and fires events via callbacks.
+     It does not own server state. Server state lives in React Query.
+     UI state that is local lives in useState. Global UI state lives in
+     Zustand. This distinction is enforced at the architectural level.
+
+  P5 — Performance is designed, not optimized after the fact
+     Code splitting, lazy loading, skeleton loaders, and memoization
+     strategies are defined here, not discovered during a post-launch
+     performance audit.
+
+  P6 — The shell renders first
+     The AppShell (top bar + sidebar) is always server-rendered and
+     visible within 500ms. Content areas load independently. Users
+     never see a full-page blank state.
+
+  P7 — Every error has a recovery path
+     Error boundaries exist at module level. Every API failure has a
+     defined fallback UI. No component renders into an unhandled error
+     state.
+
+  P8 — Accessibility is structural, not cosmetic
+     Focus management, ARIA roles, keyboard navigation, and
+     reduced-motion preferences are implemented in the component
+     architecture, not added after QA feedback.
+
+================================================================================
+SECTION 3 — PROJECT STRUCTURE
+================================================================================
+
+Complete folder tree. Every directory has a defined responsibility.
+Violating these boundaries requires an ADR.
+
+voiceguard-frontend/
+│
+├── app/                          ← Next.js App Router root
+│   ├── layout.tsx                  Root layout (HTML, body, providers)
+│   ├── page.tsx                    S01 Landing Page (SSR)
+│   ├── not-found.tsx               S21 Global 404 handler
+│   ├── error.tsx                   S22 Global error boundary
+│   ├── loading.tsx                 Global loading fallback
+│   │
+│   ├── (public)/                   Route group: unauthenticated layout
+│   │   ├── layout.tsx                PublicLayout (navbar + footer)
+│   │   ├── signup/
+│   │   │   └── page.tsx              S02 Sign Up
+│   │   ├── login/
+│   │   │   └── page.tsx              S03 Login
+│   │   ├── verify-email/
+│   │   │   └── page.tsx              S04 Email Verification
+│   │   ├── forgot-password/
+│   │   │   └── page.tsx              S05 Forgot Password
+│   │   └── r/
+│   │       └── [scanId]/
+│   │           ├── page.tsx          S20 Shared Scan Result (SSR, public)
+│   │           └── loading.tsx       Skeleton for shared result
+│   │
+│   └── (app)/                      Route group: authenticated app shell
+│       ├── layout.tsx                AppShellLayout (TopBar + Sidebar)
+│       ├── onboarding/
+│       │   └── page.tsx              S06 Onboarding Wizard
+│       ├── dashboard/
+│       │   ├── page.tsx              S07 Dashboard
+│       │   └── loading.tsx           Dashboard skeleton
+│       ├── scan/
+│       │   ├── new/
+│       │   │   └── page.tsx          S08 New Scan
+│       │   ├── processing/
+│       │   │   └── page.tsx          S09 Scan Processing
+│       │   └── [scanId]/
+│       │       ├── page.tsx          S10 Scan Result (fresh result)
+│       │       └── loading.tsx       Result skeleton
+│       ├── history/
+│       │   ├── page.tsx              S11 History — All Scans
+│       │   ├── loading.tsx           History skeleton
+│       │   └── [scanId]/
+│       │       ├── page.tsx          S12 Scan Detail (archived)
+│       │       └── loading.tsx       Scan detail skeleton
+│       ├── notifications/
+│       │   └── page.tsx              S13 Notifications
+│       ├── help/
+│       │   ├── page.tsx              S14 Help Center
+│       │   └── [articleSlug]/
+│       │       └── page.tsx          S15 Help Article
+│       ├── feedback/
+│       │   └── page.tsx              S16 Feedback / Report
+│       └── settings/
+│           ├── layout.tsx            Settings sub-layout (sidebar tabs)
+│           ├── profile/
+│           │   └── page.tsx          S17 Profile
+│           ├── account/
+│           │   └── page.tsx          S18 Account Settings
+│           └── appearance/
+│               └── page.tsx          S19 Appearance & Preferences
+│
+├── src/                          ← All application source code
+│   │
+│   ├── modules/                  ← Feature modules (core architecture unit)
+│   │   ├── auth/                   Auth module
+│   │   │   ├── index.ts              Public API (exports only what's needed)
+│   │   │   ├── components/
+│   │   │   │   ├── LoginForm.tsx
+│   │   │   │   ├── SignUpForm.tsx
+│   │   │   │   ├── OTPInput.tsx
+│   │   │   │   ├── PasswordStrengthMeter.tsx
+│   │   │   │   ├── OAuthButtons.tsx
+│   │   │   │   └── ForgotPasswordForm.tsx
+│   │   │   ├── hooks/
+│   │   │   │   ├── useAuth.ts
+│   │   │   │   ├── useLoginForm.ts
+│   │   │   │   ├── useSignUpForm.ts
+│   │   │   │   └── useOAuthRedirect.ts
+│   │   │   ├── store/
+│   │   │   │   └── authStore.ts      Zustand auth slice
+│   │   │   ├── api/
+│   │   │   │   └── authApi.ts        API calls for auth endpoints
+│   │   │   ├── guards/
+│   │   │   │   ├── AuthGuard.tsx     Redirects unauthenticated users
+│   │   │   │   ├── GuestGuard.tsx    Redirects authenticated users away
+│   │   │   │   └── OnboardingGuard.tsx
+│   │   │   └── types.ts              Auth-specific TypeScript types
+│   │   │
+│   │   ├── detection/              Detection module (core product loop)
+│   │   │   ├── index.ts
+│   │   │   ├── components/
+│   │   │   │   ├── FileDropzone.tsx
+│   │   │   │   ├── FilePreviewCard.tsx
+│   │   │   │   ├── AudioPreviewPlayer.tsx
+│   │   │   │   ├── MicrophoneRecorder.tsx
+│   │   │   │   ├── WaveformVisualizer.tsx
+│   │   │   │   ├── ProcessingCard.tsx
+│   │   │   │   ├── ProcessingSteps.tsx
+│   │   │   │   ├── VerdictCard.tsx
+│   │   │   │   ├── ConfidenceBar.tsx
+│   │   │   │   ├── ScoreBreakdown.tsx
+│   │   │   │   ├── GradCAMPanel.tsx
+│   │   │   │   ├── LimitationsCard.tsx
+│   │   │   │   └── ScanActionBar.tsx
+│   │   │   ├── hooks/
+│   │   │   │   ├── useFileUpload.ts
+│   │   │   │   ├── useMicrophoneRecorder.ts
+│   │   │   │   ├── useScanProcessing.ts
+│   │   │   │   ├── useScanResult.ts
+│   │   │   │   ├── useFileHash.ts
+│   │   │   │   ├── useAudioPlayer.ts
+│   │   │   │   └── usePDFExport.ts
+│   │   │   ├── store/
+│   │   │   │   └── detectionStore.ts
+│   │   │   ├── api/
+│   │   │   │   └── detectionApi.ts
+│   │   │   └── types.ts
+│   │   │
+│   │   ├── history/                History module
+│   │   │   ├── index.ts
+│   │   │   ├── components/
+│   │   │   │   ├── ScanTable.tsx
+│   │   │   │   ├── ScanRow.tsx
+│   │   │   │   ├── ScanCard.tsx      (mobile card variant)
+│   │   │   │   ├── FilterBar.tsx
+│   │   │   │   ├── FilterChipGroup.tsx
+│   │   │   │   ├── DateRangePicker.tsx
+│   │   │   │   ├── BulkActionBar.tsx
+│   │   │   │   └── ScanDetail.tsx
+│   │   │   ├── hooks/
+│   │   │   │   ├── useScanHistory.ts
+│   │   │   │   ├── useScanFilters.ts
+│   │   │   │   ├── useBulkSelection.ts
+│   │   │   │   └── useDeleteScan.ts
+│   │   │   ├── store/
+│   │   │   │   └── historyStore.ts
+│   │   │   ├── api/
+│   │   │   │   └── historyApi.ts
+│   │   │   └── types.ts
+│   │   │
+│   │   ├── notifications/          Notifications module
+│   │   │   ├── index.ts
+│   │   │   ├── components/
+│   │   │   │   ├── NotificationList.tsx
+│   │   │   │   ├── NotificationItem.tsx
+│   │   │   │   └── NotificationBadge.tsx
+│   │   │   ├── hooks/
+│   │   │   │   ├── useNotifications.ts
+│   │   │   │   └── useNotificationCount.ts
+│   │   │   ├── store/
+│   │   │   │   └── notificationStore.ts
+│   │   │   ├── api/
+│   │   │   │   └── notificationApi.ts
+│   │   │   └── types.ts
+│   │   │
+│   │   ├── help/                   Help module
+│   │   │   ├── index.ts
+│   │   │   ├── components/
+│   │   │   │   ├── HelpSearch.tsx
+│   │   │   │   ├── ArticleCard.tsx
+│   │   │   │   ├── ArticleBody.tsx
+│   │   │   │   ├── ArticleTOC.tsx
+│   │   │   │   └── HelpfulnessPoll.tsx
+│   │   │   ├── hooks/
+│   │   │   │   ├── useHelpSearch.ts
+│   │   │   │   └── useArticle.ts
+│   │   │   ├── api/
+│   │   │   │   └── helpApi.ts
+│   │   │   └── types.ts
+│   │   │
+│   │   ├── feedback/               Feedback module
+│   │   │   ├── index.ts
+│   │   │   ├── components/
+│   │   │   │   ├── FeedbackForm.tsx
+│   │   │   │   └── FeedbackSuccess.tsx
+│   │   │   ├── hooks/
+│   │   │   │   └── useFeedbackForm.ts
+│   │   │   ├── api/
+│   │   │   │   └── feedbackApi.ts
+│   │   │   └── types.ts
+│   │   │
+│   │   ├── settings/               Settings module
+│   │   │   ├── index.ts
+│   │   │   ├── components/
+│   │   │   │   ├── ProfileForm.tsx
+│   │   │   │   ├── EmailChangeForm.tsx
+│   │   │   │   ├── PasswordChangeForm.tsx
+│   │   │   │   ├── NotificationPreferences.tsx
+│   │   │   │   ├── ThemeSelector.tsx
+│   │   │   │   ├── ResultDisplaySettings.tsx
+│   │   │   │   ├── DangerZone.tsx
+│   │   │   │   └── DataExportButton.tsx
+│   │   │   ├── hooks/
+│   │   │   │   ├── useProfileForm.ts
+│   │   │   │   ├── useEmailChange.ts
+│   │   │   │   ├── usePasswordChange.ts
+│   │   │   │   └── useAccountDeletion.ts
+│   │   │   ├── store/
+│   │   │   │   └── settingsStore.ts
+│   │   │   ├── api/
+│   │   │   │   └── settingsApi.ts
+│   │   │   └── types.ts
+│   │   │
+│   │   ├── dashboard/              Dashboard module
+│   │   │   ├── index.ts
+│   │   │   ├── components/
+│   │   │   │   ├── StatCard.tsx
+│   │   │   │   ├── StatsRow.tsx
+│   │   │   │   ├── RecentScans.tsx
+│   │   │   │   ├── ActivityChart.tsx
+│   │   │   │   ├── QuickTip.tsx
+│   │   │   │   └── DashboardUploadZone.tsx
+│   │   │   ├── hooks/
+│   │   │   │   └── useDashboardData.ts
+│   │   │   ├── api/
+│   │   │   │   └── dashboardApi.ts
+│   │   │   └── types.ts
+│   │   │
+│   │   └── onboarding/             Onboarding module
+│   │       ├── index.ts
+│   │       ├── components/
+│   │       │   ├── OnboardingWizard.tsx
+│   │       │   ├── WelcomeStep.tsx
+│   │       │   ├── UseCaseStep.tsx
+│   │       │   ├── UseCaseCard.tsx
+│   │       │   └── FirstScanStep.tsx
+│   │       ├── hooks/
+│   │       │   └── useOnboarding.ts
+│   │       ├── api/
+│   │       │   └── onboardingApi.ts
+│   │       └── types.ts
+│   │
+│   ├── shared/                   ← Shared components, hooks, utilities
+│   │   ├── components/             Components used by 2+ modules
+│   │   │   ├── layout/
+│   │   │   │   ├── AppShell.tsx
+│   │   │   │   ├── TopBar.tsx
+│   │   │   │   ├── Sidebar.tsx
+│   │   │   │   ├── BottomTabBar.tsx
+│   │   │   │   ├── PublicNavbar.tsx
+│   │   │   │   ├── PublicFooter.tsx
+│   │   │   │   ├── PageHeader.tsx
+│   │   │   │   └── SettingsSidebar.tsx
+│   │   │   ├── ui/                 Primitive UI components (design system)
+│   │   │   │   ├── Button.tsx
+│   │   │   │   ├── IconButton.tsx
+│   │   │   │   ├── Badge.tsx
+│   │   │   │   ├── Card.tsx
+│   │   │   │   ├── Divider.tsx
+│   │   │   │   ├── Tooltip.tsx
+│   │   │   │   ├── Toast.tsx
+│   │   │   │   ├── ToastStack.tsx
+│   │   │   │   ├── Modal.tsx
+│   │   │   │   ├── ConfirmDialog.tsx
+│   │   │   │   ├── Drawer.tsx
+│   │   │   │   ├── Alert.tsx
+│   │   │   │   ├── Spinner.tsx
+│   │   │   │   ├── SkeletonLoader.tsx
+│   │   │   │   ├── EmptyState.tsx
+│   │   │   │   ├── ProgressSteps.tsx
+│   │   │   │   ├── StatusDot.tsx
+│   │   │   │   ├── Avatar.tsx
+│   │   │   │   ├── Switch.tsx
+│   │   │   │   ├── Checkbox.tsx
+│   │   │   │   ├── RadioGroup.tsx
+│   │   │   │   ├── Select.tsx
+│   │   │   │   ├── Pagination.tsx
+│   │   │   │   └── BreadcrumbTrail.tsx
+│   │   │   ├── form/               Form primitives
+│   │   │   │   ├── FormField.tsx
+│   │   │   │   ├── FormLabel.tsx
+│   │   │   │   ├── Input.tsx
+│   │   │   │   ├── TextArea.tsx
+│   │   │   │   ├── PasswordInput.tsx
+│   │   │   │   ├── SearchInput.tsx
+│   │   │   │   └── FormError.tsx
+│   │   │   └── feedback/           Feedback & state components
+│   │   │       ├── ErrorBoundary.tsx
+│   │   │       ├── ErrorFallback.tsx
+│   │   │       └── OfflineBanner.tsx
+│   │   │
+│   │   ├── hooks/                  Shared hooks
+│   │   │   ├── useBreakpoint.ts    Returns current breakpoint
+│   │   │   ├── useDebounce.ts      Debounce any value
+│   │   │   ├── useLocalStorage.ts  Type-safe localStorage wrapper
+│   │   │   ├── useClipboard.ts     Copy to clipboard + state
+│   │   │   ├── useKeyboardShortcut.ts
+│   │   │   ├── useFocusTrap.ts     Focus management in modals
+│   │   │   ├── useMediaQuery.ts    Responds to media queries
+│   │   │   ├── useScrollLock.ts    Body scroll lock for modals
+│   │   │   ├── useIntersectionObserver.ts
+│   │   │   ├── usePrevious.ts      Tracks previous value
+│   │   │   └── useReducedMotion.ts Reads prefers-reduced-motion
+│   │   │
+│   │   ├── providers/              React context providers
+│   │   │   ├── ThemeProvider.tsx   Applies theme tokens to :root
+│   │   │   ├── QueryProvider.tsx   React Query client wrapper
+│   │   │   ├── ToastProvider.tsx   Global toast stack
+│   │   │   └── AuthProvider.tsx    Auth state hydration on app load
+│   │   │
+│   │   └── utils/                  Pure utility functions
+│   │       ├── formatting.ts       Date, number, file size formatters
+│   │       ├── validation.ts       Shared validation schemas (Zod)
+│   │       ├── fileUtils.ts        MIME detection, file size check
+│   │       ├── hashUtils.ts        SHA-256 via Web Crypto API
+│   │       ├── errorUtils.ts       Error message extraction
+│   │       └── cn.ts               Class name merging utility
+│   │
+│   ├── styles/                   ← Global styles and token definitions
+│   │   ├── tokens/
+│   │   │   ├── colors.css          All color tokens (dark + light)
+│   │   │   ├── typography.css      Font family, size, weight, line-height
+│   │   │   ├── spacing.css         Space-* tokens
+│   │   │   ├── radius.css          Border radius tokens
+│   │   │   ├── shadows.css         Shadow tokens
+│   │   │   ├── motion.css          Duration + easing tokens
+│   │   │   └── index.css           Barrel: imports all token files
+│   │   ├── base.css                Reset, body, scrollbar, selection
+│   │   ├── fonts.css               Font face declarations
+│   │   └── globals.css             Imports tokens/index + base
+│   │
+│   ├── config/                   ← Application configuration
+│   │   ├── routes.ts               Typed route constants (no magic strings)
+│   │   ├── api.ts                  API base URLs, timeout values
+│   │   ├── queryKeys.ts            React Query key factory
+│   │   ├── constants.ts            App-wide constants
+│   │   └── env.ts                  Environment variable validation
+│   │
+│   └── types/                    ← Shared TypeScript types
+│       ├── api.ts                  API request/response shapes
+│       ├── models.ts               Domain models (User, Scan, Notification)
+│       └── common.ts               Utility types used everywhere
+│
+├── public/                       ← Static assets served as-is
+│   ├── fonts/                      Self-hosted font files
+│   │   ├── inter/
+│   │   └── jetbrains-mono/
+│   ├── images/
+│   │   ├── og/                     Open Graph images
+│   │   └── illustrations/          SVG illustrations for empty states
+│   └── icons/
+│       └── sprite.svg              SVG icon sprite (all icons in one file)
+│
+├── tests/                        ← Test files
+│   ├── unit/                       Unit tests for hooks and utilities
+│   ├── integration/                Component integration tests
+│   └── e2e/                        End-to-end tests (Playwright)
+│
+├── .env.local                    ← Local environment variables (git-ignored)
+├── .env.example                  ← Template for required env vars
+├── next.config.ts                ← Next.js configuration
+├── tsconfig.json                 ← TypeScript config
+└── package.json
+
+================================================================================
+SECTION 4 — MODULE ARCHITECTURE
+================================================================================
+
+Each module is a self-contained vertical slice of the application. A module
+owns its routes, components, hooks, API calls, and local state. Modules
+communicate only through their public index.ts API — never through direct
+internal imports.
+
+MODULE DEPENDENCY RULES
+────────────────────────
+  ALLOWED:    module → shared/components
+  ALLOWED:    module → shared/hooks
+  ALLOWED:    module → shared/utils
+  ALLOWED:    module → config/*
+  ALLOWED:    module → types/*
+  FORBIDDEN:  module → another module's internal files
+  FORBIDDEN:  shared/ → any module (shared never imports from features)
+
+If module A needs a component from module B, that component belongs in
+shared/components, not in module B's internal directory.
+
+MODULE BOUNDARIES MAP
+──────────────────────
+
+  ┌─────────────────────────────────────────────────────────────────────┐
+  │                           APP ENTRY                                 │
+  │                      (app/layout.tsx)                               │
+  │              ThemeProvider > QueryProvider > AuthProvider           │
+  │                         > ToastProvider                             │
+  └────────────────────────────────┬────────────────────────────────────┘
+                                   │
+         ┌─────────────────────────┼──────────────────────────┐
+         ▼                         ▼                          ▼
+  ┌─────────────┐          ┌──────────────┐           ┌──────────────┐
+  │  (public)/  │          │   (app)/     │           │   shared/    │
+  │  layout     │          │   layout     │           │  components  │
+  │             │          │  AppShell    │           │  hooks       │
+  │  auth       │          │             │           │  providers   │
+  │  public     │          │  dashboard  │           │  utils       │
+  │  modules    │          │  detection  │           └──────────────┘
+  └─────────────┘          │  history    │
+                           │  settings   │
+                           │  help       │
+                           │  feedback   │
+                           │  notif.     │
+                           └─────────────┘
+
+MODULE: AUTH
+─────────────
+  Owns:    S02 Sign Up, S03 Login, S04 Verify Email, S05 Forgot Password
+  Exports: useAuth, AuthGuard, GuestGuard, OnboardingGuard, authStore
+  State:   currentUser (User | null), isAuthenticated, isGuest, sessionToken,
+           isLoading, error
+  Consumes: /api/auth/* endpoints
+  Does NOT own: user profile display (owned by settings module)
+  Does NOT own: session-aware UI elements (owned by shared/layout)
+
+MODULE: DETECTION
+──────────────────
+  Owns:    S08 New Scan, S09 Processing, S10 Scan Result
+  Exports: detectionStore, useScanResult, VerdictCard, ConfidenceBar,
+           GradCAMPanel, LimitationsCard
+  State:   uploadedFile, processingStatus, processingStep,
+           currentScanResult, gradcamImageUrl, melImageUrl
+  Consumes: /api/scan/* endpoints
+  Critical: This is the highest-value module. It owns the core product loop.
+            S10 (Scan Result) components (VerdictCard, GradCAMPanel) are also
+            consumed by history/ScanDetail and public/SharedResult — they are
+            exported through detection/index.ts for this purpose.
+
+MODULE: HISTORY
+────────────────
+  Owns:    S11 History, S12 Scan Detail
+  Exports: historyStore, useScanHistory, ScanRow
+  State:   scans[], totalCount, filters (search, verdict, dateRange, sort),
+           pagination (page, perPage), selectedScanIds[], currentScan
+  Consumes: /api/scans/* endpoints
+  Note:    S12 Scan Detail renders detection module's components
+           (VerdictCard, GradCAMPanel, etc.) for historical scan data.
+           It imports these from detection/index.ts.
+
+MODULE: SETTINGS
+─────────────────
+  Owns:    S17 Profile, S18 Account Settings, S19 Appearance & Preferences
+  Exports: settingsStore, useTheme, ThemeSelector
+  State:   theme (light | dark | system), notificationPrefs,
+           resultDisplayPrefs, dashboardPrefs, usageContext
+  Note:    Theme preference from settingsStore is read by ThemeProvider
+           (shared/providers) — this is the only permitted cross-module
+           read. ThemeProvider reads the exported store; it never imports
+           from settings internals.
+
+MODULE: DASHBOARD
+──────────────────
+  Owns:    S07 Dashboard
+  Exports: useDashboardData, StatCard
+  Consumes: /api/dashboard/* (aggregated stats endpoint)
+  Note:    Dashboard embeds detection/FileDropzone and detection/MicrophoneRecorder
+           for the inline upload zone. These are imported from detection/index.ts.
+
+MODULE: NOTIFICATIONS
+──────────────────────
+  Owns:    S13 Notifications, notification bell badge in TopBar
+  Exports: notificationStore, useNotificationCount, NotificationBadge
+  State:   notifications[], unreadCount, isLoading
+  Polling: v1 — HTTP polling every 30s. v2 — WebSocket subscription.
+  Note:    NotificationBadge is consumed by TopBar (shared/layout).
+           It is exported through notifications/index.ts.
+
+MODULE: HELP
+─────────────
+  Owns:    S14 Help Center, S15 Help Article
+  Exports: nothing — self-contained; no other module depends on help content
+  Content: v1 — static MDX files in content/help/. v2 — CMS-backed.
+
+MODULE: FEEDBACK
+─────────────────
+  Owns:    S16 Feedback / Report
+  Exports: nothing — accessed via URL or prop from detection module
+  Note:    When a user clicks "Report Incorrect Result" from S10/S12, the
+           feedback form receives scanId, verdictGiven as URL params or
+           React Query state. It does NOT directly import from detection.
+
+MODULE: ONBOARDING
+───────────────────
+  Owns:    S06 Onboarding Wizard
+  Exports: useOnboarding (for OnboardingGuard to check completion status)
+  State:   currentStep, selectedUseCase, isComplete
+  Guard:   OnboardingGuard (in auth module) reads isComplete from
+           onboarding/index.ts export.
+
+================================================================================
+SECTION 5 — ROUTING ARCHITECTURE
+================================================================================
+
+ROUTING STRATEGY
+─────────────────
+Next.js App Router. Route groups create layout boundaries without
+affecting URL paths. All routes with authentication requirements
+use a guard component (AuthGuard, GuestGuard) rendered at layout level.
+
+URL CONVENTIONS
+────────────────
+  - Lowercase, hyphen-separated slugs
+  - No trailing slashes
+  - Dynamic segments: [paramName]
+  - No query params in URLs for navigation state (use Zustand for filter state)
+  - Exception: /scan/[scanId] where scanId is a UUID for direct deep links
+
+COMPLETE ROUTE TABLE
+─────────────────────
+
+  Screen  URL                          Auth     Layout        Guard
+  ──────────────────────────────────────────────────────────────────────────────
+  S01     /                            none     PublicLayout   none
+  S02     /signup                      guest    PublicLayout   GuestGuard
+  S03     /login                       guest    PublicLayout   GuestGuard
+  S04     /verify-email                partial  MinimalLayout  none
+  S05     /forgot-password             guest    PublicLayout   GuestGuard
+  S06     /onboarding                  auth     MinimalLayout  AuthGuard +
+                                                               OnboardingGuard
+  S07     /dashboard                   auth     AppShell       AuthGuard
+  S08     /scan/new                    semi     AppShell       SemiAuthGuard
+  S09     /scan/processing             auth     AppShell       AuthGuard
+  S10     /scan/[scanId]               semi     AppShell       SemiAuthGuard
+  S11     /history                     auth     AppShell       AuthGuard
+  S12     /history/[scanId]            auth     AppShell       AuthGuard
+  S13     /notifications               auth     AppShell       AuthGuard
+  S14     /help                        none     AppShell       none
+  S15     /help/[articleSlug]          none     AppShell       none
+  S16     /feedback                    auth     AppShell       AuthGuard
+  S17     /settings/profile            auth     AppShell       AuthGuard
+  S18     /settings/account            auth     AppShell       AuthGuard
+  S19     /settings/appearance         auth     AppShell       AuthGuard
+  S20     /r/[scanId]                  none     PublicLayout   none (SSR)
+  S21     * (not-found.tsx)            none     MinimalLayout  none
+  S22     error.tsx                    none     MinimalLayout  none
+
+GUARD DEFINITIONS
+──────────────────
+
+  AuthGuard
+    Behavior: If user is not authenticated, redirect to /login
+              with returnUrl param: /login?return=/dashboard
+    Position: Rendered inside (app)/layout.tsx — applies to ALL app routes
+    Exception: /help routes skip AuthGuard (public content)
+
+  GuestGuard
+    Behavior: If user IS authenticated, redirect to /dashboard
+              (prevents logged-in user from seeing /login or /signup)
+    Position: Rendered inside specific page components where applicable
+
+  SemiAuthGuard (New Scan / Scan Result)
+    Behavior: Allows guest sessions. Initializes guest session token if
+              no auth token is present. Does NOT redirect to login.
+              Tracks scan in anonymous session for later migration.
+    Position: /scan/new and /scan/[scanId] page.tsx components
+
+  OnboardingGuard
+    Behavior: After auth, if hasCompletedOnboarding === false, redirect
+              to /onboarding before allowing access to /dashboard
+    Chain:    AuthGuard runs first, then OnboardingGuard
+    Exception: After completing onboarding, redirect to /dashboard and
+               set hasCompletedOnboarding = true in user record
+
+REDIRECT FLOWS
+───────────────
+
+  Unauthenticated user accesses /dashboard:
+    → AuthGuard triggers
+    → Redirect: /login?return=%2Fdashboard
+    → After login: /dashboard (consuming return param)
+
+  Authenticated user accesses /login:
+    → GuestGuard triggers
+    → Redirect: /dashboard
+
+  New user (post-verification), no onboarding:
+    → AuthGuard: passes
+    → OnboardingGuard: hasCompletedOnboarding === false
+    → Redirect: /onboarding
+    → After onboarding: /dashboard
+
+  Guest user submits scan:
+    → SemiAuthGuard: creates guest session
+    → /scan/new → /scan/processing → /scan/[scanId]
+    → Post-result CTA: "Save result" → /signup?migrateScan=[scanId]
+    → After sign-up: scan migrated, redirect to /dashboard
+
+  404 catch-all:
+    → app/not-found.tsx renders S21
+    → Expired shared link (/r/[scanId] returns 404 from API):
+      → Renders expired-link state within S20 page, not redirecting to 404
+
+BREADCRUMB ROUTING
+───────────────────
+Breadcrumbs are data-driven, not URL-parsed. Each page defines its
+own breadcrumb trail by exporting a generateMetadata function and
+a useBreadcrumbs hook that returns the trail for that page.
+
+  S12 /history/[scanId]:
+    Trail: [{ label: "Dashboard", href: "/dashboard" },
+            { label: "History",   href: "/history" },
+            { label: filename,    href: null }]  ← last item is not a link
+
+  S15 /help/[articleSlug]:
+    Trail: [{ label: "Dashboard", href: "/dashboard" },
+            { label: "Help",      href: "/help" },
+            { label: article.title, href: null }]
+
+  S19 /settings/appearance:
+    Trail: [{ label: "Settings", href: "/settings/account" },
+            { label: "Appearance", href: null }]
+
+LAZY LOADING STRATEGY
+──────────────────────
+All (app)/ routes are lazy-loaded. The (public)/ routes that are
+accessed before any code splitting (S01 landing, S20 shared result)
+are statically rendered and ship minimal JS.
+
+  Eagerly loaded (in initial bundle):
+    - ThemeProvider
+    - QueryProvider
+    - ToastProvider
+    - AuthProvider
+    - AppShell shell (TopBar, Sidebar, BottomTabBar)
+    - shared/ui/Button, Card, Spinner (used everywhere)
+
+  Lazy loaded (per-route):
+    - Every module's page-level components
+    - GradCAMPanel (large component, only on S10/S12/S20)
+    - AudioPreviewPlayer (depends on Web Audio API)
+    - MicrophoneRecorder (depends on MediaRecorder API)
+    - ActivityChart (depends on charting library)
+    - DateRangePicker (large component, only on S11)
+    - PDFExport utilities (only triggered on button click)
+    - MicrophoneRecorder is also dynamically imported with ssr: false
+      (Web API not available in SSR context)
+
+CODE SPLITTING BOUNDARIES
+───────────────────────────
+
+  Bundle 1 — Critical (always loaded):
+    Providers, AppShell, design system tokens, shared UI primitives
+    Target size: < 80KB gzipped
+
+  Bundle 2 — Landing (S01):
+    PublicNavbar, PublicFooter, landing page sections
+    Target size: < 60KB gzipped
+
+  Bundle 3 — Auth bundle (S02, S03, S04, S05):
+    All auth module components and forms
+    Shared between these routes, not split further
+    Target size: < 40KB gzipped
+
+  Bundle 4 — Detection bundle (S08, S09, S10):
+    FileDropzone, MicrophoneRecorder, ProcessingCard, VerdictCard,
+    ConfidenceBar, GradCAMPanel, LimitationsCard
+    Target size: < 100KB gzipped (Grad-CAM panel is complex)
+
+  Bundle 5 — History bundle (S11, S12):
+    ScanTable, FilterBar, DateRangePicker, pagination
+    Target size: < 50KB gzipped
+
+  Bundle 6 — Settings bundle (S17, S18, S19):
+    All settings forms and components
+    Target size: < 40KB gzipped
+
+  Bundle 7 — Help bundle (S14, S15):
+    Markdown renderer, TOC, search
+    Target size: < 60KB gzipped (includes markdown parser)
+
+  Charting library:
+    Loaded only when ActivityChart is rendered (S07 Dashboard, after 5+ scans)
+    Must not be included in Bundle 1
+
+ROUTE TRANSITIONS
+──────────────────
+All route transitions use Next.js's built-in navigation with:
+  - Loading states: loading.tsx files at each route segment level
+  - Stale-while-revalidate: React Query serves cached data instantly,
+    refetches in background
+  - Optimistic navigation: For S08→S09→S10, state is pre-loaded into
+    detectionStore before navigation, so S10 renders immediately
+
+================================================================================
+SECTION 6 — LAYOUT ARCHITECTURE
+================================================================================
+
+VoiceGuard uses three distinct layout shells. Every screen belongs to exactly
+one layout. Layouts are defined as Next.js layout.tsx files and wrap all
+child pages within their route group.
+
+LAYOUT 1 — PUBLIC LAYOUT
+──────────────────────────
+Used by: S01 Landing, S02 Sign Up, S03 Login, S05 Forgot Password, S20 Shared Result
+         S21 404, S22 Error
+
+Structure:
+  <html>
+    <body>
+      <PublicNavbar />          ← sticky top, transparent → solid on scroll (S01 only)
+      <main>                    ← role="main", aria-label varies by page
+        {children}              ← page content
+      </main>
+      <PublicFooter />          ← full footer (S01, S20); minimal footer (S21, S22)
+    </body>
+  </html>
+
+PublicNavbar variants:
+  Default (S02, S03, S05): solid background, Logo + Login nav
+  Landing (S01):           transparent on load, solid after scroll threshold
+  Minimal (S21, S22):      logo only, no nav links
+
+PublicFooter variants:
+  Full (S01, S20):    Three-column link grid + copyright + social icons
+  Minimal (S21, S22): Logo + copyright line only
+
+LAYOUT 2 — APP SHELL LAYOUT (Authenticated)
+─────────────────────────────────────────────
+Used by: S07–S19 (all authenticated screens)
+
+Structure:
+  <AppShell>
+    <TopBar>                    ← sticky, 56px height, z-index 100
+      <SidebarToggle />
+      <Logo />
+      <CommandPaletteButton />  ← ⌘K trigger (v2)
+      <NewScanButton />         ← always-visible accent CTA
+      <NotificationBell />      ← badge from notificationStore
+      <UserMenu />              ← avatar + dropdown
+    </TopBar>
+    <div class="shell-body">    ← flex row, fills viewport below TopBar
+      <Sidebar>                 ← 240px desktop, 64px collapsed, hidden mobile
+        <SidebarNav />          ← links with active state
+        <SidebarUserProfile />  ← mini profile at bottom
+      </Sidebar>
+      <main>                    ← flex 1, overflow-y: auto
+        <ErrorBoundary>         ← module-level boundary
+          {children}
+        </ErrorBoundary>
+      </main>
+    </div>
+    <BottomTabBar />            ← mobile only (< 900px), fixed bottom
+    <ToastStack />              ← global, positioned fixed bottom-right desktop,
+                                   bottom-center mobile
+    <OfflineBanner />           ← global, fixed top (below TopBar) when offline
+  </AppShell>
+
+Sidebar collapse behavior:
+  State stored in: settingsStore (persisted to localStorage)
+  Desktop: collapses to 64px icon-only, labels show on hover as tooltip
+  Tablet: hidden by default, slides in as overlay drawer on toggle
+  Mobile: not rendered (BottomTabBar takes over)
+
+Mobile navigation (BottomTabBar):
+  Renders at < 900px (md breakpoint)
+  Items: Home (/) | Scan (/scan/new) | History (/history) |
+         Notifications (/notifications) | Profile (/settings/profile)
+  Active: filled icon + label color = accent
+  Badge: Notifications item shows unread count badge
+
+AppShell responsive rules:
+  xl (1536px+):  Sidebar expanded 240px | Content: max-width 1440px centered
+  lg (1200px+):  Sidebar expanded 240px | Content fills remaining
+  md (900-1199): Sidebar collapsed 64px  | Content fills remaining
+  sm (600-899):  Sidebar hidden (drawer) | Content full-width
+  xs (< 600px):  Sidebar hidden (drawer) | Content full-width
+
+LAYOUT 3 — MINIMAL LAYOUT
+───────────────────────────
+Used by: S04 Email Verification, S06 Onboarding, S21 404, S22 Error
+
+Structure:
+  <html>
+    <body>
+      <header>                  ← Logo only, no navigation
+        <Logo />
+      </header>
+      <main>
+        {children}
+      </main>
+    </body>
+  </html>
+
+Rationale: Onboarding and email verification should feel focused — no
+navigation distractions. The user has one task.
+
+SETTINGS SUB-LAYOUT
+────────────────────
+Used by: S17, S18, S19 (within the AppShell layout)
+
+Structure (renders as {children} within AppShell <main>):
+  <div class="settings-layout">
+    <PageHeader title="Settings" />
+    <div class="settings-body">
+      <SettingsSidebar>         ← vertical tab nav on desktop
+        <SidebarLink href="/settings/profile">Profile</SidebarLink>
+        <SidebarLink href="/settings/account">Account</SidebarLink>
+        <SidebarLink href="/settings/appearance">Appearance</SidebarLink>
+      </SettingsSidebar>
+      <div class="settings-content">
+        {children}              ← S17, S18, or S19 content
+      </div>
+    </div>
+  </div>
+
+Responsive: SettingsSidebar becomes a horizontal tab bar on mobile
+             (tabs at top, content below)
+
+PAGE HEADER COMPONENT
+──────────────────────
+Renders within AppShell <main> at the top of each page.
+
+Props:
+  title:        string            ← page title, rendered as h1
+  description?: string            ← optional sub-headline
+  breadcrumbs?: BreadcrumbItem[]  ← trail above the title
+  actions?:     ReactNode         ← right-aligned action buttons
+
+Rendered in: S11 History, S12 Scan Detail, S13 Notifications,
+             S14 Help, S17/S18/S19 Settings, S16 Feedback
+
+Not rendered in: S07 Dashboard (has its own greeting header),
+                 S08 New Scan (page title inline), S09 Processing (no header),
+                 S10 Scan Result (starts directly with VerdictCard)
+
+================================================================================
+SECTION 7 — COMPONENT ARCHITECTURE
+================================================================================
+
+Components are organized into three tiers:
+  Tier 1 — Primitives:   Atomic design system elements (Button, Card, Badge)
+  Tier 2 — Composites:   Combinations of primitives (FormField, ScanRow)
+  Tier 3 — Features:     Full feature blocks (VerdictCard, GradCAMPanel)
+
+PROP CONTRACT CONVENTIONS
+──────────────────────────
+  - Required props have no default
+  - Optional props use ? and document their default in comments
+  - Event handlers are named onEventName (not handleEventName)
+  - Boolean props default to false; never required to be false
+  - variant, size, and state are string literal unions, not booleans
+  - Children follow the ReactNode pattern for composable components
+  - Components never read directly from any store — they receive data via props
+    (exception: layout components like TopBar read global store values)
+
+TIER 1 — PRIMITIVE COMPONENTS
+───────────────────────────────
+
+BUTTON
+  Props:
+    variant:   'primary' | 'secondary' | 'ghost' | 'danger' | 'accent'
+    size:      'sm' | 'md' | 'lg'
+    loading?:  boolean (replaces label with spinner + loading text)
+    loadingText?: string (shown during loading state; defaults to label + "...")
+    disabled?: boolean
+    leftIcon?: ReactNode
+    rightIcon?: ReactNode
+    fullWidth?: boolean
+    type?:     'button' | 'submit' | 'reset'
+    onClick?:  () => void
+    children:  ReactNode
+
+  States: default | hover | active/pressed | focused | disabled | loading
+  Accessibility:
+    - aria-disabled on disabled state (not HTML disabled — allows focus)
+    - aria-busy on loading state
+    - role="button" if rendered as non-button element (avoid this)
+    - Minimum 44x44px touch target on mobile
+
+CARD
+  Props:
+    variant?: 'default' | 'elevated' | 'interactive' | 'verdict' | 'danger'
+    padding?:  'none' | 'sm' | 'md' | 'lg'
+    as?:       'div' | 'article' | 'section'
+    onClick?:  () => void  (makes card interactive if provided)
+    children:  ReactNode
+  Note: Verdict variant is never used directly — VerdictCard uses it
+        internally with the appropriate verdict-specific styling
+
+BADGE
+  Props:
+    variant: 'human' | 'ai' | 'uncertain' | 'info' | 'new' | 'default'
+    size?:   'sm' | 'md'
+    children: ReactNode
+  Rendering: Always pill-shaped (radius-full). Color is semantic,
+             mapped from variant using design tokens.
+
+MODAL
+  Props:
+    isOpen:         boolean
+    onClose:        () => void
+    title:          string
+    description?:   string
+    size?:          'sm' | 'md' | 'lg'
+    hideCloseButton?: boolean
+    children:       ReactNode
+    footer?:        ReactNode
+  Behavior:
+    - Renders via portal into document.body
+    - Traps focus within modal while open (useFocusTrap)
+    - Returns focus to trigger element on close
+    - Closes on Escape key
+    - Overlay click closes (unless closeOnOverlayClick=false)
+    - Body scroll locked while open (useScrollLock)
+    - aria-modal="true", role="dialog", aria-labelledby=title id
+
+CONFIRM DIALOG
+  Extends Modal with opinionated structure for destructive confirmations.
+  Props:
+    isOpen:         boolean
+    onClose:        () => void
+    onConfirm:      () => void | Promise<void>
+    title:          string
+    description:    string
+    confirmLabel?:  string  (default: "Confirm")
+    cancelLabel?:   string  (default: "Cancel")
+    variant?:       'default' | 'danger'
+    isLoading?:     boolean
+    confirmationText?: string  (if provided, renders a text input that must
+                               match this string before confirm button enables)
+  Used by: Delete scan, Delete account, Cancel processing
+
+TOAST
+  Props:
+    id:       string           (generated by ToastStack)
+    variant:  'success' | 'error' | 'info' | 'warning'
+    title:    string
+    message?: string
+    action?:  { label: string; onClick: () => void }  ← for "Undo" actions
+    duration?: number  (ms before auto-dismiss; default 4000; 0 = no auto-dismiss)
+  Behavior:
+    - Slides in from right (desktop) or bottom (mobile)
+    - Auto-dismisses after duration
+    - Hover pauses auto-dismiss timer
+    - Manual dismiss via × button
+    - aria-live="assertive" for errors; "polite" for success/info
+
+SKELETON LOADER
+  Props:
+    variant: 'text' | 'rect' | 'circle' | 'row' | 'card'
+    width?:  number | string
+    height?: number | string
+    count?:  number  (renders N instances for row lists)
+  Behavior: Animated shimmer (left-to-right sweep)
+            Respects prefers-reduced-motion (shimmer disabled, static color)
+
+TIER 2 — COMPOSITE COMPONENTS
+───────────────────────────────
+
+FORM FIELD
+  Props:
+    label:        string
+    name:         string           (maps to form control)
+    error?:       string           (inline error below input)
+    hint?:        string           (helper text below input)
+    required?:    boolean
+    children:     ReactNode        (Input, Select, etc.)
+  Renders: label (uppercase, 11px) → children → hint/error
+  Accessibility:
+    - label htmlFor={name}
+    - error div has id={name}-error, linked via aria-describedby on child input
+    - required: aria-required="true" on input
+
+SCAN ROW (History table row)
+  Props:
+    scan:      ScanSummary         (see types/models.ts)
+    selected?: boolean
+    onSelect?: (id: string) => void
+    onView:    (id: string) => void
+    onDelete:  (id: string) => void
+    onCopyLink?: (id: string) => void
+  Variants:
+    Table row (desktop): checkbox | icon | filename | verdict badge |
+                         confidence % | duration | date | actions menu
+    Card (mobile): filename + verdict badge | confidence | date | chevron
+  States: default | hover | selected | focused
+
+STAT CARD (Dashboard stats)
+  Props:
+    label:     string           ← "Total Scans", "Human Detected"
+    value:     number | string
+    delta?:    number           ← change from last period (+ or -)
+    icon?:     ReactNode
+    color?:    'default' | 'success' | 'alert' | 'warning' | 'accent'
+  Animation: value count-up on first render (1200ms ease-out)
+             Respects prefers-reduced-motion (shows final value immediately)
+
+BREADCRUMB TRAIL
+  Props:
+    items: Array<{ label: string; href: string | null }>
+  Rendering:
+    [Item1 label] / [Item2 label] / Current (no link)
+    Last item: not a link, aria-current="page"
+    Truncation: middle items truncated with ellipsis on mobile
+
+PROGRESS STEPS
+  Props:
+    steps:        Array<{ label: string; description?: string }>
+    currentStep:  number            (0-indexed)
+    completedSteps: number[]
+    variant?:     'horizontal' | 'vertical'
+  Used in: S04 Email Verification, S06 Onboarding, S09 Processing
+
+TIER 3 — FEATURE COMPONENTS
+─────────────────────────────
+
+VERDICT CARD
+  Props:
+    verdict:     'bonafide' | 'spoof' | 'uncertain'
+    confidence:  number               (0–1, e.g., 0.973)
+    summary:     string               (plain-language explanation)
+    isLoading?:  boolean              (skeleton mode)
+    animated?:   boolean              (confidence bar animates on mount; default true)
+  Internal structure:
+    - VerdictIcon (shield-check / shield-x / shield-question, 40px)
+    - VerdictLabel ("HUMAN VOICE" / "AI-GENERATED VOICE" / "UNCERTAIN")
+    - ConfidenceDisplay (confidence % in mono-lg font)
+    - ConfidenceBar (animated fill)
+    - VerdictSummary (plain-language text)
+  Color logic:
+    bonafide  → success token set (border, background, text)
+    spoof     → alert token set
+    uncertain → warning token set
+  Accessibility:
+    - aria-live="assertive" on the verdict label (announced to screen readers
+      when the result arrives)
+    - aria-label on ConfidenceBar: "Confidence: [value]%"
+    - Not aria-hidden — this is the primary content
+
+CONFIDENCE BAR
+  Props:
+    value:      number   (0–100, percentage)
+    variant:    'human' | 'ai' | 'uncertain'
+    animated?:  boolean  (fills from 0; default true)
+    duration?:  number   (animation duration ms; default 600)
+  Accessibility:
+    role="progressbar"
+    aria-valuenow={value}
+    aria-valuemin={0}
+    aria-valuemax={100}
+    aria-label="[Variant] probability: [value]%"
+
+GRAD-CAM PANEL
+  Props:
+    melImageUrl:     string | null
+    gradcamImageUrl: string | null
+    isLoading?:      boolean
+    altDescription:  string    ← required: text description for screen readers
+  Structure:
+    TwoColumnGrid:
+      Left panel:  "Acoustic Fingerprint" — mel-spectrogram image
+      Right panel: "Model Attention" — Grad-CAM heatmap image
+    Below panels: audio player (AudioPreviewPlayer)
+    Below player: plain-language caption (from Batch 02 copy spec)
+  Loading state: BlurUpImage placeholder → sharp image (blur-up technique)
+  Mobile: panels stack vertically (mel on top, Grad-CAM below)
+  Accessibility:
+    - Images have role="img" and aria-label with altDescription prop
+    - Both images together described by a single aria-describedby region
+    - "Frequency heatmap shows [high/low/medium] activation in [range] kHz range"
+
+FILE DROPZONE
+  Props:
+    onFileAccepted:   (file: File) => void
+    onFileRejected:   (reason: string) => void
+    acceptedFormats?: string[]   (default: WAV, FLAC, MP3, M4A, OGG, AIFF)
+    maxSizeMB?:       number     (default: 10)
+    disabled?:        boolean
+  States:
+    idle:       Default dashed border, upload icon, instructional text
+    drag-over:  Accent border, accent background tint, "Drop to analyze"
+    drag-reject: Error border, error background tint, "Unsupported format"
+    file-selected: File preview card replaces dropzone
+    uploading:  Progress overlay on the dropzone area
+    error:      Error message below, retry affordance
+  Client-side validation before onFileAccepted fires:
+    1. MIME type check (magic bytes via FileReader, not just extension)
+    2. File size check (max 10MB)
+    3. Basic audio duration check (via Web Audio API — rejects < 0.5s)
+  Accessibility:
+    - role="button" with aria-label="Upload audio file"
+    - Keyboard: Enter/Space opens file picker
+    - Drag events have keyboard-accessible alternative (click to open picker)
+
+MICROPHONE RECORDER
+  Props:
+    onRecordingComplete: (blob: Blob, duration: number) => void
+    onPermissionDenied:  () => void
+    maxDurationSeconds?: number   (default: 240)
+    disabled?:           boolean
+  Internal states (managed by useMicrophoneRecorder hook):
+    permission-unknown: Initial state, permission not yet requested
+    permission-denied:  Shows browser-specific instructions card
+    idle:               Shows record button (large circular, pulsing border)
+    recording:          Record button pulsing red, live waveform, timer
+    stopped:            Playback controls, re-record / accept buttons
+    accepted:           Recording confirmed, transitions to analysis
+  Dependencies:
+    - MediaRecorder API (check availability; show fallback if unavailable)
+    - WaveformVisualizer (sub-component, rendered during recording state)
+  Accessibility:
+    - Record button: aria-label="Start recording" | "Stop recording"
+    - Timer: aria-live="polite" announces every 30 seconds ("30 seconds recorded")
+
+LIMITATIONS CARD
+  Props:
+    modelVersion:      string    (e.g., "LCNN v1")
+    eer:               number    (e.g., 7.07)
+    filename:          string
+    duration:          string
+    sampleRate:        string
+    analyzedAt:        string    (ISO date)
+    sha256:            string
+    isExpanded?:       boolean   (default: false — collapsed)
+  Behavior:
+    - Collapsed: shows "About This Result" header with expand chevron
+    - Expanded: full model info, metadata, SHA-256 with copy button
+    - SHA-256 copy: button shows "✓ Copied" for 2s (useClipboard hook)
+  This component is ALWAYS rendered on S10/S12/S20. Never conditionally
+  hidden or removed — it is a trust signal (Batch 02, Principle 2).
+
+PROCESSING CARD
+  Props:
+    filename:     string
+    format:       string
+    duration:     string
+    currentStep:  0 | 1 | 2         (0=loading audio, 1=features, 2=analysis)
+    onCancel?:    () => void
+  Structure:
+    - File header (filename + format + duration)
+    - Animated spectrogram visualization (CSS animation, not real data)
+    - 3-step ProgressSteps component with active/complete states
+    - Time estimate text
+    - Cancel button (subtle, confirms via ConfirmDialog)
+  Minimum display time: 1500ms (enforced in useScanProcessing hook)
+  — Even if API responds in 800ms, card shows for at least 1.5s
+  — This is a trust/perception design decision from Batch 02
+
+================================================================================
+SECTION 8 — STATE MANAGEMENT ARCHITECTURE
+================================================================================
+
+STATE TAXONOMY
+───────────────
+  Server State:    Data that lives on the server and is fetched
+                   (scan history, user profile, notifications, help articles)
+                   Owner: React Query
+                   Never duplicated in Zustand
+
+  Global UI State: Application-wide UI decisions that persist across routes
+                   (auth session, theme, notification count, upload state)
+                   Owner: Zustand stores
+
+  Feature State:   State that lives for the duration of a feature flow
+                   (current scan being processed, history filters)
+                   Owner: Zustand feature slices or React Query (if server-backed)
+
+  Local State:     State that lives in a single component or its children
+                   (form input values, modal open/closed, hover state)
+                   Owner: useState or React Hook Form
+
+ZUSTAND STORES — COMPLETE DEFINITION
+──────────────────────────────────────
+
+AUTH STORE (authStore.ts)
+  Slice:
+    currentUser:    User | null
+    isAuthenticated: boolean
+    isGuest:        boolean
+    guestScanId:    string | null  (scan created in guest session)
+    sessionStatus:  'loading' | 'authenticated' | 'unauthenticated' | 'guest'
+
+  Actions:
+    setUser(user: User):         Sets currentUser, isAuthenticated = true, isGuest = false
+    setGuest():                  Sets isGuest = true, isAuthenticated = false
+    setGuestScan(scanId: string): Stores scanId for migration on sign-up
+    logout():                    Clears all auth state, clears session cookie
+    hydrateFromSession():        Called on app load — reads cookie/token to initialize
+
+  Persistence: sessionStatus and currentUser read from HttpOnly cookie
+               on server; hydrated client-side by AuthProvider on mount
+
+DETECTION STORE (detectionStore.ts)
+  Slice:
+    uploadedFile:      File | null
+    recordedBlob:      Blob | null
+    inputMode:         'upload' | 'record'
+    uploadStatus:      'idle' | 'validating' | 'uploading' | 'error'
+    uploadError:       string | null
+    processingId:      string | null  (scan ID from server, used for polling)
+    processingStatus:  'idle' | 'queued' | 'processing' | 'complete' | 'error'
+    processingStep:    0 | 1 | 2
+    currentResult:     ScanResult | null
+    processingStarted: number | null  (timestamp, for min 1500ms enforcement)
+
+  Actions:
+    setUploadedFile(file: File):   Validates + stores file
+    setRecordedBlob(blob: Blob):   Stores recording
+    setInputMode(mode):            Switches Upload/Record tab
+    startProcessing(scanId):       Sets processingId, begins polling
+    updateProcessingStep(step):    Advances the 3-step indicator
+    setResult(result: ScanResult): Stores completed result
+    setError(error: string):       Sets upload or processing error
+    reset():                       Clears all detection state (called on new scan)
+
+  Note: currentResult is also cached by React Query under
+        queryKeys.scan(scanId) — the store holds it for immediate
+        access; React Query holds it for cache/refetch.
+
+SETTINGS STORE (settingsStore.ts)
+  Slice:
+    theme:              'dark' | 'light' | 'system'
+    sidebarCollapsed:   boolean
+    resultDisplayPrefs: {
+      showGradCAM:        boolean  (default: true)
+      expandTechnical:    boolean  (default: false)
+      showAudioPlayer:    boolean  (default: true)
+      expandLimitations:  boolean  (default: false)
+    }
+    dashboardPrefs: {
+      showStats:     boolean  (default: true)
+      chartType:     'bar' | 'donut' | 'hidden'  (default: 'bar')
+    }
+
+  Actions:
+    setTheme(theme):              Updates theme + applies to DOM
+    setSidebarCollapsed(value):   Collapses/expands sidebar
+    updateResultPrefs(prefs):     Partial update of resultDisplayPrefs
+    updateDashboardPrefs(prefs):  Partial update of dashboardPrefs
+    syncFromServer(prefs):        Called after user profile loads —
+                                  overwrites defaults with server values
+
+  Persistence:
+    - Theme: persisted to localStorage immediately; synced to user record
+             on save (background sync, not user-triggered)
+    - Sidebar state: localStorage only (not server-synced, UX preference)
+    - Display prefs: server-synced (saved with settings form submission)
+
+HISTORY STORE (historyStore.ts)
+  Slice:
+    filters: {
+      search:    string
+      verdict:   'all' | 'bonafide' | 'spoof' | 'uncertain'
+      dateRange: 'last7' | 'last30' | 'allTime' | 'custom'
+      customFrom?: Date
+      customTo?:   Date
+      sort:      'newest' | 'oldest' | 'confidence'
+    }
+    page:              number     (current page, 1-indexed)
+    perPage:           20         (constant)
+    selectedScanIds:   string[]   (for bulk operations)
+    pendingDeleteIds:  string[]   (optimistic delete — IDs removed from UI
+                                   but not yet deleted server-side)
+
+  Actions:
+    setFilter(key, value):     Updates a filter field + resets to page 1
+    setPage(page):             Navigate pagination
+    selectScan(id):            Add to selectedScanIds
+    deselectScan(id):          Remove from selectedScanIds
+    selectAll(ids):            Replace selectedScanIds with all visible IDs
+    clearSelection():          Empty selectedScanIds
+    markPendingDelete(ids):    Optimistically hide from UI (5s undo window)
+    cancelPendingDelete(ids):  Un-hides (undo)
+    confirmPendingDelete(ids): IDs permanently gone (after server confirm)
+
+  State preservation on back-navigation:
+    When user navigates S11 → S12 → back to S11, filters and page must
+    be preserved. historyStore persists in-memory for the session.
+    On full page reload: filters reset to defaults (acceptable).
+
+NOTIFICATION STORE (notificationStore.ts)
+  Slice:
+    notifications:  Notification[]
+    unreadCount:    number
+    lastPolled:     number | null  (timestamp)
+
+  Actions:
+    setNotifications(notifications):     Replace list
+    markRead(id):                        Set read = true on one notification
+    markAllRead():                       Set all read = true
+    deleteNotification(id):              Remove from list
+    setUnreadCount(count):               Update badge
+
+  Polling: useNotificationCount hook polls /api/notifications/count
+           every 30s. Full list fetched only when S13 is visited.
+
+REACT QUERY — SERVER STATE
+───────────────────────────
+
+Query Key Factory (config/queryKeys.ts):
+  keys = {
+    user:              ['user']
+    scanHistory:       (filters) => ['scans', 'list', filters]
+    scanDetail:        (scanId) => ['scans', 'detail', scanId]
+    sharedScan:        (scanId) => ['scans', 'shared', scanId]
+    dashboardStats:    ['dashboard', 'stats']
+    notifications:     ['notifications', 'list']
+    notificationCount: ['notifications', 'count']
+    helpArticle:       (slug) => ['help', 'article', slug]
+    helpSearch:        (query) => ['help', 'search', query]
+  }
+
+Cache Times:
+  user profile:         5 minutes stale, 10 minutes cache
+  scan history list:    2 minutes stale, 5 minutes cache
+  scan detail:          5 minutes stale, 10 minutes cache
+  shared scan (S20):    10 minutes stale, 30 minutes cache (SSR-cached too)
+  dashboard stats:      2 minutes stale, 5 minutes cache
+  notifications:        30 seconds stale, 2 minutes cache
+  help articles:        30 minutes stale, 1 hour cache (nearly static)
+
+Optimistic Updates (React Query mutation + historyStore):
+  Delete scan:
+    1. Add ID to historyStore.pendingDeleteIds (immediately hidden from UI)
+    2. Show Toast with "Undo" button (5s timer)
+    3. If Undo clicked: cancelPendingDelete(id), toast dismissed
+    4. If timer expires: call DELETE /api/scans/[id]
+    5. On success: confirmPendingDelete(id) + invalidate scanHistory query
+    6. On error: cancelPendingDelete(id) + show error toast
+
+  Bulk delete:
+    Same pattern as single delete, with array of IDs
+
+FORM STATE (React Hook Form)
+─────────────────────────────
+  All forms use React Hook Form with Zod schema validation.
+  Forms do NOT use Zustand — form state is local to the form component.
+  On submit success: form resets, page navigates or shows success state.
+  On submit error: server error mapped to field errors via setError().
+
+  Forms:
+    LoginForm:          email, password
+    SignUpForm:         email, password, confirmPassword, acceptTerms
+    ForgotPasswordForm: email
+    ResetPasswordForm:  password, confirmPassword
+    ProfileForm:        displayName
+    EmailChangeForm:    newEmail, currentPassword
+    PasswordChangeForm: currentPassword, newPassword, confirmPassword
+    FeedbackForm:       type, description, scanId (hidden), userBelief,
+                        contactEmail (optional)
+    OnboardingStep1:    displayName (optional)
+    OnboardingStep2:    usageContext (required if not skipped)
+
+================================================================================
+SECTION 9 — DATA FLOW ARCHITECTURE
+================================================================================
+
+FLOW 1 — GUEST FILE UPLOAD AND VIEW RESULT
+───────────────────────────────────────────
+
+User Action: User drops file on FileDropzone (S08 / Dashboard)
+
+  1. FileDropzone.onDrop event fires
+       ↓
+  2. Client-side validation (fileUtils.ts):
+       - MIME type check via magic bytes (FileReader)
+       - File size check (max 10MB)
+       - Audio duration check (Web Audio API)
+       ↓
+     [Validation fail] → detectionStore.setError(reason)
+                       → FileDropzone renders error state
+                       → Data flow ends
+
+  3. detectionStore.setUploadedFile(file) — stores file reference
+       ↓
+  4. hashUtils.computeSHA256(file) — Web Crypto API
+       - Runs asynchronously while user reviews file preview
+       - Stored in detectionStore when complete
+       ↓
+  5. User clicks "Analyze" button
+       ↓
+  6. detectionStore: uploadStatus = 'uploading'
+       ↓
+  7. detectionApi.uploadScan(file, guestToken?) — POST /api/scan
+       ↓
+  8. Router navigates to /scan/processing
+       ↓
+  9. detectionApi.pollScanStatus(scanId) — GET /api/scan/[id]/status
+       Polls every 1000ms until status = 'complete' | 'error'
+       ↓
+     Each poll response:
+       detectionStore.updateProcessingStep(step) — updates 3-step indicator
+       ↓
+  10. Status = 'complete'
+       ↓
+  11. detectionApi.getScanResult(scanId) — GET /api/scan/[id]/result
+       ↓
+  12. React Query caches result at queryKeys.scanDetail(scanId)
+       ↓
+  13. detectionStore.setResult(result)
+       ↓
+  14. Router navigates to /scan/[scanId]
+       ↓
+  15. ScanResult page renders from React Query cache (instant — no loading)
+       VerdictCard, ConfidenceBar, GradCAMPanel animate into view
+       ↓
+  16. GradCAM images load asynchronously (blur-up placeholder shown)
+       ↓
+  17. [Guest] Post-result state: "Save this result" CTA renders
+        authStore.guestScanId = scanId (stored for migration)
+
+FLOW 2 — MICROPHONE RECORDING
+───────────────────────────────
+
+User Action: User clicks "Record" tab, then record button
+
+  1. User clicks record tab
+       ↓
+  2. detectionStore.setInputMode('record')
+       ↓
+  3. MicrophoneRecorder: navigator.mediaDevices.getUserMedia({audio: true})
+       ↓
+     [Permission denied] → onPermissionDenied callback fires
+                         → Recorder shows permission-denied state with
+                           browser-specific instructions
+                         → Data flow ends
+
+  4. MediaRecorder initializes (preferring audio/webm; fallback: audio/ogg)
+       ↓
+  5. User clicks record button
+       ↓
+  6. MediaRecorder.start() — recording begins
+       WaveformVisualizer reads AudioContext AnalyserNode in real-time
+       Timer counts up
+       ↓
+  7. User clicks stop (or maxDurationSeconds reached)
+       ↓
+  8. MediaRecorder.stop() — fires dataavailable with Blob
+       ↓
+  9. onRecordingComplete(blob, duration) fires
+       ↓
+  10. detectionStore.setRecordedBlob(blob)
+        Audio player shows for playback review
+        ↓
+  11. User clicks "Analyze Recording"
+        ↓
+  12. Continues from Flow 1, step 6 (same from here)
+        (blob uploaded as FormData, same endpoint as file upload)
+
+FLOW 3 — ACCOUNT CREATION (POST-GUEST SCAN)
+──────────────────────────────────────────────
+
+User Action: Clicks "Save this result — create a free account" on S10
+
+  1. User clicks CTA
+       ↓
+  2. Router navigates to /signup?migrateScan=[scanId]
+       ↓
+  3. SignUpForm renders (pre-filled state if possible)
+       ↓
+  4. User submits form
+       ↓
+  5. authApi.signUp(email, password) — POST /api/auth/register
+       ↓
+  6. Server: creates user, sends verification email
+       ↓
+  7. Router navigates to /verify-email
+       ↓
+  8. User verifies email (OTP or magic link)
+       ↓
+  9. authApi.verifyEmail(token) — POST /api/auth/verify
+       ↓
+  10. On success:
+        - authStore.setUser(user)
+        - migrateScan param detected in URL:
+          authApi.migrateScan(scanId, userId) — POST /api/scan/migrate
+        - React Query invalidates scanHistory (new scan appears)
+        ↓
+  11. OnboardingGuard: hasCompletedOnboarding = false
+        → Router: /onboarding
+        ↓
+  12. Onboarding complete → /dashboard
+        Migrated scan appears in Recent Scans
+
+FLOW 4 — HISTORY SEARCH AND FILTER
+────────────────────────────────────
+
+User Action: Types in search input on S11
+
+  1. User types in SearchInput
+       ↓
+  2. useDebounce(searchValue, 300ms) — prevents API call on every keystroke
+       ↓
+  3. historyStore.setFilter('search', debouncedValue) — after 300ms
+       ↓
+  4. historyStore.setPage(1) — reset pagination (called by setFilter)
+       ↓
+  5. useScanHistory hook reads: { filters, page } from historyStore
+       ↓
+  6. React Query: queryKeys.scanHistory(filters) — new query key triggers fetch
+       ↓
+  7. historyApi.getScans(filters, page) — GET /api/scans?search=...&page=1
+       ↓
+  8. While fetching: ScanTable shows SkeletonLoader (5 rows)
+       ↓
+  9. Response: React Query caches under new key; table re-renders with results
+       ↓
+  10. User applies "AI-Generated" filter chip
+         → historyStore.setFilter('verdict', 'spoof')
+         → new query key → new fetch → table updates
+         ↓
+  11. User clicks a scan row
+         → Router navigates to /history/[scanId]
+         → React Query already has scanDetail([scanId]) from the list
+           (pre-fetched or in cache) → instant render
+         ↓
+  12. User navigates back
+         → historyStore filters preserved in memory
+         → Table restores to previous state
+
+FLOW 5 — BULK DELETE
+──────────────────────
+
+User Action: Selects multiple rows, clicks "Delete selected"
+
+  1. User hovers over scan row → checkbox appears
+       ↓
+  2. User clicks checkbox → historyStore.selectScan(id)
+       ↓
+  3. BulkActionBar appears: "X scans selected | Delete | Export | Deselect"
+       ↓
+  4. User clicks "Delete selected"
+       ↓
+  5. ConfirmDialog renders:
+       "Delete 3 scans? This cannot be undone."
+       ↓
+  6. User confirms
+       ↓
+  7. historyStore.markPendingDelete(selectedIds)
+       — All 3 rows immediately disappear from table (optimistic)
+       ↓
+  8. Toast: "3 scans deleted [Undo]" — 5 second timer begins
+       ↓
+     [If Undo clicked within 5s]:
+       historyStore.cancelPendingDelete(selectedIds)
+       Toast dismissed — rows reappear
+       Data flow ends
+       ↓
+  9. [After 5s]: historyApi.deleteScans(selectedIds) — DELETE /api/scans
+       ↓
+  10. On success: historyStore.confirmPendingDelete(selectedIds)
+                  React Query invalidates scanHistory
+                  historyStore.clearSelection()
+  11. On error:   historyStore.cancelPendingDelete(selectedIds)
+                  Toast: "Delete failed. [Try again]"
+
+FLOW 6 — THEME SWITCHING
+──────────────────────────
+
+User Action: Changes theme in S19 Appearance Settings
+
+  1. User selects "Light" radio card
+       ↓
+  2. ThemeSelector.onChange('light') fires
+       ↓
+  3. settingsStore.setTheme('light')
+       ↓
+  4. setTheme action:
+       a. Updates store value
+       b. Immediately applies to DOM:
+          document.documentElement.setAttribute('data-theme', 'light')
+          (ThemeProvider reads this attribute; CSS applies light token values)
+       c. Persists to localStorage: key='voiceguard-theme', value='light'
+       ↓
+  5. ALL components rerender with new token values — zero component changes
+     (This works because all colors are CSS custom properties, not hardcoded)
+       ↓
+  6. Page shows inline "Saved ✓" for 2s (no toast — auto-save UX)
+       ↓
+  7. Background sync: settingsApi.updatePrefs({theme: 'light'})
+       — Saves to user record so preference persists across devices
+       ↓
+  8. On next visit from different device:
+       AuthProvider.hydrateFromSession() → loads user record
+       → settingsStore.syncFromServer({theme: 'light'})
+       → ThemeProvider applies 'light' before first paint
+
+================================================================================
+SECTION 10 — API INTEGRATION STRATEGY
+================================================================================
+
+This section defines the API layer architecture. It does NOT implement
+specific endpoints — those are defined in Batch 01.
+
+API LAYER STRUCTURE
+────────────────────
+
+  src/modules/[module]/api/[module]Api.ts
+    ↓ calls
+  src/shared/utils/apiClient.ts          ← Single HTTP client instance
+    ↓ built on
+  fetch (native) OR axios                ← Recommendation: native fetch
+                                            (no bundle overhead; adequate features)
+
+API CLIENT (shared/utils/apiClient.ts)
+  Responsibilities:
+    - Base URL injection from config/api.ts
+    - Auth token injection (reads from session cookie automatically — HttpOnly,
+      so no manual header injection needed for same-origin requests)
+    - Content-Type: application/json for all JSON requests
+    - Content-Type: multipart/form-data for file uploads (omit to auto-set boundary)
+    - Response parsing (JSON.parse all responses)
+    - HTTP status code mapping to typed error objects
+    - Request timeout (default: 30s; scan endpoint: 120s)
+    - Request cancellation (AbortController, passed down for component unmounts)
+
+REQUEST LAYER
+──────────────
+Each module's api/*.ts file contains functions that:
+  1. Accept typed request parameters
+  2. Call apiClient with the correct endpoint, method, and body
+  3. Return typed response objects
+  4. Never handle errors — errors propagate as thrown exceptions to React Query
+
+Function signature convention:
+  [verb][Resource](params: RequestType): Promise<ResponseType>
+
+  Examples:
+    detectionApi.uploadScan(file: File, guestToken?: string): Promise<{scanId: string}>
+    historyApi.getScans(filters: ScanFilters, page: number): Promise<ScanListResponse>
+    authApi.login(email: string, password: string): Promise<{user: User}>
+    settingsApi.updatePrefs(prefs: Partial<UserPreferences>): Promise<UserPreferences>
+
+RESPONSE LAYER
+───────────────
+All API responses follow this envelope format (assumed from Batch 01):
+  Success: { data: T, meta?: PaginationMeta }
+  Error:   { error: { code: string, message: string, field?: string } }
+
+The API client unwraps this envelope:
+  - Success: returns response.data directly
+  - Error: throws ApiError(code, message, field)
+
+ApiError class (shared/utils/errorUtils.ts):
+  code:    string     (e.g., "FILE_TOO_LARGE", "INVALID_TOKEN")
+  message: string     (user-readable message from server)
+  field?:  string     (form field name for field-level errors)
+  status:  number     (HTTP status code)
+
+ERROR CODE → UI MESSAGE MAPPING (errorUtils.ts)
+  Server error codes are mapped to user-facing messages in the frontend.
+  The server never sends raw error messages directly to users.
+  "FILE_TOO_LARGE"       → "File exceeds 10MB limit. Try a shorter clip."
+  "UNSUPPORTED_FORMAT"   → "Format not supported. Use WAV, FLAC, MP3, or AIFF."
+  "PROCESSING_FAILED"    → "Analysis failed. Please try again."
+  "RATE_LIMIT_EXCEEDED"  → "Too many requests. Please wait a moment."
+  "UNAUTHORIZED"         → triggers logout() + redirect to /login
+  "NOT_FOUND"            → triggers navigation to not-found.tsx
+  "SERVER_ERROR"         → "Something went wrong on our end. [Try again]"
+
+CACHING STRATEGY
+─────────────────
+React Query is the only cache layer for server data.
+  No custom caching logic in api/*.ts files.
+  Cache configuration lives in config/queryKeys.ts (stale times defined there).
+
+  Strategies by data type:
+    User profile:         Cache with 5min stale — changes are rare
+    Scan history list:    Cache with 2min stale — new scans are frequent
+    Single scan detail:   Cache with 5min stale — scan results are immutable
+    Notifications:        Cache with 30s stale — must be fresh for badge count
+    Help articles:        Cache with 30min stale — content rarely changes
+    Dashboard stats:      Cache with 2min stale — frequently updated
+
+RETRY STRATEGY
+───────────────
+React Query default retry: 3 attempts with exponential backoff (1s, 2s, 4s).
+Custom retry policy per query type:
+  Scan upload:            Retry: 0 (user must re-trigger; don't auto-retry uploads)
+  Scan status poll:       Retry: infinite (poll until result or timeout)
+  GET queries:            Retry: 2 (default 3 is excessive)
+  Mutation (delete, save): Retry: 1 (retry once on network error)
+
+HTTP 401 handling:
+  apiClient detects 401 responses globally.
+  Action: authStore.logout() → router.push('/login?session=expired')
+  Toast: "Session expired. Please log in again."
+  This is the ONLY place logout is called for auth failures.
+
+OFFLINE BEHAVIOR
+─────────────────
+  Detection: OfflineBanner (shared/components/feedback) renders when
+             navigator.onLine = false (useEffect event listener).
+  Offline during scan upload: Upload fails immediately with error:
+    "You appear to be offline. Check your connection and try again."
+  Offline during result view: React Query serves cached data — result
+    page renders from cache with no network required.
+  Offline during history browse: Cached pages render; filter changes
+    that require a new request show SkeletonLoader briefly, then error:
+    "Can't load history — no connection."
+
+TIMEOUT HANDLING
+─────────────────
+  Standard endpoints:    30 second timeout
+  Scan upload endpoint:  120 second timeout (large file + processing)
+  Polling endpoint:      10 second timeout per poll (short — polling resumes)
+
+  On timeout: ApiError thrown with code "REQUEST_TIMEOUT"
+  UI: Component receives error from React Query, renders retry CTA.
+
+PDF EXPORT (client-side generation)
+─────────────────────────────────────
+  PDF is generated client-side using a PDF library (jsPDF or pdfmake).
+  The API provides the raw data (verdict, scores, image URLs).
+  The frontend renders the PDF from that data — no server-side PDF endpoint.
+  This avoids server load and enables offline PDF generation from cached results.
+
+  Flow:
+    1. User clicks "Download PDF Report"
+    2. Button shows loading state: "Generating..."
+    3. usePDFExport hook:
+         a. Reads current scan result from React Query cache
+         b. Fetches Grad-CAM image as base64 (if not already cached)
+         c. Constructs PDF document definition (layout from Batch 02 Flow 5)
+         d. Renders PDF blob
+    4. Browser download triggered (URL.createObjectURL + anchor click)
+    5. Button shows "Downloaded ✓" for 2s
+    6. Toast: "[filename] report downloaded."
+
+================================================================================
+SECTION 11 — THEME ARCHITECTURE
+================================================================================
+
+DESIGN TOKEN IMPLEMENTATION
+─────────────────────────────
+All design tokens from Batch 02 Section 5 are implemented as CSS custom
+properties. The token files in src/styles/tokens/ define all values.
+
+Token file structure (src/styles/tokens/colors.css):
+  :root[data-theme="dark"],
+  :root {                       ← dark is default
+    --color-bg:           #0A0A0A;
+    --color-surface:      #111111;
+    --color-surface-2:    #161616;
+    /* ... all dark tokens ... */
+  }
+
+  :root[data-theme="light"] {
+    --color-bg:           #FAFAFA;
+    --color-surface:      #FFFFFF;
+    --color-surface-2:    #F5F5F7;
+    /* ... all light tokens ... */
+  }
+
+  :root[data-theme="system"] {
+    /* Handled via JavaScript — see ThemeProvider */
+  }
+
+System theme handling (ThemeProvider.tsx):
+  When theme = 'system':
+    window.matchMedia('(prefers-color-scheme: dark)').matches
+      → true:  document.documentElement.setAttribute('data-theme', 'dark')
+      → false: document.documentElement.setAttribute('data-theme', 'light')
+    addEventListener for 'change' event on matchMedia query
+    → Re-applies when OS theme changes (no page reload needed)
+
+Components reference tokens via CSS Modules:
+  .verdictCard {
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+  }
+
+  NOT this (banned):
+  .verdictCard {
+    background: #111111;   ← RAW HEX BANNED
+    border: 1px solid #1F1F1F;
+  }
+
+THEME PERSISTENCE CHAIN
+────────────────────────
+
+  1. User selects theme in S19 Appearance
+  2. settingsStore.setTheme(value) — updates store + DOM + localStorage
+  3. Background API call saves to user record
+  4. On next visit:
+       Server-side (Next.js middleware): reads theme cookie
+       → Adds data-theme attribute to <html> in SSR render
+       → Prevents flash of wrong theme (FOUT)
+       → ThemeProvider hydrates with same value
+
+  Theme cookie: 'vg-theme', expires 1 year, SameSite=Lax, Secure
+  This cookie is set server-side on login and client-side on theme change.
+
+PREVENTING FLASH OF WRONG THEME (FOUT)
+────────────────────────────────────────
+  Problem: React hydration happens after HTML is painted. If theme is
+  applied via JS in useEffect, users see a flash of the default theme.
+
+  Solution: Next.js middleware reads the vg-theme cookie before SSR
+  and adds data-theme to the <html> element in the server response.
+  The correct theme is applied before any JavaScript runs.
+
+  SSR fallback (no cookie): defaults to 'dark' (Batch 02 primary theme).
+
+ANIMATION TOKENS
+─────────────────
+  All animation durations and easing functions are also CSS custom properties.
+  Components reference --motion-duration-fast, --motion-ease-spring, etc.
+
+  prefers-reduced-motion handling:
+    @media (prefers-reduced-motion: reduce) {
+      :root {
+        --motion-duration-fast:    0ms;
+        --motion-duration-normal:  0ms;
+        --motion-duration-enter:   0ms;
+        --motion-duration-reveal:  0ms;
+      }
+    }
+  This disables ALL transitions and animations globally when the user
+  prefers reduced motion. No component needs individual motion logic.
+  Components that have non-motion purposes (confidence bar fill as
+  data communication) show their final value immediately.
+
+================================================================================
+SECTION 12 — NAVIGATION ARCHITECTURE
+================================================================================
+
+NAVIGATION COMPONENT TREE
+───────────────────────────
+
+  AppShell (shared/components/layout/AppShell.tsx)
+  ├── TopBar (shared/components/layout/TopBar.tsx)
+  │   ├── SidebarToggle (IconButton)
+  │   ├── Logo (links to /dashboard)
+  │   ├── CommandPaletteButton (v2; renders as ghost button)
+  │   ├── NewScanButton (accent Button; href="/scan/new")
+  │   ├── NotificationBell
+  │   │   └── NotificationBadge (from notifications/index.ts)
+  │   └── UserMenu
+  │       ├── Avatar (initials-based; shows user initials from displayName)
+  │       └── UserMenuDropdown (Popover/Menu component)
+  │           ├── MenuSection: user name + email (non-interactive)
+  │           ├── MenuDivider
+  │           ├── MenuItem: Profile    → /settings/profile
+  │           ├── MenuItem: Settings   → /settings/account
+  │           ├── MenuItem: Appearance → /settings/appearance
+  │           ├── MenuDivider
+  │           ├── MenuItem: Help Center → /help
+  │           ├── MenuItem: Feedback   → /feedback
+  │           ├── MenuDivider
+  │           └── MenuItem: Sign Out   → authStore.logout() → /
+  │
+  ├── Sidebar (shared/components/layout/Sidebar.tsx)
+  │   ├── SidebarNav
+  │   │   ├── SidebarItem: Dashboard    → /dashboard
+  │   │   ├── SidebarItem: New Scan     → /scan/new    (accent color)
+  │   │   ├── SidebarDivider
+  │   │   ├── SidebarItem: History      → /history
+  │   │   ├── SidebarDivider
+  │   │   └── SidebarItem: Help         → /help
+  │   └── SidebarUserProfile
+  │       ├── Avatar (small)
+  │       ├── DisplayName (truncated)
+  │       ├── Email (truncated, muted)
+  │       ├── Settings link → /settings/account
+  │       └── Logout button → authStore.logout()
+  │
+  └── BottomTabBar (shared/components/layout/BottomTabBar.tsx)
+      ├── TabItem: Home           → /dashboard
+      ├── TabItem: Scan (accent)  → /scan/new
+      ├── TabItem: History        → /history
+      ├── TabItem: Notifications  → /notifications
+      └── TabItem: Profile        → /settings/profile
+
+SIDEBAR ACTIVE STATE
+─────────────────────
+Active item detection uses pathname matching:
+  /dashboard          → activates "Dashboard"
+  /scan/*             → activates "New Scan"
+  /history/*          → activates "History"
+  /help/*             → activates "Help"
+  /settings/*         → activates no sidebar item
+                        (Settings is accessed via UserMenu, not sidebar)
+  /notifications      → activates no sidebar item
+                        (Notifications is accessed via TopBar bell)
+
+COMMAND PALETTE (v2 — architecture defined now, implementation deferred)
+─────────────────────────────────────────────────────────────────────────
+  Trigger: ⌘K (macOS) / Ctrl+K (Windows/Linux)
+  Component: CommandPalette (shared/components/ui/CommandPalette.tsx)
+  Data sources:
+    Static commands: "New Scan", "Go to History", "Go to Settings", "Logout"
+    Dynamic results: recent scan filenames (from React Query scan cache)
+    Help articles: fuzzy search against loaded article titles
+  Keyboard: Arrow keys to navigate, Enter to execute, Escape to close
+  Architecture note: CommandPalette is a v2 feature but the trigger
+  (CommandPaletteButton in TopBar) is implemented in v1 as a placeholder.
+  The button is rendered but disabled with tooltip "Coming soon" in v1.
+
+USER MENU DROPDOWN
+───────────────────
+  Component: Popover (primitive) with Menu content
+  Trigger: Avatar button in TopBar
+  Positioning: anchored to avatar, opens below-left
+  Keyboard: Escape closes, Tab exits to next focusable element,
+            Arrow keys navigate menu items
+  Focus: Returns to avatar button on close (useFocusTrap-adjacent pattern)
+  Mobile: Full-screen slide-up drawer instead of popover
+          (> 5 items in a popover on mobile is unusable)
+
+BREADCRUMB SYSTEM
+──────────────────
+  Component: BreadcrumbTrail (shared/components/ui/BreadcrumbTrail.tsx)
+  Data: Each page that shows breadcrumbs provides its own trail via
+        a data prop on PageHeader or a useBreadcrumbs hook.
+  No URL parsing — breadcrumbs are explicit, not inferred from URL structure.
+  Why: URL structure (/history/[scanId]) doesn't carry the filename.
+       The scan's filename comes from the data layer, not the URL.
+
+  Schema: BreadcrumbItem = { label: string; href: string | null }
+  Last item always has href: null (current page, not a link)
+  Accessibility:
+    nav element with aria-label="Breadcrumb"
+    ol with role="list"
+    Last item: aria-current="page"
+
+================================================================================
+SECTION 13 — PERFORMANCE STRATEGY
+================================================================================
+
+PERFORMANCE BUDGET
+───────────────────
+  Metric                                  Target          Priority
+  ──────────────────────────────────────────────────────────────────────────
+  First Contentful Paint (FCP)            < 1.0s  (3G)    Critical
+  Largest Contentful Paint (LCP)          < 2.5s  (3G)    Critical
+  Time to Interactive (TTI)               < 3.0s          Critical
+  Cumulative Layout Shift (CLS)           < 0.1            High
+  Initial JS bundle (gzipped)             < 80KB           Critical
+  Total page weight (landing, S01)        < 300KB          High
+  App shell render after auth             < 500ms          High
+  Scan result render (from cache)         < 200ms          High
+  History list render (20 items)          < 300ms          Medium
+  Grad-CAM image load                     < 1s             Medium
+
+CODE SPLITTING — IMPLEMENTATION DETAILS
+────────────────────────────────────────
+Next.js App Router implements automatic code splitting per route.
+Additional manual splits for heavy components:
+
+  GradCAMPanel:
+    Dynamic import with ssr: false
+    Loaded only when S10/S12/S20 renders
+    Reason: imports image rendering logic; unnecessary for all other routes
+
+  MicrophoneRecorder + WaveformVisualizer:
+    Dynamic import with ssr: false
+    Reason: uses Web Audio API + MediaRecorder (browser-only)
+    Loaded only when "Record" tab is clicked, not on S08 initial load
+    Loading state: shows a spinner inside the tab panel area while loading
+
+  ActivityChart:
+    Dynamic import — loaded only when > 5 scans exist
+    Reason: charting library (~50KB gzipped; unnecessary for new users)
+    Empty state renders immediately; chart renders after library loads
+
+  DateRangePicker:
+    Dynamic import — loaded only when S11 History is visited
+    Reason: date picker libraries are heavy; not needed on first visit
+
+  jsPDF (or pdfmake):
+    Dynamic import — loaded only when "Download PDF" is clicked
+    Pattern: button click → dynamic import → generate → download
+    Loading state: button shows "Loading PDF generator..." briefly
+
+LAZY LOADING — IMAGES
+──────────────────────
+  All images use native loading="lazy" attribute.
+  Exceptions (load eagerly):
+    - Hero image on S01 (above-the-fold; lazy would hurt LCP)
+    - User avatar in TopBar (used in initial render of every page)
+
+  Grad-CAM and mel-spectrogram images:
+    Blur-up technique:
+      1. Server returns low-resolution blurred placeholder (base64 inline)
+      2. Image component renders blurred placeholder immediately
+      3. Full image loads in background
+      4. On load: transition from blurred to sharp (CSS filter: blur, 300ms)
+    Fallback if placeholder not available: spectrogram-shaped SkeletonLoader
+
+  Next.js Image component (<Image>) used for all images:
+    - Automatic WebP conversion
+    - Responsive srcset generation
+    - CLS prevention (explicit width/height required)
+
+SUSPENSE BOUNDARIES
+────────────────────
+  Every data-dependent section has a Suspense boundary with a skeleton:
+
+  S07 Dashboard:
+    <Suspense fallback={<StatsRowSkeleton />}>
+      <StatsRow />
+    </Suspense>
+    <Suspense fallback={<RecentScansSkeleton />}>
+      <RecentScans />
+    </Suspense>
+    <Suspense fallback={<ChartSkeleton />}>
+      <ActivityChart />
+    </Suspense>
+
+  S11 History:
+    <Suspense fallback={<ScanTableSkeleton rows={20} />}>
+      <ScanTable />
+    </Suspense>
+
+  S10 Scan Result:
+    <Suspense fallback={<VerdictCardSkeleton />}>
+      <VerdictCard />
+    </Suspense>
+    <Suspense fallback={<GradCAMSkeleton />}>
+      <GradCAMPanel />
+    </Suspense>
+
+  Rule: Suspense boundaries are narrow (around data-dependent sections,
+  not entire pages). This ensures partial renders — the page shell
+  and header appear immediately even if data is loading.
+
+MEMOIZATION STRATEGY
+─────────────────────
+Memoize only when there is a documented, measurable performance problem.
+Premature memoization adds complexity without measurable benefit.
+
+  Memoize (React.memo):
+    ScanRow: re-renders on every history list refresh; 20+ items per page
+    StatCard: re-renders on every dashboard refresh; value is always same
+    NotificationItem: list of 20+ items
+    Badge: rendered inside every ScanRow; pure render based on variant
+    ConfidenceBar: animation runs on mount; should not re-animate on re-renders
+
+  Memoize (useMemo):
+    Filter query key construction in useScanHistory:
+      const queryKey = useMemo(() => queryKeys.scanHistory(filters), [filters])
+    Chart data transformation in ActivityChart:
+      const chartData = useMemo(() => transformScansToChartData(scans), [scans])
+
+  Memoize (useCallback):
+    onFileAccepted handler in FileDropzone usage sites
+    onDelete handler passed to ScanRow (changes on every render otherwise)
+
+  Do NOT memoize:
+    Simple components that render cheap JSX
+    Components that rarely re-render
+    Context consumers (use Zustand selectors instead)
+
+VIRTUALIZATION
+───────────────
+  S11 History list: virtualize when > 100 scans
+    Use TanStack Virtual (tanstack/virtual) for row virtualization
+    Implementation: only activated when total scan count > 100
+    Below 100: standard non-virtualized list (simpler, less overhead)
+
+  S13 Notifications: no virtualization needed (max reasonable: 50 items)
+  S14 Help search results: no virtualization needed (max 20 results)
+
+FONT LOADING
+─────────────
+  Self-hosted fonts in public/fonts/ (no Google Fonts CDN — GDPR + performance)
+  Preconnect + preload in <head> for Inter and Inter Tight (woff2, Latin subset)
+  JetBrains Mono loaded on-demand (only when monospace content is shown)
+  font-display: swap for all fonts (prevent invisible text during load)
+
+PREFETCHING STRATEGY
+─────────────────────
+  Next.js Link component automatically prefetches on hover.
+  Additional manual prefetches:
+    On S09 Processing (while user waits):
+      Prefetch scan result query so S10 renders instantly when ready.
+      router.prefetch('/scan/[scanId]')
+
+    On S11 History (scan list visible):
+      Prefetch top 3 scan details so clicking is instant.
+      React Query: queryClient.prefetchQuery(queryKeys.scanDetail(id))
+
+  Do NOT prefetch:
+    Heavy pages like S10 (GradCAM images are already large enough)
+    Settings pages (user rarely visits multiple times per session)
+
+BUNDLE ANALYSIS
+────────────────
+  next build generates a bundle size report.
+  Required: bundle analysis run before every major release.
+  Tool: @next/bundle-analyzer
+  Thresholds: Any individual chunk > 150KB gzipped requires justification.
+
+================================================================================
+SECTION 14 — ACCESSIBILITY STRATEGY
+================================================================================
+
+WCAG COMPLIANCE TARGETS
+─────────────────────────
+  Minimum: WCAG 2.1 AA on all content
+  Target:  WCAG 2.1 AAA on primary result display (verdict, confidence)
+  Testing: NVDA + Chrome (Windows), VoiceOver + Safari (macOS/iOS)
+
+FOCUS MANAGEMENT ARCHITECTURE
+───────────────────────────────
+
+  Focus trap (useFocusTrap hook):
+    Applied to: Modal, ConfirmDialog, Drawer, UserMenuDropdown
+    Behavior: Tab cycles within the trapped container; Shift+Tab reverses
+    On open: focus moves to first focusable element inside (or first heading)
+    On close: focus returns to the element that triggered opening
+    Implementation: query all focusable elements within container,
+                    intercept Tab keydown to cycle within the set
+
+  Skip link:
+    First focusable element in every page (visually hidden until focused)
+    Text: "Skip to main content"
+    Target: #main-content (on the <main> element)
+    Styled: appears at top of viewport when focused, accent background
+
+  After route navigation:
+    Focus moves to the <main> element's first heading (h1)
+    Implemented in AppShell layout via useEffect on pathname change
+    This ensures screen reader users hear the new page title on navigation
+
+  After modal close:
+    Focus returns to the element that opened the modal (trigger element)
+    Achieved by storing triggerRef before modal opens
+
+  After form submission error:
+    Focus moves to the first field with an error
+    Implemented in React Hook Form error handling
+
+ARIA ARCHITECTURE
+──────────────────
+
+  Live Regions:
+    Verdict announcement (S10):
+      <div aria-live="assertive" aria-atomic="true">
+        Rendered off-screen but in DOM.
+        When VerdictCard renders, its verdict text is also written here.
+        Screen readers announce: "Human Voice — 97.3% confidence"
+        This fires once, on result arrival, not on every re-render.
+
+    Processing steps (S09):
+      <div aria-live="polite" aria-atomic="false">
+        Updated as each step completes.
+        Screen reader announces: "Step 2 of 3: Extracting acoustic features"
+
+    Toast notifications:
+      ToastStack has role="status" aria-live="polite" for success/info
+      ToastStack has role="alert" aria-live="assertive" for errors
+      Two separate regions so severity controls announcement urgency
+
+    Upload progress:
+      <div aria-live="polite"> announces "File uploaded, analysis starting"
+
+  Page structure:
+    Every page has a single <h1> (page title)
+    Headings follow strict hierarchy: h1 → h2 → h3 (no skipping)
+    Landmark roles: <header>, <nav>, <main>, <aside> (sidebar), <footer>
+    Navigation landmarks labeled: aria-label="Main navigation",
+                                   aria-label="Breadcrumb"
+
+  Form accessibility:
+    All inputs have associated <label> (not just placeholder)
+    Error messages linked via aria-describedby
+    Required fields: aria-required="true" (not just visual asterisk)
+    Password strength meter: aria-live="polite" announces strength changes
+    OTP input: aria-label="Verification code digit [N] of 6" per box
+
+  Images:
+    Grad-CAM heatmap: aria-label="Frequency heatmap showing [description]"
+    Mel-spectrogram: aria-label="Acoustic fingerprint of [filename]"
+    Hero screenshot on S01: full descriptive alt text
+    Decorative images: aria-hidden="true" (waveform animations, etc.)
+    Icons used without text: aria-label on the icon element
+
+  Interactive states:
+    Loading buttons: aria-busy="true" aria-label="[Action], loading"
+    Disabled elements: aria-disabled="true" (not HTML disabled alone —
+                       HTML disabled removes from tab order; aria-disabled
+                       keeps it focusable with explanatory context)
+    Toggle switches: aria-checked, role="switch"
+    Expanded/collapsed sections: aria-expanded on trigger button
+    Sort buttons: aria-sort on table column headers
+
+KEYBOARD NAVIGATION
+────────────────────
+  Every interaction is keyboard-accessible. No mouse-only interactions.
+
+  FileDropzone:
+    Tab → focuses dropzone
+    Enter / Space → opens file picker
+    Drag-and-drop has keyboard equivalent (file picker)
+
+  MicrophoneRecorder:
+    Tab → Record button
+    Space → Start recording (same as click)
+    Space → Stop recording (if recording active)
+
+  UserMenu dropdown:
+    Enter/Space on Avatar → opens dropdown
+    Arrow Down/Up → navigate items
+    Enter → activate item
+    Escape → close dropdown, focus returns to Avatar
+
+  ConfirmDialog:
+    Tab → cycles between Cancel and Confirm (only 2 focusable elements)
+    Enter → activates focused button
+    Escape → closes dialog (= Cancel behavior)
+
+  History table:
+    Tab → focuses row
+    Enter → opens scan detail
+    Space → toggles row selection (checkbox)
+    Arrow Down/Up → moves between rows (not required by WCAG, enhances UX)
+
+  Filter chips:
+    Tab → focuses chip group container
+    Arrow Left/Right → navigates between chips
+    Space/Enter → toggles chip
+
+REDUCED MOTION
+───────────────
+  Handled globally via CSS (Section 11, Theme Architecture)
+  All animations disabled when prefers-reduced-motion: reduce
+  Confidence bar shows final value immediately (no fill animation)
+  Processing card: shimmer animation disabled; shows static placeholder
+  Toast: appears instantly (no slide animation)
+  Route transitions: instant (no fade/slide)
+  The product works fully without any motion — motion is enhancement only.
+
+COLOR AND CONTRAST
+───────────────────
+  No information is conveyed by color alone.
+  All verdict states use color + text label + icon together:
+    Human:     green + "HUMAN VOICE" text + shield-check icon
+    AI:        red + "AI-GENERATED VOICE" text + shield-x icon
+    Uncertain: amber + "UNCERTAIN" text + shield-question icon
+
+  Contrast ratios:
+    Primary text on bg (#F5F5F7 on #0A0A0A):         16.1:1  ✓ AAA
+    Verdict label on verdict-dim bg:                 > 7:1   ✓ AAA
+    Secondary text (#AEAEB2 on #0A0A0A):             6.2:1   ✓ AA
+    Interactive accent (#4F8EF7 on #111111):         5.1:1   ✓ AA
+    Error text on surface (#FF453A on #111111):      5.2:1   ✓ AA
+    Muted text (#86868B on #111111):                 3.6:1   ✓ (large text)
+    All combinations verified for both dark and light themes.
+
+TOUCH TARGETS
+──────────────
+  Minimum 44×44px for all interactive elements on mobile.
+  Implemented via CSS padding/min-height on touch targets.
+  Elements that visually appear smaller have invisible touch target expansion.
+  Example: Close button (×) on Toast appears small but has 44px touch target.
+
+================================================================================
+SECTION 15 — ERROR HANDLING STRATEGY
+================================================================================
+
+ERROR BOUNDARY HIERARCHY
+─────────────────────────
+
+  Level 1 — Global (app/error.tsx):
+    Catches: Any unhandled JS error at the top level
+    Shows: S22 Service Error page
+    Includes: "Something went wrong on our end" + Retry button + Error ID
+    Reports: Error details logged to error reporting service (Sentry or similar)
+
+  Level 2 — Module boundary (inside AppShell <main>):
+    Each route group has an error.tsx that catches module-level failures.
+    Shows: ModuleErrorFallback — a contained error card within the page shell,
+           not a full-page takeover.
+    Copy: "This section couldn't load. [Try again] [Go to Dashboard]"
+    Benefit: If S11 History crashes, the TopBar and Sidebar remain functional.
+
+  Level 3 — Section boundary (ErrorBoundary component):
+    Used within individual page sections that load independently.
+    Shows: SectionErrorFallback — small card with icon + retry link.
+    Example: If ActivityChart crashes on S07, the rest of Dashboard renders.
+    Copy: "Chart couldn't load. [Retry]"
+
+  Level 4 — React Query error state:
+    Every useSomething hook that fetches data has isError state.
+    Components render their own error state from this (not a boundary).
+    Example: ScanTable in S11 renders "Couldn't load scans. [Try again]"
+             when query.isError === true
+
+ERROR FALLBACK COMPONENTS
+──────────────────────────
+
+  ErrorFallback (shared/components/feedback/ErrorFallback.tsx)
+    Props: error, resetErrorBoundary, size ('page' | 'section' | 'inline')
+    Variants:
+      page:    Full-height centered card (S22 style, within page shell)
+      section: Card within the page content area
+      inline:  Single line with error icon + message + retry link
+
+  OfflineBanner (shared/components/feedback/OfflineBanner.tsx)
+    Renders as sticky top banner (below TopBar)
+    Text: "You appear to be offline. Some features may be unavailable."
+    Auto-dismisses when connection restored (online event)
+    aria-live="assertive" (offline is important — announce immediately)
+
+API ERROR FLOW
+───────────────
+
+  API call fails
+      ↓
+  apiClient throws ApiError(code, message, status, field?)
+      ↓
+  React Query mutation/query catches error
+      ↓
+  isError = true + error = ApiError
+      ↓
+  Component receives error from hook
+      ↓
+  if (error.code === 'UNAUTHORIZED')
+    → authStore.logout()
+    → router.push('/login?session=expired')
+    → Toast: "Session expired..."
+  else if (error.code === 'NOT_FOUND')
+    → router.push('/not-found')
+  else if (error.status >= 500)
+    → if within ErrorBoundary: boundary catches
+    → else: component renders inline error state
+  else
+    → Component renders specific error message via errorUtils.getMessageForCode()
+
+FORM ERROR HANDLING
+────────────────────
+  Client-side validation (Zod) runs on blur for each field.
+  Server-side errors (from API response) are mapped to fields:
+    If error.field is set: setError(error.field, {message: error.message})
+    If error.field is not set: setError('root', {message: error.message})
+  Root form errors render above the submit button as an Alert component.
+
+CRASH REPORTING
+────────────────
+  Error boundaries capture: error message, stack trace, component tree,
+  current URL, user ID (hashed), browser/OS info.
+  Reported to: error tracking service (architecture supports Sentry integration)
+  Error ID: generated UUID shown to user ("Error ID: abc123") for support
+  PII: User email NEVER included in error reports. User ID is hashed.
+
+SCAN PROCESSING ERROR STATES
+──────────────────────────────
+  These are the most critical error states — user has submitted work and
+  expects a result. Each has a specific recovery path.
+
+  processing-timeout (> 15s no response):
+    Show: "Taking longer than usual..."
+    Action: [Keep waiting] [Cancel] [Contact support]
+
+  processing-error (server returns error):
+    Show: "Analysis failed. This sometimes happens with unusual audio formats."
+    Actions: [Try again with same file] [Upload different file] [Report issue →]
+    Note: "Try again with same file" re-uses the file still in detectionStore.
+          User does not have to re-upload.
+
+  processing-unsupported (model rejects the audio):
+    Show: "This audio format couldn't be analyzed."
+    Sub: "Try converting to WAV or FLAC and uploading again."
+    Actions: [Upload different file]
+
+  network-error during upload:
+    Show: inline error below dropzone
+    Text: "Upload failed. Check your connection and try again."
+    Action: [Try again] — re-submits the same file from detectionStore
+
+================================================================================
+SECTION 16 — ENGINEERING STANDARDS
+================================================================================
+
+NAMING CONVENTIONS
+───────────────────
+
+  Files:
+    Components:           PascalCase.tsx          (VerdictCard.tsx)
+    Hooks:                camelCase.ts prefixed    (useScanResult.ts)
+    Stores:               camelCase + Store.ts     (detectionStore.ts)
+    API files:            camelCase + Api.ts       (detectionApi.ts)
+    Types:                camelCase.ts             (models.ts, api.ts)
+    Utilities:            camelCase.ts             (formatting.ts)
+    CSS Modules:          PascalCase.module.css    (VerdictCard.module.css)
+    Test files:           [name].test.ts/tsx       (VerdictCard.test.tsx)
+
+  Components:
+    All component names: PascalCase
+    Event prop names:    onEventName              (not handleEventName)
+    Boolean prop names:  isLoading, hasError      (not loading, error as boolean)
+    Variant props:       variant (not type, mode, kind)
+    Children prop:       children (never child, content, body)
+
+  Hooks:
+    Prefix: use
+    Return object (not array unless exactly 2 values):
+      const { data, isLoading, error } = useScanHistory()
+    Exception: useState-like hooks: const [value, setValue] = useSomething()
+
+  Stores:
+    Store state: noun properties (currentUser, not getUser)
+    Store actions: verb properties (setUser, logout, not updateUser)
+    Selectors: functions that derive from state (useAuthStore(s => s.currentUser))
+
+  CSS Modules:
+    Class names: camelCase                      (.verdictCard, .confidenceBar)
+    State modifiers: [component]--[state]       (.verdictCard--human, .btn--loading)
+    Avoid global class names: everything scoped to the module
+
+  Constants:
+    SCREAMING_SNAKE_CASE for true constants:   MAX_FILE_SIZE_MB, API_TIMEOUT_MS
+    camelCase for configuration objects:       queryKeys, routeConfig
+
+IMPORT CONVENTIONS
+───────────────────
+
+  Import order (enforced by ESLint):
+    1. React and React-related libraries
+    2. Third-party libraries (alphabetical)
+    3. Internal imports — absolute paths (aliased via tsconfig paths)
+    4. Relative imports (for same-module internal files)
+    5. CSS module imports (always last)
+
+  Path aliases (tsconfig.json paths):
+    @/modules/*      → src/modules/*
+    @/shared/*       → src/shared/*
+    @/styles/*       → src/styles/*
+    @/config/*       → src/config/*
+    @/types/*        → src/types/*
+
+  Barrel (index.ts) imports:
+    Every module exposes a barrel file that defines its public API.
+    Other code imports from the barrel, never from internal paths.
+    Correct:    import { VerdictCard } from '@/modules/detection'
+    Forbidden:  import { VerdictCard } from '@/modules/detection/components/VerdictCard'
+
+COMPONENT CONVENTIONS
+──────────────────────
+
+  File structure within a component file:
+    1. Imports
+    2. Type definitions (Props interface)
+    3. Component function (named export, not default)
+    4. Helper components (small, used only in this file)
+    5. Exports
+
+  Props interface:
+    Always named [ComponentName]Props
+    Defined in the same file as the component
+    Exported if other components extend it; otherwise not exported
+
+  Component function signature:
+    export function VerdictCard({ verdict, confidence, ... }: VerdictCardProps) {
+    No default exports from component files (named exports only)
+    Reason: Named exports make refactoring and tree-shaking explicit
+
+  State in components:
+    Local UI state (hover, open, selected): useState
+    Form state: React Hook Form
+    Server data: React Query (via custom hook)
+    Global state: Zustand selector (useAuthStore, useDetectionStore)
+    Never: useContext for mutable state (use Zustand)
+
+  Conditional rendering:
+    Prefer ternary for simple cases, early return for complex logic
+    Avoid nested ternaries (extract to named variables)
+    Avoid && for rendering JSX when left side could be 0 or '' (use ternary)
+
+HOOK CONVENTIONS
+─────────────────
+
+  Custom hooks must:
+    - Return a typed object (not arbitrary tuples)
+    - Handle loading, error, and success states explicitly
+    - Never contain JSX
+    - Never contain routing logic (hooks are not page-level concerns)
+
+  React Query hooks pattern:
+    function useScanHistory() {
+      const filters = useHistoryStore(s => s.filters)
+      const page    = useHistoryStore(s => s.page)
+      return useQuery({
+        queryKey: queryKeys.scanHistory({ filters, page }),
+        queryFn:  () => historyApi.getScans(filters, page),
+        staleTime: 2 * 60 * 1000,
+      })
+    }
+
+  Mutation pattern:
+    function useDeleteScan() {
+      const queryClient = useQueryClient()
+      return useMutation({
+        mutationFn: (scanId: string) => historyApi.deleteScan(scanId),
+        onSuccess: () => {
+          queryClient.invalidateQueries({ queryKey: queryKeys.scanHistory() })
+        }
+      })
+    }
+
+TESTING CONVENTIONS
+────────────────────
+
+  What to test:
+    Unit tests:       Utility functions, Zod schemas, store actions
+    Component tests:  Component rendering in all states (using Testing Library)
+    Integration tests: User flows through multiple components
+    E2E tests:        Critical paths (sign up, upload + result, delete scan)
+
+  What NOT to unit test:
+    CSS / visual appearance (snapshot tests for this are brittle)
+    Third-party library internals
+    Simple getters/setters
+
+  Testing priorities (in order):
+    1. useScanProcessing hook (most complex async flow)
+    2. useFileUpload hook (validation logic is critical)
+    3. VerdictCard (most important component; tested in all 3 verdict states)
+    4. FileDropzone (drag-and-drop, file validation, error states)
+    5. AuthGuard (route protection)
+    6. All form validation flows (sign up, login, settings)
+    7. E2E: Guest upload → result → sign up → dashboard
+    8. E2E: Authenticated user search and filter history
+
+  Test file location: co-located with source (VerdictCard.test.tsx beside
+                      VerdictCard.tsx) for features; tests/e2e/ for E2E
+
+  Testing Library conventions:
+    Query by: role > label > text > testId (testId is last resort)
+    Avoid: querySelector, className queries (implementation detail)
+    userEvent over fireEvent (userEvent simulates real browser interaction)
+
+DOCUMENTATION CONVENTIONS
+───────────────────────────
+
+  Code comments: only when WHY is non-obvious
+    The minimum display time of 1500ms on ProcessingCard is intentional:
+    perceived trustworthiness requires the AI to appear to "work."
+
+  JSDoc: only on hook return types and complex utility functions
+  README files: one per module directory, covering: purpose, exports, usage
+
+  Architecture Decision Records (ADRs):
+    Location: docs/adr/
+    Format: [number]-[description].md (e.g., 001-state-management-zustand.md)
+    Required for: choice of libraries, deviations from this document,
+                  significant refactors
+
+ENVIRONMENT CONFIGURATION
+──────────────────────────
+
+  All environment variables validated at startup (config/env.ts).
+  Missing required variables: app crashes with descriptive error.
+  Optional variables with defaults: documented in .env.example.
+
+  Required:
+    NEXT_PUBLIC_API_BASE_URL     API base URL
+    NEXT_PUBLIC_APP_URL          Frontend URL (for OG tags, shared links)
+
+  Optional with defaults:
+    NEXT_PUBLIC_POLL_INTERVAL_MS    1000     (scan status poll interval)
+    NEXT_PUBLIC_MAX_FILE_SIZE_MB    10       (client-side validation)
+    NEXT_PUBLIC_NOTIFICATION_POLL_S 30       (notification count poll)
+
+  Never in environment variables:
+    API keys, secrets, private keys — these are server-only
+    User data, session tokens — these live in cookies
+
+================================================================================
+SECTION 17 — FRONTEND SCALABILITY PLAN
+================================================================================
+
+GROWTH VECTORS ADDRESSED
+─────────────────────────
+
+  From Batch 01 roadmap, each v2/v3 feature has architectural implications.
+  This section ensures the v1 architecture accommodates future growth
+  without requiring a rewrite.
+
+BATCH FILE PROCESSING (v2)
+───────────────────────────
+  Current architecture: single file upload in detectionStore
+  Required change: minimal
+
+  detectionStore becomes a BatchDetectionStore:
+    files[]:           Array of {file, status, result}
+    activeJobId?:      string
+
+  Detection module gains BatchUploadZone component.
+  Processing page shows a table of files with individual status rows.
+  VerdictCard gains a compact mode for rendering inside a batch row.
+
+  The API layer (detectionApi) gains:
+    batchUploadScans(files[])
+    getBatchStatus(batchId)
+  These are new functions alongside the existing single-scan functions.
+  No existing functions are modified.
+
+REST API + API KEY MANAGEMENT (v2)
+────────────────────────────────────
+  A new module: api-access/
+    Screens: API Keys list, Create Key, Delete Key, Documentation
+  The auth module gains an API key type in its types.ts.
+  No structural changes to existing modules.
+
+TEAM WORKSPACES (v2)
+─────────────────────
+  Requires: an organization concept in the auth store.
+  authStore gains: currentOrg, userRole (owner | member | viewer)
+
+  Route changes: /dashboard → /[orgSlug]/dashboard (optional)
+  OR: org scoping via subdomain (preferred for isolation)
+
+  History module gains org-level filter (show team scans vs personal)
+  Settings module gains:
+    settings/team/ sub-layout with member management
+
+  All existing routes remain valid for personal accounts.
+  Org routes are additive, not replacements.
+
+REAL-TIME FEATURES (v2 WebSocket)
+───────────────────────────────────
+  Current architecture: HTTP polling for notifications and scan status
+  v2 change: WebSocket connection replaces polling
+
+  WebSocket client: singleton in shared/providers/WebSocketProvider.tsx
+  Events:
+    scan.complete(scanId)  → invalidates React Query scan cache
+    notification.new()     → appends to notificationStore
+    scan.progress(step)    → updates detectionStore.processingStep
+
+  The v1 polling implementations in useScanProcessing and
+  useNotificationCount are designed as drop-in replaceable with
+  WebSocket event subscriptions. The hook interface is identical —
+  only the data source changes.
+
+INTERNATIONALIZATION (v2)
+───────────────────────────
+  v1 ships English only, but the architecture accommodates i18n.
+  All user-facing strings are not hardcoded in JSX.
+  Convention: strings defined in a locale object or next-intl messages file.
+  Font loading already uses subset strategy (will expand for new scripts).
+
+  What does NOT need to change:
+    - Design tokens (language-agnostic)
+    - Component structure (text is a prop or children)
+    - Routing structure (locale prefix added: /en/dashboard)
+
+  What changes:
+    - All string literals extracted to messages files
+    - Date/number formatting uses Intl API (already used in formatting.ts)
+    - Text direction (LTR/RTL) added to ThemeProvider for RTL locales
+
+MOBILE APP (v3)
+────────────────
+  If React Native is chosen:
+    Shared logic (hooks, stores, api layer) is portable with minimal changes.
+    Design tokens can be translated to React Native StyleSheet constants.
+    Components need new implementations but share the same prop contracts.
+
+  If a web view (Capacitor/Expo Web) is chosen:
+    The existing web app is wrapped with minimal native shell.
+    Deep linking routes map directly to existing URL structure.
+
+COMPONENT LIBRARY EXTRACTION (v2+)
+────────────────────────────────────
+  The shared/components/ui/ directory is designed to be extractable as an
+  independent npm package (voiceguard-ui or @voiceguard/design-system).
+
+  Requirements already met by current architecture:
+    - No app-level dependencies in shared/ui components
+    - All tokens referenced via CSS custom properties (portable)
+    - Props-driven, no internal store reads
+    - Storybook-compatible file structure
+
+  When to extract: when a second product (mobile app, API dashboard)
+  needs to share components.
+
+================================================================================
+SECTION 18 — ARCHITECTURE SELF AUDIT
+================================================================================
+
+This audit evaluates the architecture against the criteria from the prompt:
+tight coupling, duplicate logic, scalability risks, maintenance risks,
+performance risks, accessibility risks, security risks, DX issues.
+
+ISSUE LOG
+──────────────────────────────────────────────────────────────────────────────
+
+AUDIT-01: Tight Coupling — Detection Components in S12 Scan Detail
+STATUS: RESOLVED IN THIS DOCUMENT
+
+Issue: S12 Scan Detail needs VerdictCard, ConfidenceBar, GradCAMPanel,
+       LimitationsCard — the same components as S10 Scan Result.
+       Naively, the history module might duplicate these.
+
+Resolution: Detection module exports these components in detection/index.ts.
+            History module imports from detection/index.ts.
+            S20 Shared Scan Result also imports from detection/index.ts.
+            Single source of truth, three consumers.
+
+──────────────────────────────────────────────────────────────────────────────
+
+AUDIT-02: State Duplication — React Query vs Zustand for Scan Result
+STATUS: RESOLVED IN THIS DOCUMENT
+
+Issue: detectionStore.currentResult and React Query both hold the scan result.
+       This risks stale state if one is updated but not the other.
+
+Resolution: detectionStore holds currentResult for the duration of the
+            active scan session only (for immediate S10 render).
+            After navigating away and back, S10/S12 reads from React Query
+            exclusively. detectionStore.reset() is called when user starts
+            a new scan. The two never diverge because React Query is always
+            the authoritative source; the store is a short-lived read cache.
+
+──────────────────────────────────────────────────────────────────────────────
+
+AUDIT-03: Guest Session Management Complexity
+STATUS: ACCEPTABLE — DOCUMENTED
+
+Issue: Guest users can create scans, and those scans must be migrated to
+       their account after sign-up. This creates a coordination requirement
+       between auth, detection, and onboarding modules.
+
+Resolution: authStore.guestScanId holds the scanId created in guest session.
+            After sign-up → verification → auth:
+              authApi.migrateScan(guestScanId, userId) is called once.
+            This migration call is made in AuthProvider after the first
+            authenticated session is established.
+            The migration endpoint is idempotent (safe to call twice).
+            If migration fails: non-critical — scan is lost. User sees
+            notification: "Your guest scan couldn't be migrated. Please
+            re-upload the file."
+
+──────────────────────────────────────────────────────────────────────────────
+
+AUDIT-04: Performance — Charting Library in Dashboard Bundle
+STATUS: RESOLVED IN THIS DOCUMENT
+
+Issue: Including a charting library (e.g., Recharts ~100KB gzipped) in
+       the dashboard bundle would bloat the initial page load.
+
+Resolution: ActivityChart is dynamically imported with next/dynamic.
+            It only renders when scan count > 5 (empty state below that).
+            The charting library is in its own code split chunk and never
+            part of the critical path.
+
+──────────────────────────────────────────────────────────────────────────────
+
+AUDIT-05: Settings Sidebar — Mobile Usability
+STATUS: RESOLVED IN THIS DOCUMENT
+
+Issue: The settings layout uses a sidebar tab list (S17/S18/S19). On mobile,
+       a vertical sidebar becomes unusable (too narrow).
+
+Resolution: SettingsSidebar renders as:
+            Desktop (> 900px): vertical tab list on left, content on right
+            Mobile (< 900px):  horizontal scrollable tab bar at top,
+                               content below
+
+──────────────────────────────────────────────────────────────────────────────
+
+AUDIT-06: Accessibility — MicrophoneRecorder Permission Denied State
+STATUS: RESOLVED IN THIS DOCUMENT
+
+Issue: When microphone permission is denied, the browser shows a native
+       dialog. After dismissal, the app's state machine must handle this
+       correctly for keyboard and screen reader users.
+
+Resolution: useMicrophoneRecorder tracks permission state explicitly.
+            On permission denied: state = 'permission-denied'
+            MicrophoneRecorder renders a Card with:
+              - aria-live="assertive" announcement: "Microphone access denied"
+              - Browser-specific instructions (detected from userAgent)
+              - "Try uploading a file instead" link (keyboard accessible)
+            Focus moves to the first instruction link.
+
+──────────────────────────────────────────────────────────────────────────────
+
+AUDIT-07: Security — File Upload XSS via Filename
+STATUS: RESOLVED IN THIS DOCUMENT
+
+Issue: Filenames are displayed in multiple places (FilePreviewCard, ScanRow,
+       VerdictCard footer, PDF). A crafted filename could contain HTML/JS.
+
+Resolution: All filename rendering uses textContent, not innerHTML.
+            React's default JSX rendering escapes all string values.
+            PDF generation sanitizes filenames before insertion.
+            Filenames are truncated at 80 characters for display.
+
+──────────────────────────────────────────────────────────────────────────────
+
+AUDIT-08: DX — Module Barrel Files May Cause Circular Imports
+STATUS: ADDRESSED — CONVENTION ESTABLISHED
+
+Issue: Barrel files (index.ts) in modules create risk of circular imports
+       if modules start importing from each other's barrels.
+
+Resolution: The rule is enforced: modules may ONLY import from shared/*.
+            If two modules need to share a component, it belongs in shared/.
+            No module imports from another module's barrel.
+            ESLint rule: import/no-cycle enforces this at lint time.
+
+──────────────────────────────────────────────────────────────────────────────
+
+AUDIT-09: Performance — Multiple Zustand Selectors Causing Re-renders
+STATUS: ADDRESSED — PATTERN DEFINED
+
+Issue: If a component selects multiple values from a Zustand store in
+       separate useStore calls, each store update triggers a separate
+       re-render, even if the component uses both values together.
+
+Resolution: Use object selector with shallow equality:
+  const { verdict, confidence } = useDetectionStore(
+    useShallow(s => ({ verdict: s.currentResult?.verdict,
+                       confidence: s.currentResult?.confidence }))
+  )
+  useShallow from zustand/react/shallow prevents re-renders when the
+  selected values haven't changed.
+
+──────────────────────────────────────────────────────────────────────────────
+
+AUDIT-10: Future Maintenance — Error Code Mapping Duplication
+STATUS: RESOLVED IN THIS DOCUMENT
+
+Issue: Error messages for API codes are mapped in errorUtils.ts. If the
+       backend adds new error codes, the frontend silently falls back to
+       a generic message. This fallback must be graceful.
+
+Resolution: errorUtils.getMessageForCode(code) returns a generic
+            "Something went wrong. [Try again]" for any unmapped code.
+            Additionally, unknown error codes are logged to the error
+            reporting service so they surface during development/monitoring.
+            The mapping function is the single place where this logic lives.
+
+──────────────────────────────────────────────────────────────────────────────
+
+AUDIT SUMMARY
+──────────────
+  Total issues identified:  10
+  Resolved in document:      8
+  Acceptable/documented:     2
+  Failures:                  0
+  Architecture is approved for implementation.
+
+================================================================================
+SECTION 19 — RISKS & MITIGATIONS
+================================================================================
+
+RISK 01 — Next.js App Router Complexity
+Probability: Medium | Impact: High
+Description: The App Router's caching, parallel routes, and server component
+             model introduces complexity that can cause subtle bugs — especially
+             for teams unfamiliar with the paradigm.
+Mitigation:
+  - Use Client Components for all interactive UI (components with state,
+    events, and hooks). Server Components only for static/SEO pages.
+  - Establish team convention: mark all interactive components with
+    'use client' immediately, not after debugging a hydration error.
+  - Create a decision doc: "Server Component vs Client Component" checklist.
+  - Use Pages Router as fallback if App Router issues prove blocking
+    (all routing patterns defined here work in both routers with minor changes)
+
+RISK 02 — Web Audio API Cross-Browser Compatibility
+Probability: Medium | Impact: Medium
+Description: MediaRecorder API and AudioContext have inconsistent support
+             across browsers and iOS Safari has known limitations.
+Mitigation:
+  - Detect MediaRecorder support on component mount
+  - If unsupported: disable "Record" tab, show "Recording not supported
+    in your browser. Please upload a file instead."
+  - Test explicitly on iOS Safari 15+ and Firefox 115+
+  - Fallback is always available (file upload mode works everywhere)
+
+RISK 03 — Grad-CAM Images Taking Longer Than Expected to Load
+Probability: Medium | Impact: High (S10 is the most important screen)
+Description: Grad-CAM images are generated server-side. If generation is
+             slow, S10 renders the verdict but not the visual evidence,
+             undermining the professional use case.
+Mitigation:
+  - GradCAMPanel renders a spectrogram-shaped SkeletonLoader immediately
+  - Images use blur-up: low-res placeholder available instantly from API
+  - Backend caches Grad-CAM images for the scan's lifetime
+  - If both images fail to load: LimitationsCard explains why (fallback copy)
+  - SLO: Grad-CAM images available within 1s of scan complete (from Batch 01)
+
+RISK 04 — Mobile Microphone Recording Quality
+Probability: High | Impact: Medium
+Description: Mobile browser microphone recordings may have lower quality,
+             background noise, or different sample rates that affect model
+             accuracy. Users may receive unexpected results and blame the tool.
+Mitigation:
+  - Display explicit notice before recording on mobile:
+    "Recording on mobile may produce different results than uploading a file.
+    For forensic analysis, upload the original file."
+  - This notice is part of the "About audio requirements" collapsible
+    section on S08 (defined in Batch 02)
+  - No technical change needed — this is a content/UX mitigation
+
+RISK 05 — React Query Cache Stale Data on Result Pages
+Probability: Low | Impact: High
+Description: If a scan result is modified (e.g., admin correction), a cached
+             React Query result would show stale data.
+Mitigation:
+  - Scan results are immutable once created (by design, from Batch 01)
+  - React Query's 5min stale time is appropriate — results never change
+  - If server ever sends updated data: React Query refetches in background
+    and updates the UI without disrupting the user's reading
+
+RISK 06 — Zustand Store Size Growing Over Time
+Probability: Medium | Impact: Medium (maintenance)
+Description: As features are added, Zustand stores accumulate state
+             properties. Bloated stores become hard to reason about.
+Mitigation:
+  - Each module has its own store file (no single global store)
+  - State review in ADR when adding > 3 properties to any store
+  - Server-fetched data goes in React Query, not stores (this constraint
+    prevents the most common cause of store bloat)
+  - Quarterly code review: evaluate whether any store property can be
+    replaced with React Query or local state
+
+RISK 07 — PDF Export Library Bundle Size
+Probability: Medium | Impact: Medium
+Description: PDF generation libraries (jsPDF, pdfmake) are typically
+             100–200KB gzipped. Loading on button click creates a delay.
+Mitigation:
+  - Dynamic import: library loads only when user clicks "Download PDF"
+  - Loading state: button shows "Loading..." during library download (~1s)
+  - This 1-second delay is acceptable for an on-demand action
+  - Alternative if unacceptable: server-side PDF generation endpoint
+    (trades bundle size for API latency — acceptable tradeoff in v2)
+
+RISK 08 — Authentication State Flash on Hard Refresh
+Probability: High | Impact: Low (cosmetic)
+Description: On hard refresh, AuthProvider reads the session cookie and
+             hydrates authStore. During this async operation, the page
+             briefly renders the unauthenticated state before the auth
+             check completes, causing a layout flash.
+Mitigation:
+  - AppShell layout.tsx renders a full-height skeleton (not the actual
+    sidebar navigation) until sessionStatus !== 'loading'
+  - AuthGuard shows a full-page spinner while sessionStatus = 'loading'
+  - This prevents flash of wrong navigation state
+  - Target: AuthProvider hydration completes within 100ms (reads cookie;
+    no network request needed for initial auth state check)
+
+RISK 09 — Content Security Policy (CSP) Blocking Inline Styles
+Probability: Medium | Impact: Medium
+Description: Strict CSP policies block inline styles. CSS-in-JS libraries
+             (if ever used) inject inline styles and require 'unsafe-inline'.
+Mitigation:
+  - Current architecture uses CSS Modules only — no inline styles
+  - CSS custom properties (design tokens) are defined in .css files, not JS
+  - Next.js with CSS Modules is fully CSP-compatible
+  - Rule: never add CSS-in-JS libraries (styled-components, Emotion) as
+    they would require relaxing CSP
+
+RISK 10 — Testing Coverage Gaps in Complex Async Flows
+Probability: High | Impact: Medium
+Description: The scan upload → poll → result flow involves async state
+             transitions that are easy to under-test, leading to regressions
+             in the core product loop.
+Mitigation:
+  - useScanProcessing hook has dedicated unit tests covering every state
+    transition (idle → uploading → processing step 0/1/2 → complete → error)
+  - E2E test covers the full guest upload → result flow (highest priority test)
+  - Mock Service Worker (msw) used for API mocking in component tests
+    (not jest.mock — avoids brittle implementation mocks)
+
+================================================================================
+SECTION 20 — FINAL RECOMMENDATIONS
+================================================================================
+
+REC 01 — BUILD ORDER: TOKENS → SHELL → S10 → EVERYTHING ELSE
+──────────────────────────────────────────────────────────────
+Following Batch 01 and Batch 02 recommendations, the implementation order is:
+
+  Phase 1 (Week 1–2): Foundation
+    1. Design token CSS files (all of src/styles/tokens/)
+    2. AppShell, TopBar, Sidebar, BottomTabBar (no data, hardcoded nav)
+    3. Shared UI primitives: Button, Card, Badge, Modal, Toast, Skeleton
+
+  Phase 2 (Week 3–4): Core Product Loop
+    4. detection module: FileDropzone, MicrophoneRecorder, AudioPreviewPlayer
+    5. VerdictCard, ConfidenceBar, ScoreBreakdown — all three verdict states
+    6. GradCAMPanel with blur-up loading
+    7. LimitationsCard (always present; never conditional)
+    8. S10 Scan Result page assembled from components
+    9. S09 Scan Processing page
+    10. S08 New Scan page
+
+  Phase 3 (Week 5–6): Auth + History
+    11. Auth module: SignUpForm, LoginForm, OTPInput, AuthGuard
+    12. History module: ScanTable, ScanRow, FilterBar, BulkActionBar
+    13. S11 History, S12 Scan Detail
+
+  Phase 4 (Week 7–8): Shell Features + Settings
+    14. Dashboard: StatsRow, RecentScans, ActivityChart (lazy)
+    15. Settings module: all three settings pages
+    16. Notifications module
+    17. S20 Shared Result (reuses detection components)
+
+  Phase 5 (Week 9–10): Support Features + Polish
+    18. Onboarding wizard
+    19. Help Center (static MDX content)
+    20. Feedback form
+    21. S21 / S22 error pages
+    22. Accessibility pass (screen reader testing, focus management)
+    23. Performance pass (bundle analysis, Core Web Vitals)
+
+REC 02 — IMPLEMENT DESIGN TOKENS BEFORE WRITING ANY COMPONENT STYLES
+───────────────────────────────────────────────────────────────────────
+The single most important implementation decision in this document.
+Every shortcut taken here (hardcoding a color "just this once") will
+compound. Dark mode retrofitting costs 3–5× what implementing tokens first
+costs. The payoff is not just theme switching — it is brand-wide consistency
+that is never broken by a single component making an independent color choice.
+
+REC 03 — DO NOT USE CONTEXT API FOR MUTABLE GLOBAL STATE
+──────────────────────────────────────────────────────────
+React Context triggers re-renders for every consumer when the context
+value changes. For high-frequency state updates (upload progress, scan
+processing steps), this causes significant performance problems. Zustand
+with granular selectors solves this cleanly. This architecture uses:
+  - Zustand for all mutable global/feature state
+  - Context ONLY for dependency injection (QueryClient, theme value)
+    where the value changes rarely or never
+
+REC 04 — ENFORCE MODULE BOUNDARIES WITH ESLint IMPORT RULES
+──────────────────────────────────────────────────────────────
+The module architecture defined in this document only holds if engineers
+can't accidentally violate it. Configure eslint-plugin-import with:
+  import/no-cycle: error
+  boundaries/element-types: module cannot import from another module
+  This makes violations a CI failure, not a code review discussion.
+
+REC 05 — THE LIMITATIONS CARD IS NON-NEGOTIABLE IN THE COMPONENT TREE
+────────────────────────────────────────────────────────────────────────
+Following Batch 02 Principle 2: LimitationsCard is always rendered on
+S10, S12, and S20. Never conditional. Never behind a feature flag.
+It must be treated as a first-class component in the component tree,
+not a "nice to have" detail section.
+
+REC 06 — MINIMUM PROCESSING DISPLAY TIME IS AN ARCHITECTURAL CONSTANT
+────────────────────────────────────────────────────────────────────────
+The 1500ms minimum display time on S09 Processing is a user trust
+mechanism, not a bug. It is implemented in useScanProcessing as:
+
+  const elapsed = Date.now() - processingStartedAt
+  const remaining = Math.max(0, MIN_DISPLAY_MS - elapsed)
+  setTimeout(() => navigateToResult(), remaining)
+
+This constant (MIN_DISPLAY_MS = 1500) must NOT be removed in
+performance optimization passes. It is intentional behavior.
+
+REC 07 — SHA-256 IS COMPUTED CLIENT-SIDE, NOT SERVER-SIDE
+───────────────────────────────────────────────────────────
+The SHA-256 hash in LimitationsCard must be the hash of the ORIGINAL
+file — the file before upload. If it is computed server-side after
+receive, any transmission modification would not be detected.
+
+useFileHash hook uses the Web Crypto API (SubtleCrypto.digest) to compute
+SHA-256 in the browser immediately after file selection.
+This computation is async and runs in the background while the user
+reviews the file preview, completing before the Analyze button is pressed.
+
+REC 08 — MOBILE IS NOT A SIMPLIFIED DESKTOP
+─────────────────────────────────────────────
+Following Batch 02 Principle (Section 8): the mobile layout is explicitly
+designed. Key mobile-specific implementations required:
+  - BottomTabBar replaces Sidebar entirely (not a collapsed sidebar)
+  - GradCAM panels stack vertically (not side-by-side)
+  - History table becomes a card list (not a compact table)
+  - User menu becomes a full-screen bottom drawer (not a popover)
+  - FileDropzone shows full-width "Browse" button (no dashed zone — mobile
+    doesn't support drag-and-drop in practice)
+
+REC 09 — REACT QUERY IS THE ONLY SERVER CACHE
+───────────────────────────────────────────────
+Do not build a secondary caching layer. Do not store fetched data in
+Zustand for caching purposes. React Query is the server cache.
+Zustand is the UI state store. When in doubt: if the data comes from
+an API, it belongs in React Query. If it's a UI decision (sidebar open,
+filter state, current theme), it belongs in Zustand.
+
+REC 10 — ACCESSIBILITY TESTING BEFORE LAUNCH, NOT AFTER
+─────────────────────────────────────────────────────────
+The accessibility architecture defined in Section 14 must be validated
+before launch with actual screen readers, not just automated tools.
+Automated tools (axe-core, Lighthouse accessibility audit) catch ~40%
+of accessibility issues. The remaining 60% — focus management behavior,
+live region announcements, keyboard navigation flows — require manual
+testing with NVDA on Windows and VoiceOver on macOS.
+
+Schedule one dedicated accessibility testing session per phase:
+  Phase 2 (after S10 is built): test the result announcement flow
+  Phase 3 (after auth): test form error navigation
+  Phase 4 (after history): test table keyboard navigation
+  Final (pre-launch): full regression across all 22 screens
+
+================================================================================
+DOCUMENT STATISTICS
+================================================================================
+
+  Sections:                   20
+  Screens covered:            22 (all screens from Batch 01 sitemap)
+  Modules defined:             9 (auth, detection, history, notifications,
+                                  help, feedback, settings, dashboard, onboarding)
+  Components specified:       60+ (Tier 1 + Tier 2 + Tier 3)
+  State stores defined:        5 (auth, detection, history, notifications, settings)
+  Data flows documented:       6 (upload, recording, account creation, history
+                                  search, bulk delete, theme switching)
+  Audit issues identified:    10 (all resolved or documented)
+  Risks identified:           10 (all with mitigations)
+  Recommendations:            10
+
+HANDOFF CHECKLIST
+─────────────────
+  □ Design token CSS files created (src/styles/tokens/) before first component
+  □ Path aliases configured in tsconfig.json (@/modules, @/shared, etc.)
+  □ ESLint rules configured (import/no-cycle, boundaries/element-types)
+  □ React Query client configured with correct stale times
+  □ Zustand stores created for: auth, detection, history, notifications, settings
+  □ AuthGuard and GuestGuard implemented and applied to routes
+  □ ThemeProvider reads from cookie (FOUT prevention)
+  □ Error boundary at AppShell level + per-module level
+  □ OfflineBanner implemented (navigator.onLine monitoring)
+  □ All components built in all states (not just happy path)
+  □ Accessibility: focus management on modals + route navigation
+  □ Accessibility: aria-live regions on VerdictCard + ProcessingSteps
+  □ Performance: ActivityChart and PDFExport are dynamic imports
+  □ S10 LimitationsCard is always rendered — never conditional
+
+This document is the complete frontend engineering blueprint for VoiceGuard v1.0.
+It supersedes any informal architecture decisions made before this document existed.
+All engineers implementing VoiceGuard features must reference:
+  VOICEGUARD_PRODUCT_ARCHITECTURE.md  (what and why)
+  BATCH_02_UX_UI_DESIGN_SYSTEM.txt    (how it looks and behaves)
+  BATCH_03_FRONTEND_ARCHITECTURE.txt  (how it is engineered)
+
+================================================================================
+END OF BATCH 03: FRONTEND ARCHITECTURE
+================================================================================

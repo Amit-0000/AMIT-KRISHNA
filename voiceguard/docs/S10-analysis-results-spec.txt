@@ -1,0 +1,758 @@
+================================================================================
+VOICEGUARD — S10 ANALYSIS RESULTS SCREEN
+Complete UI/UX Design Specification
+================================================================================
+Screen ID   : S10
+Route       : /scan/:scanId
+Auth        : Required (AuthGuard + OnboardingGuard + AppShell)
+Max Width   : max-w-4xl (narrower than Dashboard 7xl, wider than Processing sm)
+Spec Date   : 2026-07-27
+================================================================================
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+SECTION 1 — ARCHITECTURE SUMMARY
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Data model (from src/types/index.ts):
+  ScanResult {
+    scan_id             string
+    status              'pending' | 'processing' | 'completed' | 'failed'
+    verdict             'human' | 'ai_generated' | 'uncertain' | null
+    confidence          number (0–100)
+    human_score         number (0–100)
+    ai_score            number (0–100)
+    inference_time_ms   number
+    model_version       string
+    segment_count       number
+    frequency_heatmap   string | null   (URL to image, optional)
+    file_name           string
+    file_duration_seconds number
+    created_at          string (ISO)
+    share_token         string | null
+    user_verdict        'human' | 'ai_generated' | 'uncertain' | null
+  }
+
+API surface (from src/services/api.ts):
+  scanApi.status(scanId)              → { data: ScanResult }
+  scanApi.delete(scanId)              → void
+  scanApi.submitFeedback(scanId, v)   → void  (v: 'human'|'ai_generated'|'uncertain')
+  scanApi.share(scanId)               → { share_url: string }
+
+Three-state verdict thresholds:
+  human        → human_score ≥ 85
+  ai_generated → ai_score   ≥ 85
+  uncertain    → everything else (scores between 15–84)
+
+Design tokens (from tailwind.config.ts):
+  Background  : #080810  (bg-bg-base)
+  Surface     : #0E0E1A  (bg-bg-surface)
+  Brand       : #7B6CEA  (text-brand, bg-brand)
+  Human       : #32D583  (text-human, bg-human)
+  AI          : #FF4F4F  (text-ai, bg-ai)
+  Uncertain   : #F5A623  (text-uncertain, bg-uncertain)
+  Text primary: #F0F0FF
+  Text sec    : rgba(240,240,255,0.6)
+  Text tert   : rgba(240,240,255,0.35)
+  Border      : rgba(255,255,255,0.08)
+  Glows       : shadow-glow-human, shadow-glow-ai, shadow-glow-brand
+  Keyframe    : animate-confidence-fill (already in Tailwind config)
+
+Reused components:
+  AudioPlayer, WaveformVisualizer  ← src/pages/NewScan/components/
+  Button, Badge, Skeleton          ← src/components/ui/
+  PageContainer                    ← src/components/layout/
+  Toaster (sonner)                 ← global in App.tsx
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+SECTION 2 — SCREEN STATES
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+STATE A — LOADING SKELETON
+  Triggered  : scanId present, API call in-flight (first load)
+  Layout     : Same card structure as success, filled with Skeleton components
+  Duration   : Until first API response resolves
+  Skeleton areas:
+    - VerdictHeroCard: 64×64 circle + two text bars (50%, 30%)
+    - Gauge: 200×200 circle skeleton
+    - ScoreBreakdownCard: 3 bar rows, each label + bar + percent
+    - AudioInfoCard: 4 rows of metadata pairs
+    - EvidenceCard: 1 heading + 3 text lines
+    - SegmentTimeline: full-width bar skeleton
+    - TechnicalDetailsCard: 4 text rows
+
+STATE B — NOT FOUND (404)
+  Triggered  : API returns 404 or scanId belongs to different user
+  Layout     : Centered empty state, no AppShell chrome changes
+  Content    :
+    - Icon: Search (Lucide), 48×48, text-text-tertiary
+    - Heading: "Result not found"
+    - Body: "This scan doesn't exist or you don't have access to it."
+    - CTA: Button → /history ("View your scans")
+  No retry — 404 is permanent.
+
+STATE C — STILL PROCESSING
+  Triggered  : status === 'pending' || status === 'processing'
+  Layout     : Centered card, no full-page content
+  Content    :
+    - Animated waveform pulse (reuse ProcessingAnimation)
+    - Heading: "Analysis in progress"
+    - Body: "Check back in a moment — results will appear here automatically."
+    - Auto-refresh: poll every 3 seconds (separate from useScanPolling), navigate
+      to same route (replace: true) when completed — triggers re-render
+    - CTA: Link → /scan/processing?id={scanId} ("View processing status")
+  Accessibility: role="status" aria-live="polite" on the auto-refresh container
+
+STATE D — ANALYSIS FAILED
+  Triggered  : status === 'failed'
+  Layout     : Same as STATE B but with failure-specific copy
+  Content    :
+    - Icon: AlertOctagon, text-ai
+    - Heading: "Analysis failed"
+    - Body: "Something went wrong during processing. Try uploading again."
+    - CTAs: "Try again" → /scan/new  |  "View history" → /history
+
+STATE E — SUCCESS (main design)
+  Triggered  : status === 'completed' && verdict !== null
+  Full layout with all sections described in Section 3.
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+SECTION 3 — SUCCESS LAYOUT (STATE E)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Page layout (top to bottom, PageContainer maxWidth="4xl"):
+  [VerdictHeroCard]
+  [ScoreBreakdownCard]           ← sits inline below hero on mobile, same row on md+
+  [AudioInfoCard + AudioPlayer]
+  [EvidenceCard]
+  [SegmentTimeline]
+  [SpectralHeatmap]              ← conditional on frequency_heatmap !== null
+  [TechnicalDetailsCard]
+  [FeedbackCard]
+  [ActionBar]                    ← sticky on desktop, inline at bottom on mobile
+
+Desktop (md+): two-column grid in the hero row:
+  Left column (flex-1): VerdictHeroCard
+  Right column (w-64): confidence gauge SVG
+
+Mobile: stacked vertically, gauge below verdict pill
+
+────────────────────────────────────────────────────────────────────────────────
+3.1 VerdictHeroCard
+────────────────────────────────────────────────────────────────────────────────
+Container : card-base rounded-2xl p-6, no border override
+Layout    : flex items-center gap-5 (horizontal), flex-col gap-4 on mobile
+
+Verdict icon badge (left):
+  Size     : 64×64 rounded-2xl
+  Verdict colors:
+    human        → bg-human-muted border border-human-border, icon: ShieldCheck text-human
+    ai_generated → bg-ai-muted border border-ai-border, icon: ShieldX text-ai
+    uncertain    → bg-uncertain-muted border border-uncertain-border, icon: ShieldAlert text-uncertain
+  Icon size: w-8 h-8, aria-hidden="true"
+  Animation: motion.div initial={scale:0.5,opacity:0} animate={scale:1,opacity:1}
+             transition={type:'spring',stiffness:400,damping:20,delay:0.1}
+
+Text block (flex-1):
+  Eyebrow : "Analysis Result" — text-xs font-semibold text-text-tertiary uppercase tracking-widest mb-1
+  Heading : Verdict label — text-display-sm font-bold
+    "Human Voice"           → text-human
+    "AI Generated"          → text-ai
+    "Uncertain"             → text-uncertain
+  Subtext : Confidence statement — text-sm text-text-secondary mt-1
+    human        → "Model is {confidence}% confident this is a human voice."
+    ai_generated → "Model is {confidence}% confident this is AI-generated audio."
+    uncertain    → "Confidence too low to make a definitive determination."
+  File name : text-xs text-text-tertiary mt-2 truncate max-w-xs, title attr for tooltip
+
+Verdict glow effect:
+  Outer wrapper: motion.div with box-shadow on animate
+    human        → shadow-glow-human (already in Tailwind)
+    ai_generated → shadow-glow-ai
+    uncertain    → no glow (orange is visually softer)
+  Transition   : duration 0.8s ease-out on mount
+
+────────────────────────────────────────────────────────────────────────────────
+3.2 Confidence Gauge (SVG)
+────────────────────────────────────────────────────────────────────────────────
+Placement  : Right column of hero row (md+); below VerdictHeroCard on mobile
+Size       : 200×200 viewBox, 180×180 rendered (mx-auto)
+
+SVG structure:
+  Background track arc:
+    SVG arc, 270° sweep (starts at 135°, ends at 405° / sweeps clockwise)
+    stroke: rgba(255,255,255,0.06), strokeWidth: 12, fill: none
+    r = 72, cx = 100, cy = 100
+    stroke-linecap: round
+
+  Fill arc (animated):
+    Same path, same r
+    stroke: verdict color (human=#32D583, ai=#FF4F4F, uncertain=#F5A623)
+    strokeDasharray: computed from circumference × 0.75 (270/360)
+    strokeDashoffset: animated from full-offset to (1 - confidence/100) × totalDash
+    Animation: CSS transition on stroke-dashoffset, 1.2s ease-out, delay 0.3s
+    OR: use Framer Motion animate on a custom var
+
+  Threshold markers (two tick marks on the arc):
+    At 65% fill position  → tick at arc position for 65% of 270° sweep
+    At 85% fill position  → tick at arc position for 85% of 270° sweep
+    Each tick: short line segment (length 6px) perpendicular to arc, stroke rgba(255,255,255,0.2)
+    Tooltip on hover: "Below 65%: unreliable" / "Above 85%: high confidence"
+
+  Center text:
+    Large number: "{confidence}" — text-3xl font-bold, verdict-colored, dy=-6
+    Label: "confidence" — text-xs, text-text-tertiary, dy=16
+    Animation: motion.span countUp from 0 to confidence over 1s, starts at 0.4s delay
+
+  Screen reader:
+    <title> element inside SVG: "Confidence gauge: {confidence}%"
+    role="img" aria-labelledby="gauge-title" on the <svg>
+
+────────────────────────────────────────────────────────────────────────────────
+3.3 ScoreBreakdownCard
+────────────────────────────────────────────────────────────────────────────────
+Container : card-base rounded-xl p-5
+Heading   : "Score Breakdown" — text-sm font-semibold text-text-secondary mb-4
+
+Three rows:
+  Row 1: Human Score
+    Label      : "Human" — text-sm text-text-secondary
+    Bar track  : h-2 bg-white/6 rounded-full, overflow-hidden, flex-1 mx-3
+    Bar fill   : motion.div h-full bg-human rounded-full
+                 initial={width:'0%'} animate={width:'{human_score}%'}
+                 transition={duration:1, ease:[0.25,0,0,1], delay:0.5}
+    Percentage : text-xs font-mono tabular-nums text-text-tertiary w-8 text-right
+    85% marker : small vertical tick at 85% position within bar track
+                 (div positioned absolute at left:85%, h-full, w-px, bg-white/20)
+
+  Row 2: AI Score (same structure, bg-ai fill, delay:0.6)
+
+  Row 3: Overall Confidence (same, bg-brand fill, delay:0.7)
+
+Accessibility:
+  Each row is a <dl> / <dt><dd> pair with aria-label
+  "Human score: {human_score} percent"
+
+────────────────────────────────────────────────────────────────────────────────
+3.4 AudioInfoCard + AudioPlayer
+────────────────────────────────────────────────────────────────────────────────
+Container : card-base rounded-xl p-5 space-y-4
+
+Top section — file metadata grid (2 columns):
+  File name     : label "File" / value: truncated filename
+  Duration      : label "Duration" / value: "1m 23s" formatted
+  Scanned at    : label "Analyzed" / value: relative time ("2 minutes ago")
+  Format        : label "Format" / value: extension Badge (same style as NewScan FileCard)
+
+Divider: h-px bg-white/5
+
+Bottom section — AudioPlayer:
+  Reuse the full AudioPlayer component from src/pages/NewScan/components/AudioPlayer.tsx
+  Pass: objectUrl (fetched fresh for this page — see Section 5 note)
+  IMPORTANT NOTE: The audio file may be deleted within 60 seconds of inference.
+    - If objectUrl fetch fails (404/410), hide the AudioPlayer section entirely.
+    - Show fallback: "Audio preview unavailable — file was securely deleted after analysis."
+    - This is expected behavior per privacy policy, not an error.
+
+────────────────────────────────────────────────────────────────────────────────
+3.5 EvidenceCard
+────────────────────────────────────────────────────────────────────────────────
+Purpose   : Plain-language explainability. No jargon. Helps users understand WHY.
+Container : card-base rounded-xl p-5
+Heading   : "What did the model detect?" — text-sm font-semibold text-text-secondary mb-3
+
+Content is verdict-specific:
+
+  HUMAN verdict:
+    Lead: "The audio contains natural human voice characteristics."
+    Details (bullet list, text-sm text-text-secondary, gap-2):
+      • "Natural pitch variation and micro-tremors consistent with biological speech production."
+      • "Breath patterns and pause timing match human conversational cadence."
+      • "No spectral artifacts associated with neural vocoders or GAN-based synthesis."
+    Footer note (text-xs text-text-tertiary italic):
+      "The LCNN model analyzed {segment_count} overlapping 3-second segments."
+
+  AI GENERATED verdict:
+    Lead: "Synthetic audio signatures were detected across multiple segments."
+    Details:
+      • "Unnatural spectral smoothness inconsistent with human vocal tract resonance."
+      • "Pitch stability deviations typical of neural text-to-speech or voice conversion."
+      • "Phase inconsistencies across frequency bands suggest digital synthesis."
+    Footer note: same as human, same format
+
+  UNCERTAIN verdict:
+    Lead: "The model could not make a high-confidence determination."
+    Details:
+      • "Scores fell within the 15–84% range where either classification has low reliability."
+      • "This may occur with heavily compressed audio, background noise, or very short clips."
+      • "Consider re-uploading with a longer, higher-quality recording for a clearer result."
+    Guidance box (mt-3, bg-uncertain-muted border border-uncertain-border rounded-lg p-3):
+      Icon: Info w-4 h-4 text-uncertain (inline, aria-hidden)
+      Text: "An uncertain result does not mean the audio is safe or unsafe.
+             It means our model needs more signal. Use your own judgment."
+      text-xs text-uncertain/80
+
+────────────────────────────────────────────────────────────────────────────────
+3.6 SegmentTimeline
+────────────────────────────────────────────────────────────────────────────────
+Purpose   : Visual representation of per-segment analysis across the audio timeline
+Container : card-base rounded-xl p-5
+Heading   : "Segment Analysis ({segment_count} segments)" — text-sm font-semibold
+
+Timeline bar:
+  Full width, h-8, rounded-lg, overflow-hidden
+  Divided into {segment_count} equal segments, rendered as flex row
+  Each segment:
+    Width: 100% / segment_count
+    Height: 100%
+    Color: We do NOT have per-segment verdicts in the current API.
+           Use overall verdict color for all segments (approximation).
+           Future: when API exposes per-segment scores, each segment gets its own color.
+    Opacity: alternating 1.0 / 0.75 to show segment boundaries
+    Border-right: 1px solid rgba(0,0,0,0.2) (visual separator)
+
+Animation:
+  Segments reveal left-to-right with staggered Framer Motion:
+    Each segment: initial={scaleX:0} animate={scaleX:1}
+    transform-origin: left
+    delay: idx * (0.8 / segment_count), duration: 0.4, ease: [0.25,0,0,1]
+
+Labels below timeline (flex justify-between):
+  Left  : "0:00" — text-xs text-text-tertiary font-mono
+  Right : formatted duration — text-xs text-text-tertiary font-mono
+
+Tooltip on segment hover:
+  "Segment {n+1} of {segment_count}"
+  (No score data available yet — just position)
+  Implemented with Tooltip from shadcn/ui or simple CSS title attr
+
+Accessibility:
+  role="img" aria-label="Segment timeline: {segment_count} segments analyzed, overall verdict: {verdict}"
+
+Future note (comment in code):
+  // When API exposes per_segment_scores array, map each score to a gradient
+  // from human-color to ai-color and render per-segment colors here.
+
+────────────────────────────────────────────────────────────────────────────────
+3.7 SpectralHeatmap (conditional)
+────────────────────────────────────────────────────────────────────────────────
+Rendered only when: frequency_heatmap !== null
+
+Container : card-base rounded-xl p-5
+Heading   : "Frequency Analysis Map" — text-sm font-semibold mb-1
+Subheading: "Spectral energy distribution across time and frequency bands."
+            text-xs text-text-tertiary mb-3
+
+Image:
+  <img src={frequency_heatmap} alt="Frequency heatmap showing spectral energy distribution" />
+  w-full rounded-lg object-contain max-h-48
+  Loading state: Skeleton w-full h-48 rounded-lg while image loads (onLoad)
+  Error state: "Heatmap unavailable" text-xs text-text-tertiary italic
+
+Legend (below image, flex gap-4):
+  Three color stops with labels:
+  ■ Low energy (dark blue/purple)  ■ Medium (yellow/green)  ■ High energy (red)
+  text-xs text-text-tertiary
+
+────────────────────────────────────────────────────────────────────────────────
+3.8 TechnicalDetailsCard
+────────────────────────────────────────────────────────────────────────────────
+Container : card-base rounded-xl p-5, collapsible (collapsed by default on mobile)
+Heading   : "Technical Details" + ChevronDown toggle icon (collapsed) / ChevronUp (expanded)
+            Always expanded on md+ screens
+
+Content (4-row definition list, dl / dt / dd pairs):
+  Model version  : {model_version}       (e.g. "LCNN-v2.1")
+  Inference time : {inference_time_ms}ms
+  Dataset        : "ASVspoof 2019 LA"
+  EER            : "7.07% (LA eval)"
+
+Formatting:
+  dt: text-xs text-text-tertiary, uppercase tracking-wider, w-36 flex-shrink-0
+  dd: text-sm font-mono text-text-secondary
+  Row: flex items-center py-2 border-b border-white/5 last:border-0
+
+────────────────────────────────────────────────────────────────────────────────
+3.9 FeedbackCard
+────────────────────────────────────────────────────────────────────────────────
+Purpose   : Submit user verdict (disagree / confirm model verdict)
+Container : card-base rounded-xl p-5
+Position  : After TechnicalDetails, BEFORE ActionBar
+
+Heading: "Was this result accurate?"
+         text-sm font-semibold text-text-secondary
+
+Subtext: "Your feedback helps improve the model."
+         text-xs text-text-tertiary mt-1 mb-4
+
+Feedback pills (role="radiogroup" aria-label="Your verdict"):
+  Three pills in a flex row (flex-wrap on mobile):
+    ✓ Human Voice   → aria-label="Mark as human voice"
+    ✗ AI Generated  → aria-label="Mark as AI generated"
+    ? Uncertain     → aria-label="Mark as uncertain"
+
+  Each pill (role="radio"):
+    Unselected: border border-white/8 bg-white/[0.02] text-text-secondary
+                hover: border-white/20 bg-white/[0.05]
+    Selected (current user_verdict or newly chosen):
+      human        → border-human bg-human-muted text-human
+      ai_generated → border-ai bg-ai-muted text-ai
+      uncertain    → border-uncertain bg-uncertain-muted text-uncertain
+    Keyboard: Space/Enter to select; Arrow keys cycle
+    Size: px-4 py-2 rounded-lg text-sm font-medium
+
+  If user_verdict is already set on load: pre-select that pill, show "Thank you" state
+
+States after submit:
+  Submitting  : pills disabled, spinner inside selected pill
+  Success     : pills replaced with:
+                "Thank you for your feedback." — text-sm text-text-tertiary
+                + checkmark icon (Check, text-human)
+  Error       : Toast via sonner: "Failed to submit feedback. Please try again."
+                Pills remain interactive.
+
+  Note: allow re-submission (user may change their mind). If user clicks a different
+  pill after already submitting, call submitFeedback again.
+
+────────────────────────────────────────────────────────────────────────────────
+3.10 ActionBar
+────────────────────────────────────────────────────────────────────────────────
+Layout  :
+  Desktop (md+): sticky bottom-0 z-10, full-width, backdrop-blur-md
+                  bg-bg-surface/80 border-t border-white/8
+                  inner: max-w-4xl mx-auto px-6 py-3 flex items-center justify-between
+  Mobile        : inline card at bottom (not sticky), card-base rounded-xl p-4
+                  flex-col gap-3
+
+Primary actions (left group on desktop):
+  [Download Report]  → Button variant="primary" size="sm", FileDown icon
+                       Behavior: generate/download PDF report
+                       Click → loading state → trigger browser download
+                       PDF content: verdict, scores, file info, evidence text, timestamp
+
+  [Share]            → Button variant="secondary" size="sm", Share2 icon
+                       Click → opens ShareDialog (see Section 4.1)
+
+  [New Scan]         → Button variant="secondary" size="sm", Plus icon, Link to="/scan/new"
+
+Secondary actions (right group on desktop / below on mobile):
+  [View History]     → Button variant="ghost" size="sm", History icon, Link to="/history"
+
+  [⋮ More]           → DropdownMenu trigger (MoreHorizontal icon, ghost button)
+                       Items:
+                         Delete scan   → opens DeleteDialog (see Section 4.2)
+                         (future: Export CSV, Report abuse)
+
+────────────────────────────────────────────────────────────────────────────────
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+SECTION 4 — DIALOGS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+4.1 ShareDialog
+────────────────────────────────────────────────────────────────────────────────
+Trigger    : "Share" ActionBar button
+Component  : shadcn/ui Dialog
+
+Open sequence:
+  1. If share_token exists on ScanResult: compute URL directly from token
+     (https://voiceguard.app/r/{share_token})
+  2. If share_token is null: call scanApi.share(scanId) → { share_url: string }
+     Show loading spinner inside Dialog until resolved
+  3. Cache share_url in local state (avoid repeated API calls on re-open)
+
+Dialog content:
+  Title    : "Share Result"
+  Body     :
+    Icon   : Link2, mx-auto, text-brand, w-10 h-10, mb-4
+    Text   : "Anyone with this link can view the result (no login required)."
+             text-sm text-text-secondary text-center mb-4
+    URL field:
+      Flex row: input (readOnly, bg-white/4, border-white/8, rounded-lg px-3 py-2 text-sm text-text-secondary flex-1)
+      + Copy button (Button size="sm", Copy/Check icon)
+      Copy behavior: navigator.clipboard.writeText(shareUrl) → icon → Check for 2s → Copy
+      Accessible: button aria-label="Copy share link"
+  Footer   :
+    Close button (Button variant="ghost" fullWidth)
+
+Error:
+  If scanApi.share() fails: inline error inside Dialog
+  "Could not generate share link. Please try again."
+  + Retry button
+
+4.2 DeleteDialog
+────────────────────────────────────────────────────────────────────────────────
+Trigger    : "Delete scan" item in ActionBar's DropdownMenu
+Component  : shadcn/ui AlertDialog (not Dialog — semantic difference)
+
+Content:
+  Title    : "Delete this scan?"
+  Body     : "This action cannot be undone. The scan result and all associated
+              data will be permanently deleted."
+             text-sm text-text-secondary
+  Footer   :
+    Cancel button : Button variant="secondary" → closes dialog
+    Delete button : Button variant="destructive" ("Delete")
+                    text-white bg-ai hover:bg-ai/80 focus-visible:ring-ai
+
+Delete sequence:
+  1. Click Delete → button shows loading spinner, both buttons disabled
+  2. Call scanApi.delete(scanId)
+  3. On success: toast.success("Scan deleted.") → navigate('/history', {replace:true})
+  4. On error  : toast.error("Failed to delete scan. Please try again.")
+                 Dialog remains open, buttons re-enabled
+
+Accessibility:
+  AlertDialog role="alertdialog" aria-labelledby aria-describedby (shadcn handles this)
+  Focus trapped inside dialog
+  Escape key closes (shadcn default)
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+SECTION 5 — HOOK DESIGN
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+useScanResult(scanId: string)
+────────────────────────────────────────────────────────────────────────────────
+Returns: { state: ScanResultState }
+Where ScanResultState = {
+  status: 'loading' | 'not_found' | 'processing' | 'failed' | 'success'
+  result: ScanResult | null
+  error:  string | null
+}
+
+Behavior:
+  - On mount: call scanApi.status(scanId)
+  - 404 response → status: 'not_found'
+  - 401/403 response → status: 'not_found' (same treatment, don't leak existence)
+  - result.status === 'pending' | 'processing' → status: 'processing', start re-poll loop
+  - result.status === 'failed' → status: 'failed'
+  - result.status === 'completed' → status: 'success', result: data
+  - Network error → status: 'failed', error: 'Network error. Please refresh.'
+
+Re-poll loop (only when status: 'processing'):
+  - Poll every 3 seconds using closure-based cancelled flag (same pattern as useScanPolling)
+  - When completed or failed: stop polling, update state accordingly
+  - Cleanup: clear timeout on unmount
+
+NOTE on AudioPlayer in results:
+  The ScanResult does NOT include an audio URL — audio is deleted within 60s of inference.
+  Therefore, the AudioPlayer in the results screen will almost always show "unavailable."
+  The AudioInfoCard should NOT attempt to fetch or display audio.
+  The audio metadata (file_name, file_duration_seconds) is still shown.
+  Remove the AudioPlayer section from the final implementation or show it as unavailable state only.
+  Do NOT add API calls to retrieve audio — audio is not stored.
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+SECTION 6 — COMPONENT HIERARCHY
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+src/pages/ScanResult/
+  index.tsx                     ← ScanResultPage (route component)
+  hooks/
+    useScanResult.ts            ← fetch + poll + state
+    useShareLink.ts             ← share URL generation + clipboard
+    useDeleteScan.ts            ← delete flow + navigation
+    useFeedback.ts              ← submitFeedback + local state
+  components/
+    VerdictHeroCard.tsx         ← icon + heading + glow
+    ConfidenceGauge.tsx         ← SVG arc gauge with animation
+    ScoreBreakdownCard.tsx      ← three animated bars
+    AudioInfoCard.tsx           ← metadata grid (no player — audio deleted)
+    EvidenceCard.tsx            ← verdict-specific explainability text
+    SegmentTimeline.tsx         ← staggered segment bar
+    SpectralHeatmap.tsx         ← conditional image with skeleton
+    TechnicalDetailsCard.tsx    ← collapsible details
+    FeedbackCard.tsx            ← verdict radio group
+    ActionBar.tsx               ← download / share / new scan / history / more
+    ShareDialog.tsx             ← copy-link dialog
+    DeleteDialog.tsx            ← confirmation alert dialog
+    ResultSkeleton.tsx          ← full-page loading skeleton
+    ResultNotFound.tsx          ← 404 empty state
+    ResultProcessing.tsx        ← still-processing state
+    ResultFailed.tsx            ← failed state
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+SECTION 7 — ANIMATIONS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Page enter:
+  Outer wrapper: motion.div initial={opacity:0,y:14} animate={opacity:1,y:0}
+  transition={duration:0.4, ease:[0.25,0,0,1]}
+
+Card stagger:
+  Each card: motion.div initial={opacity:0,y:10} animate={opacity:1,y:0}
+  delay: 0.05 * cardIndex
+  duration: 0.35, ease:[0.25,0,0,1]
+
+Verdict icon:
+  Spring: stiffness:400, damping:20, delay:0.1
+
+Confidence gauge fill:
+  CSS stroke-dashoffset transition or Framer Motion on mount
+  duration: 1.2s, delay: 0.3s, easing: cubic-bezier(0.25,0,0,1)
+
+Score bars:
+  Framer Motion width: '0%' → '{score}%'
+  duration: 1.0s, delay: 0.5/0.6/0.7s, ease: [0.25,0,0,1]
+
+Segment timeline segments:
+  staggerChildren: (0.8 / segment_count)
+  Each: scaleX 0→1, transform-origin left, duration 0.4s
+
+Counter animation (gauge center number):
+  useEffect with requestAnimationFrame counting from 0 to confidence
+  Duration: 1s, starts after 0.4s delay
+  Easing: easeOut
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+SECTION 8 — ACCESSIBILITY CHECKLIST
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+[✓] Page <title>: "{verdict label} — VoiceGuard" (via react-helmet or document.title)
+[✓] Heading hierarchy: h1 = verdict (in VerdictHeroCard), h2 = each card heading
+[✓] SVG gauge: role="img" aria-labelledby="gauge-title", <title id="gauge-title">
+[✓] Score bars: each row has aria-label "X score: N percent"
+[✓] FeedbackCard: role="radiogroup" aria-label="Your verdict", pills are role="radio"
+[✓] FeedbackCard keyboard: Arrow keys cycle options, Space/Enter selects
+[✓] ActionBar: all buttons have visible labels (not icon-only except More)
+    MoreHorizontal button: aria-label="More actions"
+[✓] ShareDialog: focus moves to URL input on open; Copy button aria-label updates to "Copied!" after copy
+[✓] DeleteDialog: focus moves to Cancel (safer default) on open
+[✓] Segment timeline: role="img" aria-label with verdict summary
+[✓] SpectralHeatmap image: descriptive alt text
+[✓] No aria-live on polled values — state-loading is communicated via screen state, not live regions
+[✓] role="status" on the still-processing auto-refresh container (STATE C only)
+[✓] All interactive elements: focus-visible:ring-2 focus-visible:ring-brand rounded
+[✓] Color is never the sole differentiator: icons + labels accompany verdict colors
+[✓] Uncertain verdict: explicit guidance text (not just color) in EvidenceCard
+[✓] Keyboard navigation: Tab order follows visual reading order top→bottom
+[✓] Escape closes all dialogs (shadcn default)
+[✓] Reduced motion: Framer Motion respects prefers-reduced-motion via useReducedMotion
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+SECTION 9 — RESPONSIVE DESIGN
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Mobile (< 768px / below md breakpoint):
+  - VerdictHeroCard: flex-col gap-4, icon centered above text
+  - ConfidenceGauge: below VerdictHeroCard, max-w-[180px] mx-auto
+  - ScoreBreakdownCard: full width
+  - ActionBar: NOT sticky, inline card at bottom of page
+  - TechnicalDetailsCard: collapsed by default (ChevronDown toggles open)
+  - FeedbackCard pills: flex-wrap allows 2-per-row on narrow screens
+  - All cards: full width, stack vertically, space-y-4
+
+Tablet / Desktop (≥ 768px / md+):
+  - Hero row: CSS Grid, 2 columns [1fr, 220px] or flex gap-6
+    Left: VerdictHeroCard + ScoreBreakdownCard stacked
+    Right: ConfidenceGauge (sticky top-6 within this column)
+  - ActionBar: sticky bottom-0 full-width with backdrop blur
+  - TechnicalDetailsCard: always expanded
+  - Cards: max-w-4xl centered
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+SECTION 10 — UX REVIEW FINDINGS + RESOLUTIONS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+FINDING 1 — Audio file privacy vs AudioPlayer expectation
+  Issue   : Users arriving from S09 may expect to hear their audio on the result
+             screen. But audio is deleted within 60 seconds of inference.
+  Risk    : Showing a broken AudioPlayer is confusing and damages trust.
+  Resolution: Remove AudioPlayer from results screen entirely.
+              Show file metadata only (name, duration, format).
+              Add privacy badge: "Audio securely deleted after analysis."
+              This is a feature (privacy-first), communicate it positively.
+
+FINDING 2 — aria-live noise on automated states
+  Issue   : STATE C (still processing) uses auto-poll every 3s. Adding aria-live
+             to a countdown or "refreshing..." indicator would be extremely noisy.
+  Resolution: Use role="status" aria-live="polite" ONLY on the state change message
+              ("Analysis complete, loading results…"). Do NOT add aria-live to
+              polling-related UI elements. The navigate() call is the accessibility
+              "announcement" via route change.
+
+FINDING 3 — Uncertain verdict needs action guidance, not just explanation
+  Issue   : "Uncertain" is ambiguous. Users don't know what to do next.
+  Resolution: EvidenceCard for uncertain verdict includes a "What to do" guidance
+              box with: upload longer clip, improve audio quality, use your own judgment.
+              FeedbackCard remains enabled (they can still submit their opinion).
+              ActionBar always shows "New Scan" as first visible CTA.
+
+FINDING 4 — Score bars need 85% threshold visual marker
+  Issue   : Users don't know what score represents "high confidence." The 85%
+             threshold is invisible without a marker.
+  Resolution: Add a thin vertical tick at 85% position inside each score bar track.
+              On hover: Tooltip "Above 85%: high confidence threshold"
+              Also reflected in ConfidenceGauge threshold tick marks.
+
+FINDING 5 — Feedback card placement
+  Issue   : Placing feedback AFTER the action bar (below delete/share) means most
+             users will never see it. Feedback before actions risks anchoring bias
+             (user rates before reading evidence).
+  Resolution: Feedback placed AFTER evidence and technical details, but BEFORE
+              the action bar. User reads the full explanation, then rates, then acts.
+              This order: Verdict → Evidence → Technical → Feedback → Actions.
+
+FINDING 6 — Download Report is high-effort with unclear output
+  Issue   : "Download Report" as a primary action implies a PDF or structured file.
+             Implementing PDF generation in-browser (jsPDF, html2canvas) is heavy.
+  Resolution: For MVP: "Download Report" generates a plain-text .txt file with
+              verdict, scores, evidence text, metadata, and timestamp.
+              Use Blob + URL.createObjectURL + anchor click — no external library needed.
+              Label: "Download Report (.txt)" to set correct expectations.
+              Future: upgrade to PDF.
+
+FINDING 7 — Share link vs share_token lifecycle
+  Issue   : share_token may be null initially. Calling share() on every result
+             page load wastes an API call and creates tokens unnecessarily.
+  Resolution: Only call scanApi.share(scanId) when user explicitly clicks "Share."
+              Cache in component state. If user closes and reopens ShareDialog in
+              same session, use cached URL. Never pre-fetch.
+
+FINDING 8 — Segment timeline is misleading without per-segment scores
+  Issue   : A timeline colored entirely in one verdict color implies we have
+             per-segment data when we don't. Users may interpret color gradations
+             that don't exist.
+  Resolution: Use a stippled/gradient fill instead of solid color for the timeline bar.
+              Label it: "Overall confidence projected across {n} segments"
+              Add a note: "Per-segment breakdown coming soon."
+              This communicates what we DO have (segment count) without implying more.
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+SECTION 11 — APPROVED FINAL DESIGN DECISIONS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+1.  Route            : /scan/:scanId (path param — canonical, bookmarkable, shareable)
+2.  Max width        : max-w-4xl
+3.  AudioPlayer      : REMOVED from results. Show audio metadata only.
+                       Add "Audio securely deleted after analysis" notice.
+4.  Gauge            : SVG arc, 270° sweep, threshold ticks at 65% and 85%,
+                       verdict-colored fill, center counter animation.
+5.  Score bars       : Human / AI / Confidence, animated fills, 85% tick marker.
+6.  Segment timeline : Gradient (not solid) fill, "projected confidence" label,
+                       staggered reveal animation.
+7.  Evidence         : Three verdict-specific variants. Uncertain includes guidance box.
+8.  Feedback order   : Evidence → Technical → Feedback → ActionBar
+9.  Feedback submit  : Allow re-submission. Success state replaces pills with thank-you.
+10. Share            : Lazy — only call API on user click. Cache in component state.
+11. Delete           : AlertDialog → loading → navigate to /history on success.
+12. Download         : Plain-text .txt via Blob + anchor click. No external libraries.
+13. ActionBar        : Sticky on desktop (backdrop-blur), inline on mobile.
+14. Reduced motion   : All Framer Motion animations gated with useReducedMotion.
+15. Audio privacy    : Never attempt to fetch or display audio in results.
+                       Communicate deletion as a positive privacy feature.
+
+
+================================================================================
+END OF SPECIFICATION — S10 ANALYSIS RESULTS
+================================================================================
