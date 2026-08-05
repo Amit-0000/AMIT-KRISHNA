@@ -10,7 +10,7 @@ _transform = MelSpectrogramTransform(augment=False)
 
 def load_model(checkpoint_path: str | Path, device: torch.device) -> LCNN:
     model = LCNN()
-    model.load_state_dict(torch.load(checkpoint_path, map_location=device))
+    model.load_state_dict(torch.load(checkpoint_path, map_location=device, weights_only=True))
     model.to(device).eval()
     return model
 

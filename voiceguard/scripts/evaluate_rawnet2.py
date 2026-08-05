@@ -35,7 +35,7 @@ def main():
                          shuffle=False, num_workers=0)
 
     model = RawNet2()
-    model.load_state_dict(torch.load("checkpoints/rawnet2/best.pt", map_location=device))
+    model.load_state_dict(torch.load("checkpoints/rawnet2/best.pt", map_location=device, weights_only=True))
     model = model.to(device)
     model.eval()
 

@@ -16,7 +16,7 @@ from src.evaluation.eer import compute_eer, compute_eer_per_attack
 def get_scores(model, df, transform, checkpoint, device, desc):
     dataset = ASVspoofDataset(df, transform=transform)
     loader  = DataLoader(dataset, batch_size=32, shuffle=False, num_workers=0)
-    model.load_state_dict(torch.load(checkpoint, map_location=device))
+    model.load_state_dict(torch.load(checkpoint, map_location=device, weights_only=True))
     model = model.to(device)
     scores, labels = collect_scores(model, loader, device, use_mel=transform is not None)
     return scores, labels

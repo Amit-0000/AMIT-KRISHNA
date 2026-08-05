@@ -59,7 +59,7 @@ def main():
     model = RawNet2()
     checkpoint_path = Path(cfg["paths"]["checkpoint_dir"]) / "best.pt"
     if checkpoint_path.exists():
-        model.load_state_dict(torch.load(checkpoint_path, map_location=device))
+        model.load_state_dict(torch.load(checkpoint_path, map_location=device, weights_only=True))
         print(f"Resumed from checkpoint: {checkpoint_path}")
     else:
         print("No checkpoint found — training from scratch")

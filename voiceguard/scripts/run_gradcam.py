@@ -10,7 +10,7 @@ device = torch.device("mps" if torch.backends.mps.is_available() else "cpu")
 
 # Load model
 model = LCNN()
-model.load_state_dict(torch.load("checkpoints/best.pt", map_location=device))
+model.load_state_dict(torch.load("checkpoints/best.pt", map_location=device, weights_only=True))
 gradcam = GradCAM(model, device)
 transform = MelSpectrogramTransform(augment=False)
 

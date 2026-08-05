@@ -38,7 +38,10 @@ def load_training_checkpoint(
     at, the best dev EER seen so far, and the early-stopping counter. Never
     touches `best.pt` — that file stays a plain state_dict for the inference
     adapter (api.inference.adapters.lcnn_adapter), unrelated to resume."""
-    state = torch.load(path, map_location=device, weights_only=False)
+    # weights_only=True verified against an actual last.pt checkpoint
+    # (epoch/model/optimizer/scheduler state) before this change shipped —
+    # see security_review.md F-01.
+    state = torch.load(path, map_location=device, weights_only=True)
     model.load_state_dict(state["model_state_dict"])
     if optimizer is not None and state.get("optimizer_state_dict") is not None:
         optimizer.load_state_dict(state["optimizer_state_dict"])
