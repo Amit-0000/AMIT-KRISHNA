@@ -7,10 +7,10 @@
     "expected_status": "401",
     "finding": false,
     "severity": "info",
-    "response_time_ms": 10.2,
+    "response_time_ms": 6.3,
     "test_category": "token_tampering",
     "note": "correctly rejected (401)",
-    "timestamp": "2026-08-04T09:27:52.828015+00:00"
+    "timestamp": "2026-08-05T19:20:58.599363+00:00"
   },
   {
     "endpoint": "/api/v1/feedback",
@@ -20,10 +20,10 @@
     "expected_status": "401",
     "finding": false,
     "severity": "info",
-    "response_time_ms": 4.1,
+    "response_time_ms": 6.4,
     "test_category": "token_tampering",
     "note": "correctly rejected (401)",
-    "timestamp": "2026-08-04T09:27:52.832196+00:00"
+    "timestamp": "2026-08-05T19:20:58.605751+00:00"
   },
   {
     "endpoint": "/api/v1/auth/me",
@@ -33,10 +33,10 @@
     "expected_status": "401",
     "finding": false,
     "severity": "info",
-    "response_time_ms": 7.5,
+    "response_time_ms": 0.0,
     "test_category": "token_tampering",
     "note": "correctly rejected (401)",
-    "timestamp": "2026-08-04T09:27:52.839823+00:00"
+    "timestamp": "2026-08-05T19:20:58.605751+00:00"
   },
   {
     "endpoint": "/api/v1/feedback",
@@ -46,10 +46,10 @@
     "expected_status": "401",
     "finding": false,
     "severity": "info",
-    "response_time_ms": 16.3,
+    "response_time_ms": 18.0,
     "test_category": "token_tampering",
     "note": "correctly rejected (401)",
-    "timestamp": "2026-08-04T09:27:52.856179+00:00"
+    "timestamp": "2026-08-05T19:20:58.623748+00:00"
   },
   {
     "endpoint": "/api/v1/auth/me",
@@ -59,10 +59,10 @@
     "expected_status": "401",
     "finding": false,
     "severity": "info",
-    "response_time_ms": 17.1,
+    "response_time_ms": 5.5,
     "test_category": "token_tampering",
     "note": "correctly rejected (401)",
-    "timestamp": "2026-08-04T09:27:52.873360+00:00"
+    "timestamp": "2026-08-05T19:20:58.629219+00:00"
   },
   {
     "endpoint": "/api/v1/feedback",
@@ -72,10 +72,10 @@
     "expected_status": "401",
     "finding": false,
     "severity": "info",
-    "response_time_ms": 28.0,
+    "response_time_ms": 26.7,
     "test_category": "token_tampering",
     "note": "correctly rejected (401)",
-    "timestamp": "2026-08-04T09:27:52.901500+00:00"
+    "timestamp": "2026-08-05T19:20:58.655895+00:00"
   },
   {
     "endpoint": "/api/v1/auth/me",
@@ -85,10 +85,10 @@
     "expected_status": "401",
     "finding": false,
     "severity": "info",
-    "response_time_ms": 4.4,
+    "response_time_ms": 5.0,
     "test_category": "token_tampering",
     "note": "correctly rejected (401)",
-    "timestamp": "2026-08-04T09:27:52.905962+00:00"
+    "timestamp": "2026-08-05T19:20:58.660916+00:00"
   },
   {
     "endpoint": "/api/v1/feedback",
@@ -98,10 +98,10 @@
     "expected_status": "401",
     "finding": false,
     "severity": "info",
-    "response_time_ms": 4.1,
+    "response_time_ms": 31.7,
     "test_category": "token_tampering",
     "note": "correctly rejected (401)",
-    "timestamp": "2026-08-04T09:27:52.910142+00:00"
+    "timestamp": "2026-08-05T19:20:58.692630+00:00"
   },
   {
     "endpoint": "/api/v1/auth/me",
@@ -111,10 +111,10 @@
     "expected_status": "401",
     "finding": false,
     "severity": "info",
-    "response_time_ms": 3.7,
+    "response_time_ms": 15.7,
     "test_category": "token_tampering",
     "note": "correctly rejected (401)",
-    "timestamp": "2026-08-04T09:27:52.913885+00:00"
+    "timestamp": "2026-08-05T19:20:58.708290+00:00"
   },
   {
     "endpoint": "/api/v1/feedback",
@@ -124,9 +124,9 @@
     "expected_status": "401",
     "finding": false,
     "severity": "info",
-    "response_time_ms": 22.4,
+    "response_time_ms": 19.3,
     "test_category": "token_tampering",
     "note": "correctly rejected (401)",
-    "timestamp": "2026-08-04T09:27:52.936419+00:00"
+    "timestamp": "2026-08-05T19:20:58.727595+00:00"
   }
 ]

@@ -21,5 +21,6 @@
     "No self-serve admin signup path exists; admin test account was promoted via a direct SQL UPDATE against the local docker postgres for RBAC testing only.",
     "No code path in the app ever creates a Notification row, so IDOR could not be tested against a real owned notification (see 03_idor.py note) -- re-test if that feature is wired up later.",
     "One finding: POST /predict (top-level legacy endpoint, no /api/v1 prefix) has zero auth and zero rate limiting -- confirmed 30/30 burst succeeded."
-  ]
+  ],
+  "last_failed_step": "setup_env.py"
 }
