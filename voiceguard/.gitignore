@@ -1,5 +1,7 @@
 # Data — never commit raw audio (gigabytes)
 /data/
+/evaluation/dataset/
+/evaluation/dataset_fornorm/
 
 # Model checkpoints — large binary files, mount at runtime
 checkpoints/
@@ -7,6 +9,7 @@ checkpoints/
 # Experiment tracking logs (generated artifacts)
 runs/
 wandb/
+training/*.log
 
 # Secrets
 .env
@@ -19,6 +22,7 @@ __pycache__/
 venv/
 dist/
 build/
+.pytest_cache/
 
 # Jupyter
 .ipynb_checkpoints/
@@ -28,3 +32,9 @@ build/
 
 # Claude Code internal tooling
 .claude/
+
+# Node — dependency tree, never commit; lockfiles/manifests stay tracked
+node_modules/
+
+# Database journals / scratch artifacts
+*.db-journal
