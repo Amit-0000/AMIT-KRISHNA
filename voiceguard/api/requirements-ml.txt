@@ -1,0 +1,19 @@
+# ML runtime deps actually imported by the serving path, and only that path —
+# api/inference/{model_loader,preprocessing,feature_extraction,inference}.py,
+# api/inference/adapters/audio_cnn_adapter.py, and the vendored
+# src/models/audio_cnn.py + src/data/{dataset,transforms}.py it reuses.
+#
+# A strict subset of the root requirements.txt, same package names/pins —
+# deliberately NOT the whole file as-is: gradio, scipy, scikit-learn,
+# matplotlib, huggingface_hub are training/notebook/demo-only and are never
+# imported anywhere in api/inference/* for the currently-active AudioCNN
+# model (AudioCNNAdapter.supports_explainability is False, so even the
+# LCNN/Grad-CAM matplotlib path never runs in this deployment).
+--extra-index-url https://download.pytorch.org/whl/cpu
+torch==2.9.1
+torchaudio==2.9.1
+soundfile
+numpy
+pydub
+librosa
+pandas

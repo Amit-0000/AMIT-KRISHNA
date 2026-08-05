@@ -24,14 +24,37 @@ class GradCAM:
 
         # Hook into the last ConvBlock (index 9 in self.features)
         target_layer = model.features[9]
-        target_layer.register_forward_hook(self._save_activation)
-        target_layer.register_full_backward_hook(self._save_gradient)
+        # Handles kept so close()/__exit__ can remove these — matters for any
+        # caller that instantiates GradCAM repeatedly against a shared,
+        # long-lived model (e.g. once per request in a service) rather than
+        # once per process lifetime (the original scripts/run_gradcam.py,
+        # app.py, demo/app.py usage): without removing them, every new
+        # instance adds another forward+backward hook that never goes away.
+        self._handles = [
+            target_layer.register_forward_hook(self._save_activation),
+            target_layer.register_full_backward_hook(self._save_gradient),
+        ]
 
     def _save_activation(self, module, input, output):
         self._activations["feat"] = output.detach()
 
     def _save_gradient(self, module, grad_input, grad_output):
         self._gradients["feat"] = grad_output[0].detach()
+
+    def close(self) -> None:
+        """Removes the hooks registered in __init__. Optional — existing
+        single-instance-per-process callers don't need it — but required for
+        any caller that creates a new GradCAM per call against a cached
+        model."""
+        for handle in self._handles:
+            handle.remove()
+        self._handles = []
+
+    def __enter__(self) -> "GradCAM":
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb) -> None:
+        self.close()
 
     def compute(self, mel: torch.Tensor, target_class: int = 1) -> np.ndarray:
         """
