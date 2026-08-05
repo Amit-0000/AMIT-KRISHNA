@@ -1,403 +1,376 @@
----
-title: VoiceGuard
-emoji: 🛡️
-colorFrom: gray
-colorTo: gray
-sdk: gradio
-sdk_version: "5.29.0"
-pinned: false
----
-
-<h1 align="center">🎙️ Audio Deepfake Detector</h1>
+<h1 align="center">🛡️ VoiceGuard</h1>
 
 <p align="center">
-  <em>Detect AI-generated speech with a Light CNN trained on ASVspoof 2019 LA — <strong>7.07% EER</strong>, beating the LFCC-GMM baseline of 8.09%.</em>
+  <em>A full-stack platform for detecting AI-generated speech — FastAPI + PostgreSQL + Redis backend,
+  a React/TypeScript frontend, and a dual-model (LCNN + AudioCNN) inference pipeline trained on
+  ASVspoof 2019.</em>
 </p>
 
 <p align="center">
-  <a href="https://www.python.org/"><img src="https://img.shields.io/badge/Python-3.14-3776AB?logo=python&logoColor=white" alt="Python"></a>
-  <a href="https://pytorch.org/"><img src="https://img.shields.io/badge/PyTorch-2.11-EE4C2C?logo=pytorch&logoColor=white" alt="PyTorch"></a>
-  <a href="https://fastapi.tiangolo.com/"><img src="https://img.shields.io/badge/FastAPI-0.111-009688?logo=fastapi&logoColor=white" alt="FastAPI"></a>
-  <a href="https://gradio.app/"><img src="https://img.shields.io/badge/Gradio-5.x-F97316?logo=gradio&logoColor=white" alt="Gradio"></a>
-  <a href="https://www.docker.com/"><img src="https://img.shields.io/badge/Docker-ready-2496ED?logo=docker&logoColor=white" alt="Docker"></a>
+  <img src="https://img.shields.io/badge/Python-3.12-3776AB?logo=python&logoColor=white" alt="Python">
+  <img src="https://img.shields.io/badge/PyTorch-2.x-EE4C2C?logo=pytorch&logoColor=white" alt="PyTorch">
+  <img src="https://img.shields.io/badge/FastAPI-0.115-009688?logo=fastapi&logoColor=white" alt="FastAPI">
+  <img src="https://img.shields.io/badge/React-19-61DAFB?logo=react&logoColor=white" alt="React">
+  <img src="https://img.shields.io/badge/TypeScript-5.7-3178C6?logo=typescript&logoColor=white" alt="TypeScript">
+  <img src="https://img.shields.io/badge/PostgreSQL-16-4169E1?logo=postgresql&logoColor=white" alt="PostgreSQL">
+  <img src="https://img.shields.io/badge/Docker-ready-2496ED?logo=docker&logoColor=white" alt="Docker">
   <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-yellow.svg" alt="License: MIT"></a>
-  <a href="https://huggingface.co/spaces/imsoumya18/audio_deepfake_detector"><img src="https://img.shields.io/badge/🤗%20Spaces-Live%20Demo-blue" alt="Live Demo"></a>
-</p>
-
-<p align="center">
-  <strong>🚀 Live Demo:</strong> <a href="https://huggingface.co/spaces/imsoumya18/audio_deepfake_detector">Hugging Face Spaces</a> &nbsp;|&nbsp;
-  <strong>📚 Docs:</strong> <a href="docs/"><code>docs/</code></a>
 </p>
 
 ---
 
-## 🧠 Overview
+## Overview
 
-This project trains and evaluates two neural architectures for **countermeasure (CM)** systems against text-to-speech and voice-conversion spoofing attacks, as defined by the ASVspoof 2019 Logical Access (LA) challenge. The system answers one question: **is this audio clip real human speech or AI-generated?**
+VoiceGuard answers one question about an uploaded audio clip: **is this real human speech, or is
+it AI-generated?** It's built as two things at once:
 
-Two complementary approaches are explored:
+1. **A product** — a FastAPI backend with account auth, scan upload/management, background AI
+   processing, notifications, feedback, sharing, and a usage dashboard, served by a React/TypeScript
+   frontend.
+2. **A research artifact** — two independently trained detection models (a Light CNN operating on
+   log-mel spectrograms, and a second CNN architecture as an alternative), evaluated against the
+   ASVspoof 2019 Logical Access benchmark and served through a shared inference pipeline that
+   supports hot-swapping the active model.
 
-- **LCNN** — a Light CNN operating on log mel-spectrograms that detects spectral artifacts left by vocoders
-- **RawNet2** — an end-to-end model with learnable sinc filters that operates directly on raw waveforms
-
-The final deployed model is LCNN with **7.07% EER** on the held-out evaluation set, outperforming the published LFCC-GMM baseline of 8.09%.
-
----
-
-## 📊 Results
-
-### Overall EER Comparison
-
-| Model | Dev EER | Eval EER | vs. Baseline |
-|---|---|---|---|
-| LFCC-GMM Baseline | — | 8.0900% | — |
-| **LCNN (ours)** | **0.0000%** | **7.0724%** | **-1.02 pp ✅** |
-| RawNet2 (ours) | 2.4700% | 12.7814% | +4.69 pp |
-| Ensemble (average) | — | 10.2392% | +2.15 pp |
-| Ensemble (learned LR) | — | 9.9167% | +1.83 pp |
-
-Lower EER is better. Baseline from the ASVspoof 2019 paper (Todisco et al., 2019).
-
-### Per-Attack EER — LCNN on Eval Set
-
-| Attack | EER (%) | Difficulty | Notes |
-|---|---|---|---|
-| A07 | 0.0000 | 🟢 Easy | Vocoder artifacts at high freq — perfect detection |
-| A08 | 0.8158 | 🟢 Easy | Traditional waveform concatenation |
-| A09 | 0.1224 | 🟢 Easy | Waveform filtering — slight low-freq artifacts |
-| A10 | 0.5846 | 🟢 Easy | NN-based TTS |
-| A11 | 0.3663 | 🟢 Easy | Transformer TTS |
-| A12 | 0.7750 | 🟢 Easy | WaveNet vocoder |
-| A13 | 0.7937 | 🟢 Easy | Waveform synthesis |
-| A14 | 0.5088 | 🟢 Easy | Statistical parametric synthesis |
-| A15 | 1.5228 | 🟡 Moderate | Hybrid neural/statistical |
-| A16 | 0.0000 | 🟢 Easy | Waveform concatenation |
-| **A17** | **36.8457** | 🔴 **Hard** | Neural codec — model fails completely |
-| A18 | 9.7477 | 🔴 Hard | Neural codec variant |
-| A19 | 0.0611 | 🟢 Easy | Traditional synthesis |
-
-A17 (36.8% EER) represents a near-complete failure — the model is barely better than random for this neural codec attack type.
+The final deployed LCNN model reaches **7.07% EER** on the held-out evaluation set (published
+LFCC-GMM baseline: 8.09%).
 
 ---
 
-## 🏗️ Architecture Overview
+## Features
 
-```
-Audio File (.wav / .flac)
-          │
-    load_waveform()          src/data/dataset.py
-          │
-   16 kHz mono · 64,000 samples
-          │
-    ┌─────┴──────┐
-    │             │
-MelSpectrogram  Raw Waveform
-[transforms.py]  (RawNet2 path)
-    │             │
-1×128×313      1×64000
-    │             │
-  LCNN          RawNet2
-699,938 params  4,908,026 params
-    │             │
- Logits 1×2   Logits 1×2
-    │    └─────────┘
-    │          │
-    │       Ensemble          src/models/ensemble.py
-    │
- Softmax → Label + Confidence
-```
-
-### LCNN Layer Shapes
-
-```
-Input [B, 1, 128, 251]
-    |
-ConvBlock(1->32, 5x5, pad=2)     [B, 32, 128, 251]   Conv2d + BN + MFM
-MaxPool2d(2,2)                   [B, 32,  64, 125]
-ConvBlock(32->32, 1x1)           [B, 32,  64, 125]   channel mixing
-ConvBlock(32->32, 3x3, pad=1)    [B, 32,  64, 125]   spatial features
-MaxPool2d(2,2)                   [B, 32,  32,  62]
-ConvBlock(32->32, 1x1)           [B, 32,  32,  62]
-ConvBlock(32->32, 3x3, pad=1)    [B, 32,  32,  62]
-MaxPool2d(2,2)                   [B, 32,  16,  31]
-ConvBlock(32->64, 1x1)           [B, 64,  16,  31]   expand channels
-ConvBlock(64->32, 3x3, pad=1)    [B, 32,  16,  31]   compress back
-MaxPool2d(2,2)                   [B, 32,   8,  15]
-Flatten                          [B, 3840]
-Linear(3840->160) + Dropout(0.75)
-Linear(160->2)                   [B, 2]
-```
-
-### RawNet2 Layer Shapes
-
-```
-Input [B, 1, 64000]
-    |
-SincConv(70 filters, kernel=1024, stride=16)    [B, 70, ~4000]
-BatchNorm1d(70) + LeakyReLU(0.01)
-ResBlock(70->70,   stride=1)                    [B,  70, ~4000]
-ResBlock(70->70,   stride=1)                    [B,  70, ~4000]
-ResBlock(70->128,  stride=3)                    [B, 128, ~1333]
-ResBlock(128->128, stride=1)                    [B, 128, ~1333]
-ResBlock(128->256, stride=3)                    [B, 256,  ~444]
-ResBlock(256->256, stride=1)                    [B, 256,  ~444]
-Permute [B, time, 256]
-GRU(256->1024)                                  h_n [B, 1024]
-Linear(1024->2)                                 [B, 2]
-```
+- **Account platform** — email/password auth with verification, session cookies (JWT,
+  algorithm-confusion-guarded), password reset, per-route rate limiting.
+- **Scan management** — upload an audio clip, track its lifecycle (validating → preprocessing →
+  ready → AI analysis → completed/failed) with a full audit trail per scan.
+- **Dual-model AI pipeline** — pluggable adapter pattern; the active model (LCNN or a second
+  architecture) is chosen at the database level, not hardcoded, so a new architecture can be
+  registered and activated without a code change.
+- **Explainability** — Grad-CAM attention maps over the mel-spectrogram for architectures that
+  support it; a clear "unavailable for this model" response for those that don't, rather than a
+  silent wrong answer.
+- **Result sharing** — generate a public, token-based read-only link to a scan result.
+- **Notifications, feedback, and a usage dashboard** — the rest of the product surface around the
+  core detection feature.
+- **Security-hardened by default** — every write route is authenticated and rate-limited, bcrypt
+  hashing is offloaded off the event loop, uploads are validated by content sniffing (not just
+  file extension), and the platform has been through an internal security review and an automated
+  DAST regression pass (see [Security Testing](#security-testing)).
 
 ---
 
-## ⚡ Quick Start
+## Screenshots
 
-### 1. Install
-
-```bash
-git clone https://github.com/imsoumya18/audio_deepfake_detector
-cd audio_deepfake_detector
-python3.14 -m venv .venv && source .venv/bin/activate
-pip install -e .
-```
-
-### 2. Download Data
-
-Download ASVspoof 2019 LA from Kaggle:
-```
-https://www.kaggle.com/datasets/awsaf49/asvpoof-2019-dataset
-```
-
-Unzip into `data/` so the layout matches:
-```
-data/
-├── ASVspoof2019_LA_cm_protocols/
-│   ├── ASVspoof2019.LA.cm.train.trn.txt
-│   ├── ASVspoof2019.LA.cm.dev.trl.txt
-│   └── ASVspoof2019.LA.cm.eval.trl.txt
-├── ASVspoof2019_LA_train/flac/
-├── ASVspoof2019_LA_dev/flac/
-└── ASVspoof2019_LA_eval/flac/
-```
-
-### 3. Verify Environment and Data
-
-```bash
-python scripts/check_env.py
-python scripts/check_dataset.py
-```
-
-### 4. Train
-
-```bash
-# Train LCNN (~28 epochs to convergence on Apple Silicon MPS)
-python scripts/train.py
-
-# Train RawNet2 (100+ epochs recommended)
-python scripts/train_rawnet2.py
-```
-
-Monitor training in real time:
-```bash
-tensorboard --logdir runs/
-```
-
-### 5. Evaluate
-
-```bash
-# LCNN on eval set
-python scripts/evaluate.py
-
-# RawNet2 on eval set
-python scripts/evaluate_rawnet2.py
-
-# Ensemble comparison table
-python scripts/evaluate_ensemble.py
-```
-
-### 6. Grad-CAM Visualization
-
-```bash
-python scripts/run_gradcam.py
-# Output images saved to notebooks/
-```
-
-### 7. Run the REST API
-
-```bash
-uvicorn api.main:app --reload
-# Swagger UI: http://localhost:8000/docs
-```
-
-Test with curl:
-```bash
-curl -X POST http://localhost:8000/predict \
-  -F "audio_file=@path/to/clip.flac"
-# Returns: {"label": "spoof", "confidence": 0.9872, "scores": {"bonafide": 0.0128, "spoof": 0.9872}}
-```
-
-### 8. Run the Gradio Demo
-
-```bash
-python demo/app.py
-# Opens at http://localhost:7860
-```
+> Screenshots aren't checked into this repository yet. Once the frontend is running locally
+> (see [Running Locally](#running-locally)), the key screens to capture are: Login/Signup, the
+> New Scan upload flow, Scan Processing (live status), Scan Result (verdict + explanation), and
+> the Dashboard. Contributions adding real screenshots here are welcome.
 
 ---
 
-## 🔍 Grad-CAM Findings
+## Architecture
 
-Grad-CAM hooks into the last convolutional block (`model.features[9]`) of the trained LCNN to reveal which time-frequency regions drove each prediction.
+```mermaid
+flowchart TB
+    subgraph Client
+        FE["React + TypeScript Frontend<br/>(Vite, Zustand, React Router)"]
+    end
 
-### Summary of Findings
+    subgraph Backend["FastAPI Backend (api/)"]
+        AUTH["auth / user"]
+        SCANS["scans"]
+        INFER["inference<br/>(AI processing pipeline)"]
+        NOTIF["notifications"]
+        FEED["feedback"]
+        SHARE["sharing"]
+        DASH["dashboard"]
+    end
 
-| Input type | Activation region | Interpretation |
-|---|---|---|
-| Bonafide speech | Very low frequencies (0–1 kHz), low magnitude | Model checks *absence* of high-freq artifacts |
-| A07 spoof (0% EER) | High frequencies (4–8 kHz), strong | Vocoder aliasing artifacts — clearly detectable |
-| A17 spoof (36.8% EER) | Mid-low frequencies, diffuse, weak | Model has no learned signal for neural codecs |
-| A18 spoof (9.7% EER) | Similar to A17, slightly more signal | Partially detectable but not reliably |
+    subgraph AI["Inference Pipeline (api/inference)"]
+        PRE["preprocessing<br/>(decode, normalize, trim silence)"]
+        FEAT["feature extraction<br/>(log-mel spectrogram)"]
+        REG["model registry<br/>(active model selection)"]
+        ADPT["adapters<br/>(LCNN · AudioCNN)"]
+        CONF["confidence / verdict"]
+        EXPL["explainability<br/>(Grad-CAM, where supported)"]
+    end
 
-> **Key insight:** LCNN learned a vocoder-specific detector, not a general speech-authenticity detector. It checks for the characteristic high-frequency spectral artifacts that 2017–2019 era neural vocoders leave behind. Neural codec attacks do not produce these artifacts, so the model is effectively blind to them.
+    DATA[("PostgreSQL")]
+    CACHE[("Redis<br/>rate limiting, sessions")]
+    STORE[("Local / object storage<br/>uploaded audio")]
 
----
-
-## ⚠️ Failure Analysis: A17 and A18
-
-### Why These Attacks Break the Model
-
-| Property | Vocoder attacks (A07–A16) | Neural codec attacks (A17–A18) |
-|---|---|---|
-| Generation method | Statistical/neural vocoders | End-to-end neural audio codecs |
-| Spectral artifacts | High-frequency aliasing, unnatural harmonics | Distributed across full spectrum |
-| Phase coherence | Often incoherent at high freq | Highly coherent |
-| Perceptual quality | Moderate to high | Very high (near-indistinguishable) |
-| LCNN Eval EER | 0.0% to 1.5% | 9.7% to 36.8% |
-
-### Root Cause
-
-The training set (A01–A06) contains only vocoder-based attacks generated with 2015–2018 TTS systems. The model learned features specific to those generation pipelines. Neural codec attacks (A17–A18) were deliberately withheld from training and placed in the evaluation set to test generalization to unseen attack families — and the model fails this test.
-
-The ensemble did not help: both LCNN and RawNet2 fail on A17/A18, so fusing their scores produces correlated errors, not cancellations.
-
-### Path Forward
-
-1. Include neural codec attack samples in training (ASVspoof 2021/2024 data)
-2. Use phase-aware features — neural codecs have distinctive phase patterns
-3. Apply temporal coherence analysis — neural codecs have unnatural temporal smoothness
-4. Train AASIST (graph attention on spectro-temporal features) — state-of-the-art as of 2022
-
----
-
-## 📁 Project Structure
-
-```
-audio_deepfake_detector/
-├── data/                        # Dataset (gitignored — download separately)
-├── src/
-│   ├── data/
-│   │   ├── protocol.py          # Parse ASVspoof protocol files into DataFrames
-│   │   ├── dataset.py           # ASVspoofDataset + load_waveform()
-│   │   └── transforms.py        # MelSpectrogramTransform + SpecAugment
-│   ├── models/
-│   │   ├── lcnn.py              # LCNN with MFM activation (699,938 params)
-│   │   ├── rawnet2.py           # RawNet2 with SincConv (4,908,026 params)
-│   │   └── ensemble.py          # Score fusion: average + logistic regression
-│   ├── training/
-│   │   ├── trainer.py           # Training loop + TensorBoard + early stopping
-│   │   └── losses.py            # Weighted CrossEntropyLoss computation
-│   ├── evaluation/
-│   │   └── eer.py               # EER + per-attack EER via sklearn + scipy
-│   ├── explainability/
-│   │   └── gradcam.py           # Grad-CAM with PyTorch forward/backward hooks
-│   └── inference/
-│       └── predict.py           # Single-file inference pipeline
-├── api/
-│   ├── main.py                  # FastAPI app with lifespan model loading
-│   └── schemas.py               # Pydantic response models
-├── demo/
-│   └── app.py                   # Gradio interface with Grad-CAM overlay
-├── scripts/
-│   ├── train.py                 # LCNN training entry point
-│   ├── train_rawnet2.py         # RawNet2 training entry point
-│   ├── evaluate.py              # LCNN evaluation
-│   ├── evaluate_rawnet2.py      # RawNet2 evaluation
-│   ├── evaluate_ensemble.py     # All models + ensemble comparison table
-│   ├── run_gradcam.py           # Grad-CAM visualization script
-│   ├── check_env.py             # Verify PyTorch/MPS/torchaudio setup
-│   └── check_dataset.py         # Verify dataset download and integrity
-├── configs/
-│   ├── lcnn.yaml                # LCNN hyperparameters
-│   └── rawnet2.yaml             # RawNet2 hyperparameters
-├── checkpoints/                 # Saved model weights (gitignored)
-├── runs/                        # TensorBoard event logs
-├── notebooks/                   # Grad-CAM output images
-├── tests/                       # Unit tests
-├── docs/                        # Detailed documentation
-├── pyproject.toml
-└── .gitignore
+    FE -->|"HTTP + cookies"| Backend
+    SCANS --> STORE
+    SCANS --> DATA
+    INFER --> PRE --> FEAT --> REG --> ADPT --> CONF --> EXPL
+    INFER --> DATA
+    AUTH --> DATA
+    AUTH --> CACHE
+    SCANS --> CACHE
+    NOTIF --> DATA
+    FEED --> DATA
+    SHARE --> DATA
+    DASH --> DATA
 ```
 
+**Request flow for a scan:** upload → `scans` validates and stores the file → a background job
+runs preprocessing → once `READY_FOR_AI`, `POST /scans/{id}/process` hands off to the `inference`
+pipeline → the currently-active model (selected via the model registry, not hardcoded) produces a
+verdict, confidence score, and — where supported — a Grad-CAM explanation → the result is
+persisted and readable via `GET /scans/{id}/result|technical|explanation`.
+
 ---
 
-## 📖 Documentation
+## Tech Stack
 
-Full deep-dive documentation is in [`docs/`](docs/):
-
-| File | Topic |
+| Layer | Technology |
 |---|---|
-| [01_problem_and_motivation.md](docs/01_problem_and_motivation.md) | Why audio deepfake detection matters, EER metric |
-| [02_dataset.md](docs/02_dataset.md) | ASVspoof 2019 LA — format, splits, all 19 attack types |
-| [03_architecture.md](docs/03_architecture.md) | LCNN and RawNet2 deep-dives with shapes and math |
-| [04_data_pipeline.md](docs/04_data_pipeline.md) | Audio loading, mel-spectrogram theory, SpecAugment |
-| [05_training.md](docs/05_training.md) | Loss, optimizer, scheduler, full training stories |
-| [06_evaluation.md](docs/06_evaluation.md) | EER theory, all results, ensemble analysis |
-| [07_explainability.md](docs/07_explainability.md) | Grad-CAM math, hooks, per-attack heatmap findings |
-| [08_serving.md](docs/08_serving.md) | FastAPI, Gradio, Docker deployment guide |
-| [09_results_and_conclusions.md](docs/09_results_and_conclusions.md) | Conclusions, limitations, future work |
+| Backend | FastAPI, SQLAlchemy (async), Alembic migrations, PostgreSQL, Redis, PyJWT, bcrypt |
+| Frontend | React 19, TypeScript, Vite, Zustand, React Router, React Hook Form + Zod, Tailwind CSS |
+| ML / Inference | PyTorch (CPU), torchaudio, librosa, soundfile — LCNN and a second CNN architecture behind a shared adapter interface |
+| Explainability | Grad-CAM (custom implementation) |
+| Infra | Docker, Docker Compose |
+| Testing | pytest + pytest-asyncio (backend, 191 tests), a custom DAST harness (`automated_test/`), a k6 load-testing harness (`performance/`) |
+| CI | GitHub Actions — backend (lint + test + coverage), frontend (lint + typecheck + build), Docker build sanity |
 
 ---
 
-## 🛠️ Stack
+## Repository Structure
 
-<p align="center">
-  <img src="https://img.shields.io/badge/PyTorch-EE4C2C?logo=pytorch&logoColor=white" />
-  <img src="https://img.shields.io/badge/torchaudio-EE4C2C?logo=pytorch&logoColor=white" />
-  <img src="https://img.shields.io/badge/FastAPI-009688?logo=fastapi&logoColor=white" />
-  <img src="https://img.shields.io/badge/Gradio-F97316?logo=gradio&logoColor=white" />
-  <img src="https://img.shields.io/badge/Docker-2496ED?logo=docker&logoColor=white" />
-  <img src="https://img.shields.io/badge/scikit--learn-F7931E?logo=scikitlearn&logoColor=white" />
-  <img src="https://img.shields.io/badge/NumPy-013243?logo=numpy&logoColor=white" />
-  <img src="https://img.shields.io/badge/TensorBoard-FF6F00?logo=tensorflow&logoColor=white" />
-  <img src="https://img.shields.io/badge/Hugging%20Face-FFD21E?logo=huggingface&logoColor=black" />
-</p>
-
-| Component | Library / Version |
-|---|---|
-| Deep learning framework | PyTorch 2.11 |
-| Audio I/O | soundfile, torchaudio |
-| Feature extraction | torchaudio.transforms |
-| Scientific computing | numpy, scipy |
-| ML utilities | scikit-learn |
-| Training monitoring | TensorBoard |
-| REST API | FastAPI + uvicorn |
-| Browser demo | Gradio 5.x |
-| Visualization | matplotlib |
-| Configuration | PyYAML |
-| Runtime environment | Python 3.14, Apple Silicon MPS |
-
----
-
-## 📝 Citation
-
-If you use this work, please cite the ASVspoof 2019 dataset:
-
-```bibtex
-@inproceedings{todisco2019asvspoof,
-  title     = {ASVspoof 2019: Future Horizons in Spoofed and Fake Audio Detection},
-  author    = {Todisco, Massimiliano and Wang, Xin and Yamagishi, Junichi
-               and Evans, Nicholas and Kinnunen, Tomi and Lee, Kong Aik
-               and Sahidullah, Md},
-  booktitle = {Proc. Interspeech 2019},
-  year      = {2019},
-  doi       = {10.21437/Interspeech.2019-2308}
-}
 ```
+.
+├── .github/workflows/       # CI: backend, frontend, docker
+├── automated_test/          # DAST regression harness (see Security Testing)
+└── voiceguard/
+    ├── api/                 # FastAPI backend
+    │   ├── core/            # config, database, redis, security, rate limiting, middleware
+    │   ├── auth/ user/      # authentication and account management
+    │   ├── scans/           # scan upload, lifecycle, state machine
+    │   ├── inference/       # AI processing pipeline, model registry, adapters
+    │   ├── notifications/ feedback/ sharing/ dashboard/
+    │   ├── alembic/         # database migrations
+    │   └── tests/           # backend test suite
+    ├── frontend/             # React + TypeScript SPA
+    ├── src/                  # ML: models (LCNN, AudioCNN, RawNet2), data pipeline, training, explainability
+    ├── scripts/               # training / evaluation / benchmarking entry points
+    ├── configs/                # model hyperparameter configs
+    ├── docs/                    # ML research documentation (problem, dataset, architecture, training, evaluation, explainability, serving, results)
+    ├── training/ evaluation/ performance/   # experiment results, benchmark reports, load-test reports
+    ├── docker-compose.yml       # full local stack: postgres + redis + backend + frontend
+    ├── api/Dockerfile.ml         # backend image (ML-enabled) — what docker-compose builds
+    └── Dockerfile                 # standalone inference-server image (legacy /predict path only)
+```
+
+---
+
+## Installation
+
+### Prerequisites
+- Docker and Docker Compose (recommended path — see below)
+- *or*, for running components individually: Python 3.12+, Node.js 20+, PostgreSQL 16, Redis 7
+
+### Clone
+```bash
+git clone <this-repository-url>
+cd AMIT-KRISHNA/voiceguard
+```
+
+---
+
+## Docker Setup (recommended)
+
+The full stack — PostgreSQL, Redis, the FastAPI backend, and the Vite dev server for the
+frontend — runs with one command from `voiceguard/`:
+
+```bash
+docker compose up --build
+```
+
+This builds the backend from `api/Dockerfile.ml` (the ML-enabled image — installs
+`api/requirements.txt` + `api/requirements-ml.txt`, i.e. the full platform + torch/torchaudio),
+runs Alembic migrations automatically on container startup, and starts the frontend dev server
+proxying `/api` to the backend container.
+
+- Backend: http://localhost:8000 (Swagger UI at `/docs`)
+- Frontend: http://localhost:5173
+
+> **`voiceguard/Dockerfile` (repo root) is currently broken and should not be used.** It predates
+> the full platform and only installs `pyproject.toml`'s ML dependencies, not
+> `api/requirements.txt` (SQLAlchemy, Redis, Alembic, etc.). Building and running it fails
+> immediately with `ModuleNotFoundError: No module named 'sqlalchemy'` — verified directly as part
+> of this release audit. Use `docker compose up` (`api/Dockerfile.ml`) for the real platform; see
+> `Release_Readiness_Report.md` for the full finding. Fixing or removing this file is a tracked
+> known limitation, not yet done.
+
+---
+
+## Environment Variables
+
+Copy the example files and adjust as needed — every value ships with a safe local-development
+default:
+
+```bash
+cp api/.env.example api/.env
+cp frontend/.env.example frontend/.env   # optional; only needed if not using docker-compose
+```
+
+Key variables (see `api/.env.example` for the full list with defaults):
+
+| Variable | Purpose |
+|---|---|
+| `DATABASE_URL` | PostgreSQL connection string |
+| `REDIS_URL` | Redis connection string |
+| `JWT_SECRET` | Session token signing key — **generate a real one before any non-local deployment**: `openssl rand -hex 32` |
+| `AUDIT_IP_SALT` | Salt for hashing IPs in the audit log — same rule as `JWT_SECRET` |
+| `COOKIE_SECURE` | Must be `true` outside local HTTP development |
+| `RATE_LIMIT_*` | Per-route rate limits (login, register, scan creation, `/predict`, etc.) |
+| `MODEL_CHECKPOINT_PATH` | Path to the LCNN checkpoint the AI pipeline loads |
+| `HF_MODEL_REPO` *(optional)* | If set, `app.py`/`demo/app.py` pull the checkpoint from this HuggingFace Hub repo instead of the local file — see [ML Models](#ml-models) |
+
+---
+
+## Running Locally
+
+### Full stack (Docker)
+See [Docker Setup](#docker-setup-recommended) above.
+
+### Backend only
+Run from `voiceguard/` (not from inside `api/`) — the app's imports and Alembic's
+`script_location` both assume this as the working directory:
+```bash
+pip install -r api/requirements.txt -r api/requirements-ml.txt
+alembic -c api/alembic.ini upgrade head   # requires DATABASE_URL pointing at a running Postgres
+uvicorn api.main:app --reload --port 8000
+```
+
+### Frontend only
+```bash
+cd frontend
+npm install
+npm run dev
+```
+
+### Backend tests
+```bash
+cd api
+pip install -r requirements.txt -r requirements-ml.txt
+pytest
+```
+The suite (191 tests) uses an in-memory SQLite engine and a fake Redis double — no external
+services required.
+
+---
+
+## ML Models
+
+Two architectures are trained and can be registered as the active production model:
+
+- **LCNN** — a Light CNN over log-mel spectrograms; the currently deployed default (7.07% EER).
+- **AudioCNN** — a second architecture wired through the same adapter interface, for comparison
+  (see `training/Benchmark_Comparison.xlsx` and `evaluation/`).
+- **RawNet2** — implemented (`src/models/rawnet2.py`) but not currently deployed; see
+  `training/RawNet2_*.md` for the feasibility/readiness assessment.
+
+**Checkpoints are not committed to this repository** (`checkpoints/` is gitignored — model weights
+don't belong in git history). To run inference, either:
+
+1. **Train your own** — `python scripts/train.py` (reads `configs/lcnn.yaml`; pass `--resume` to
+   continue from `checkpoints/last.pt` instead of starting fresh), then point
+   `MODEL_CHECKPOINT_PATH` at the resulting `checkpoints/best.pt`, or
+2. **Host your own checkpoint on HuggingFace Hub** and set `HF_MODEL_REPO` (and optionally
+   `HF_MODEL_FILENAME`, default `lcnn_best.pt`) — `app.py`/`demo/app.py` will download from there
+   if no local checkpoint is found.
+
+All `torch.load()` calls in this repository use `weights_only=True` (verified against every
+checkpoint file in this project — see `Vulnerability Test Results/security_review.md`, finding
+F-01).
+
+---
+
+## API Overview
+
+Full interactive documentation is served at `/docs` (Swagger) and `/redoc` once the backend is
+running. Route groups, all under `/api/v1` unless noted:
+
+| Group | Examples |
+|---|---|
+| `auth` | register, login, logout, refresh, verify-email, forgot/reset-password, OAuth (Google) |
+| `user` | profile get/update, change password |
+| `scans` | upload, list, get, cancel, delete, status |
+| `inference` | process a ready scan, get result / technical detail / explanation, list available models |
+| `sharing` | create/revoke a public share link, fetch a shared result (no auth) |
+| `notifications` | list, unread count, mark read / mark all read, delete |
+| `feedback` | submit (public), list (admin) |
+| `dashboard` | aggregate stats, recent scans |
+| `/predict` *(legacy, top-level, not under `/api/v1`)* | Single-shot inference without an account — authenticated + rate-limited (see [Security Testing](#security-testing)) |
+
+---
+
+## Performance Benchmarks
+
+From `performance/performance_fix_report.md` (100 virtual users, 60s, real Docker stack —
+methodology and full before/after data in that report):
+
+| Metric | Before | After |
+|---|---|---|
+| Successful requests | 1.25% (19 / 1,517) | 100% (excluding expected 409 duplicate-upload rejections) |
+| Average response time | 1,736.9 ms | 176.7 ms (**−89.8%**) |
+| P99 response time | 32,340.7 ms | 1,628.8 ms (**−95.0%**) |
+| Login success rate | 15.5% | 100% |
+| Login average latency | 29.1 s | 323.5 ms |
+
+Root cause: synchronous `bcrypt` password hashing blocking the single asyncio event loop under
+load. Fixed by offloading to a thread pool (`asyncio.to_thread`), which then surfaced two
+second-order bottlenecks (undersized Postgres/Redis connection pools) fixed with config-only pool
+size increases. Full methodology, raw metrics, and the k6 harness itself are in `performance/`.
+
+---
+
+## Security Testing
+
+- **Internal security review** — `Vulnerability Test Results/security_review.md`, covering
+  deserialization safety, upload handling, auth/rate-limiting coverage, checkpoint integrity,
+  CORS, and more.
+- **Automated DAST regression harness** — `automated_test/` — 227 automated checks across 7
+  categories (authentication bypass, RBAC matrix, IDOR, token tampering, injection probing, rate
+  limiting, hardcoded credentials), run against a live local stack. Current result: **0 findings**.
+- **Notable fix**: the legacy `/predict` endpoint previously had no authentication and no rate
+  limiting, allowing unlimited unauthenticated CPU-bound inference calls (cost-abuse / DoS). It now
+  requires authentication and enforces a per-user rate limit — see the isolated
+  `fix(security): protect legacy /predict endpoint...` commit in the git history.
+
+Run the DAST suite yourself against a local stack:
+```bash
+cd automated_test
+python setup_env.py     # provisions test accounts against your running backend
+python run_all.py
+```
+
+---
+
+## License
+
+[MIT](LICENSE). This project began as a fork of an existing open-source audio deepfake detector
+and has been substantially extended (full backend platform, frontend, multi-model inference,
+security hardening, load testing). The original author's copyright is retained in `LICENSE`
+alongside this project's, per the MIT license's attribution requirement.
+
+---
+
+## Roadmap
+
+- [ ] Register and evaluate RawNet2 as a third selectable model (architecture implemented, not
+      yet benchmarked end-to-end against LCNN/AudioCNN — see `training/RawNet2_*.md`)
+- [ ] Frontend automated test coverage (currently none — see `CONTRIBUTING.md`)
+- [ ] Object-storage backend for uploaded audio (currently local disk via `STORAGE_BACKEND=local`)
+- [ ] Rich per-route OpenAPI descriptions
+- [ ] Real screenshots in this README
+
+See `Release_Readiness_Report.md` for the full current list of known limitations.
+
+---
+
+## Contributors
+
+Built by [Kanishsenthilkumar](https://github.com/Amit-0000). Contributions welcome — see
+`CONTRIBUTING.md`.
