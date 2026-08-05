@@ -1,0 +1,18 @@
+# Root-level ignores. voiceguard/.gitignore and automated_test/.gitignore
+# hold additional, more specific rules for their own subtrees.
+
+# Python
+__pycache__/
+*.py[cod]
+
+# Node
+node_modules/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Editors
+.vscode/
+.idea/
+*.swp
