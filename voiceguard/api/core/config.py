@@ -86,6 +86,10 @@ class Settings(BaseSettings):
     RATE_LIMIT_RESEND_VERIFICATION_PER_HOUR_PER_IP: int = 3
     RATE_LIMIT_VERIFY_EMAIL_PER_HOUR_PER_IP: int = 10
     RATE_LIMIT_SCAN_CREATE_PER_HOUR_PER_USER: int = 30
+    # /predict is the legacy top-level inference endpoint (pre-dates the
+    # /scans pipeline) — kept alongside the scan-create limit for parity,
+    # since it's just as CPU-bound (see security_review.md F-03/F-04).
+    RATE_LIMIT_PREDICT_PER_HOUR_PER_USER: int = 30
 
     # ── Audit ────────────────────────────────────────────────────────────────
     AUDIT_IP_SALT: str = "dev-only-audit-ip-salt-change-me"

@@ -78,3 +78,6 @@ require_verify_email_rate_limit = rate_limit("verify-email", limit_attr="RATE_LI
 require_scan_create_rate_limit = rate_limit(
     "scan-create", limit_attr="RATE_LIMIT_SCAN_CREATE_PER_HOUR_PER_USER", by="user"
 )
+require_predict_rate_limit = rate_limit(
+    "predict", limit_attr="RATE_LIMIT_PREDICT_PER_HOUR_PER_USER", by="user"
+)

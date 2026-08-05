@@ -3,15 +3,17 @@ import tempfile
 from contextlib import asynccontextmanager
 from pathlib import Path
 
-from fastapi import FastAPI, File, UploadFile
+from fastapi import Depends, FastAPI, File, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 
 from api.auth.router import router as auth_router
 from api.core.audio_formats import ALLOWED_AUDIO_EXTENSIONS
 from api.core.config import get_settings
 from api.core.database import dispose_engine, init_engine
+from api.core.deps import require_authenticated
 from api.core.exceptions import InvalidInputError, ServiceUnavailableError, register_exception_handlers
 from api.core.middleware import RequestContextMiddleware
+from api.core.rate_limit import require_predict_rate_limit
 from api.core.redis import close_redis, init_redis
 from api.core.responses import success_envelope
 from api.dashboard.router import router as dashboard_router
@@ -23,6 +25,7 @@ from api.scans.jobs import expire_stale_scans_on_startup
 from api.scans.router import router as scans_router
 from api.schemas import PredictionResponse
 from api.sharing.router import router as sharing_router
+from api.user.models import User
 from api.user.router import router as user_router
 
 logger = logging.getLogger("voiceguard")
@@ -113,8 +116,8 @@ def health():
     return success_envelope({"status": "ok"})
 
 
-@app.post("/predict", response_model=None)
-async def predict_endpoint(audio_file: UploadFile = File(...)):
+@app.post("/predict", response_model=None, dependencies=[Depends(require_predict_rate_limit)])
+async def predict_endpoint(audio_file: UploadFile = File(...), user: User = Depends(require_authenticated)):
     if app.state.model is None:
         raise ServiceUnavailableError("The detection model is not loaded on this deployment yet.")
 
