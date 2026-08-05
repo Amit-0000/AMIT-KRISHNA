@@ -1,0 +1,73 @@
+# VoiceGuard — Product Foundation stack (postgres, redis, backend, frontend).
+#
+# This is separate from the root Dockerfile, which builds the Gradio HF Space
+# demo (app.py) and is untouched by this slice. Run:
+#   docker compose up --build
+# Backend: http://localhost:8000/docs   Frontend: http://localhost:5173
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: voiceguard
+      POSTGRES_USER: voiceguard
+      POSTGRES_PASSWORD: voiceguard
+    ports:
+      - "5432:5432"
+    volumes:
+      - voiceguard_postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U voiceguard -d voiceguard"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  backend:
+    build:
+      context: .
+      dockerfile: api/Dockerfile.ml
+    env_file:
+      - api/.env.example
+    environment:
+      DATABASE_URL: postgresql+asyncpg://voiceguard:voiceguard@postgres:5432/voiceguard
+      REDIS_URL: redis://redis:6379/0
+      ALLOWED_ORIGINS: http://localhost:5173
+      APP_BASE_URL: http://localhost:5173
+    ports:
+      - "8000:8000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    volumes:
+      - ./checkpoints:/app/checkpoints:ro
+      - ./data/uploads:/app/data/uploads
+
+  frontend:
+    image: node:20-alpine
+    working_dir: /app
+    command: sh -c "npm install && npm run dev -- --host"
+    volumes:
+      - ./frontend:/app
+      - voiceguard_frontend_node_modules:/app/node_modules
+    ports:
+      - "5173:5173"
+    environment:
+      VITE_API_PROXY_TARGET: http://backend:8000
+    depends_on:
+      - backend
+
+volumes:
+  voiceguard_postgres_data:
+  voiceguard_frontend_node_modules:
