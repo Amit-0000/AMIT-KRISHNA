@@ -12,7 +12,7 @@ SAMPLE_RATE = 16_000
 
 
 class MelSpectrogramTransform:
-    """Converts a raw waveform [1, 64000] to a log mel-spectrogram [1, 128, 313]."""
+    """Converts a raw waveform [1, 64000] to a log mel-spectrogram [1, 128, 251]."""
 
     def __init__(self, augment: bool = False):
         self.augment = augment
@@ -39,4 +39,4 @@ class MelSpectrogramTransform:
             mel = self.time_mask(mel)
             mel = self.freq_mask(mel)
 
-        return mel  # [1, 128, 313]
+        return mel  # [1, 128, 251]

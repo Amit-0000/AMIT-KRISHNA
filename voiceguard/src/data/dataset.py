@@ -71,14 +71,39 @@ def load_waveform(file_path: str | Path) -> torch.Tensor:
     return waveform  # [1, 64000]
 
 
+def serving_equivalent_preprocess(waveform: torch.Tensor) -> torch.Tensor:
+    """Applies the same peak-normalization + silence-trim + re-fix-length
+    steps the live scan pipeline runs before feature extraction
+    (api.inference.preprocessing.run_preprocessing) — training was verified
+    (Phase 4 preprocessing audit) to previously skip these, causing a large,
+    measured train/serve mismatch (mean absolute log-mel difference of 5.75
+    on a ~16-wide value range, from a mean 46.6% of each clip's samples being
+    trimmed differently). Deferred import, mirroring run_preprocessing's own
+    deferred import of load_waveform in the other direction — keeps src/
+    from picking up api/'s heavier dependency chain (FastAPI settings,
+    SQLAlchemy models) at module load time, only at first actual use."""
+    from api.inference.preprocessing import detect_and_trim_silence, normalize_amplitude, _fix_length
+
+    normalized = normalize_amplitude(waveform)
+    trimmed, _ = detect_and_trim_silence(normalized, sample_rate=SAMPLE_RATE)
+    return _fix_length(trimmed, target_samples=MAX_SAMPLES)
+
+
 class ASVspoofDataset(Dataset):
-    def __init__(self, df: pd.DataFrame, transform=None):
+    def __init__(self, df: pd.DataFrame, transform=None, match_serving_preprocessing: bool = True):
         """
         df       : DataFrame from parse_protocol()
-        transform: optional callable applied to the raw waveform tensor
+        transform: optional callable applied to the waveform tensor (e.g. MelSpectrogramTransform)
+        match_serving_preprocessing: apply the same peak-norm + silence-trim
+            the live scan pipeline applies before feature extraction, so the
+            model trains on exactly what it will be served in production
+            (see serving_equivalent_preprocess). Defaults to True; the flag
+            exists only so scripts/check_dataset_loader.py-style raw shape
+            checks can opt out without needing the api.* import chain.
         """
         self.df = df.reset_index(drop=True)
         self.transform = transform
+        self.match_serving_preprocessing = match_serving_preprocessing
 
     def __len__(self) -> int:
         return len(self.df)
@@ -87,6 +112,9 @@ class ASVspoofDataset(Dataset):
         row = self.df.iloc[idx]
 
         waveform = load_waveform(row["file_path"])
+
+        if self.match_serving_preprocessing:
+            waveform = serving_equivalent_preprocess(waveform)
 
         if self.transform:
             waveform = self.transform(waveform)
