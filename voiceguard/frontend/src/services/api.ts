@@ -15,8 +15,24 @@ api.interceptors.request.use(
 )
 
 // ─── Response interceptor ────────────────────────────────────────────────────
+// The backend wraps every success response as { data: <payload> } (and, for
+// paginated list endpoints, a sibling { meta: <pagination info> }) — see
+// api/core/responses.py's success_envelope. Unwrapping it once here means
+// every call site below (and every existing page consuming them) can treat
+// response.data as the real payload directly, instead of each of them having
+// to know about and re-implement `.data.data` unwrapping individually.
 api.interceptors.response.use(
-  (response: AxiosResponse) => response,
+  (response: AxiosResponse) => {
+    const body = response.data as unknown
+    if (body && typeof body === 'object' && 'data' in (body as Record<string, unknown>)) {
+      const envelope = body as { data: unknown; meta?: Record<string, unknown> }
+      response.data =
+        envelope.meta && typeof envelope.meta === 'object'
+          ? { ...(envelope.data as object), ...envelope.meta }
+          : envelope.data
+    }
+    return response
+  },
   async (error: AxiosError<{ error?: ApiError }>) => {
     const status = error.response?.status
 
@@ -55,6 +71,8 @@ export const authApi = {
     api.post('/auth/reset-password', { token, password }),
   verifyEmail: (token: string) =>
     api.post('/auth/verify-email', { token }),
+  resendVerification: (email: string) =>
+    api.post('/auth/resend-verification', { email }),
 }
 
 // ─── Scan endpoints ──────────────────────────────────────────────────────────

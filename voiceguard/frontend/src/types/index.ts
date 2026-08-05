@@ -91,11 +91,17 @@ export interface AppNotification {
 
 // ─── API ─────────────────────────────────────────────────────────────────────
 
+export interface ApiErrorDetail {
+  field?: string
+  message: string
+}
+
 export interface ApiError {
   code: string
   message: string
   field?: string
   retry_after?: number
+  details?: ApiErrorDetail[]
 }
 
 export interface PaginatedResponse<T> {
