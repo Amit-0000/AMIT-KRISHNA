@@ -1,0 +1,54 @@
+[
+  {
+    "endpoint": "/api/v1/auth/login",
+    "method": "POST",
+    "role": "anon",
+    "status": "[401, 401, 401, 401, 401, 401, 401, 401, 401, 401, 429, 429, 429, 429, 429]",
+    "expected_status": "429 appears within the burst",
+    "finding": false,
+    "severity": "info",
+    "response_time_ms": null,
+    "test_category": "rate_limiting",
+    "note": "statuses=[401, 401, 401, 401, 401, 401, 401, 401, 401, 401, 429, 429, 429, 429, 429]; 429 seen, limiter active",
+    "timestamp": "2026-08-04T09:28:55.604064+00:00"
+  },
+  {
+    "endpoint": "/api/v1/auth/register",
+    "method": "POST",
+    "role": "anon",
+    "status": "[201, 201, 201, 201, 201, 429, 429]",
+    "expected_status": "429 appears within the burst",
+    "finding": false,
+    "severity": "info",
+    "response_time_ms": null,
+    "test_category": "rate_limiting",
+    "note": "statuses=[201, 201, 201, 201, 201, 429, 429]; 429 seen, limiter active",
+    "timestamp": "2026-08-04T09:28:56.840484+00:00"
+  },
+  {
+    "endpoint": "/predict",
+    "method": "POST",
+    "role": "anon",
+    "status": "[401, 401, 401, 401, 401, 401, 401, 401, 401, 401]...",
+    "expected_status": "401 (auth now required) for every call",
+    "finding": false,
+    "severity": "info",
+    "response_time_ms": null,
+    "test_category": "rate_limiting",
+    "note": "correctly rejected unauthenticated calls (401 x30)",
+    "timestamp": "2026-08-04T09:28:57.321274+00:00"
+  },
+  {
+    "endpoint": "/predict",
+    "method": "POST",
+    "role": "user_a",
+    "status": "[200, 200, 200, 200, 200, 200, 200, 200, 200, 200, 200, 200, 200, 200, 200, 200, 200, 200, 200, 200, 200, 200, 200, 200, 200, 200, 200, 200, 200, 200, 429, 429, 429]",
+    "expected_status": "429 appears after ~30 successful calls",
+    "finding": false,
+    "severity": "info",
+    "response_time_ms": null,
+    "test_category": "rate_limiting",
+    "note": "statuses=[200, 200, 200, 200, 200, 200, 200, 200, 200, 200, 200, 200, 200, 200, 200, 200, 200, 200, 200, 200, 200, 200, 200, 200, 200, 200, 200, 200, 200, 200, 429, 429, 429]; 429 seen, per-user limiter active",
+    "timestamp": "2026-08-04T09:28:58.259570+00:00"
+  }
+]

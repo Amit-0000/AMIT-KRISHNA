@@ -1,0 +1,176 @@
+[
+  {
+    "file": "voiceguard/BATCH_05_DATABASE_STORAGE_ARCHITECTURE.txt",
+    "line": 3727,
+    "pattern": "db_url_with_password",
+    "excerpt": "\u2014 Connection string: postgresql+asyncpg://user:pass@host:5432/db?ssl=require"
+  },
+  {
+    "file": "voiceguard/frontend/node_modules/@types/node/process.d.ts",
+    "line": 859,
+    "pattern": "generic_password_assignment",
+    "excerpt": "*   PWD: '/Users/maciej',"
+  },
+  {
+    "file": "voiceguard/frontend/node_modules/axios/README.md",
+    "line": 831,
+    "pattern": "generic_password_assignment",
+    "excerpt": "password: 's00pers3cret'"
+  },
+  {
+    "file": "voiceguard/frontend/node_modules/axios/README.md",
+    "line": 1015,
+    "pattern": "generic_password_assignment",
+    "excerpt": "password: 'rapunz3l'"
+  },
+  {
+    "file": "voiceguard/frontend/node_modules/keyv/README.md",
+    "line": 58,
+    "pattern": "db_url_with_password",
+    "excerpt": "const keyv = new Keyv('mongodb://user:pass@localhost:27017/dbname');"
+  },
+  {
+    "file": "voiceguard/frontend/node_modules/keyv/README.md",
+    "line": 60,
+    "pattern": "db_url_with_password",
+    "excerpt": "const keyv = new Keyv('postgresql://user:pass@localhost:5432/dbname');"
+  },
+  {
+    "file": "voiceguard/frontend/node_modules/keyv/README.md",
+    "line": 61,
+    "pattern": "db_url_with_password",
+    "excerpt": "const keyv = new Keyv('mysql://user:pass@localhost:3306/dbname');"
+  },
+  {
+    "file": "voiceguard/frontend/node_modules/zod/src/v3/tests/error.test.ts",
+    "line": 220,
+    "pattern": "generic_password_assignment",
+    "excerpt": "password: \"peanuts\","
+  },
+  {
+    "file": "voiceguard/frontend/node_modules/zod/src/v3/tests/refine.test.ts",
+    "line": 40,
+    "pattern": "generic_password_assignment",
+    "excerpt": "password: \"aaaaaaaa\","
+  },
+  {
+    "file": "voiceguard/frontend/node_modules/zod/src/v3/tests/refine.test.ts",
+    "line": 41,
+    "pattern": "generic_password_assignment",
+    "excerpt": "confirmPassword: \"bbbbbbbb\","
+  },
+  {
+    "file": "voiceguard/frontend/node_modules/zod/src/v3/tests/refine.test.ts",
+    "line": 74,
+    "pattern": "generic_password_assignment",
+    "excerpt": "password: \"password\","
+  },
+  {
+    "file": "voiceguard/frontend/node_modules/zod/src/v3/tests/refine.test.ts",
+    "line": 75,
+    "pattern": "generic_password_assignment",
+    "excerpt": "confirmPassword: \"password\","
+  },
+  {
+    "file": "voiceguard/frontend/node_modules/zod/src/v4/classic/tests/error.test.ts",
+    "line": 285,
+    "pattern": "generic_password_assignment",
+    "excerpt": "password: \"peanuts\","
+  },
+  {
+    "file": "voiceguard/frontend/node_modules/zod/src/v4/classic/tests/refine.test.ts",
+    "line": 66,
+    "pattern": "generic_password_assignment",
+    "excerpt": "password: \"aaaaaaaa\","
+  },
+  {
+    "file": "voiceguard/frontend/node_modules/zod/src/v4/classic/tests/refine.test.ts",
+    "line": 67,
+    "pattern": "generic_password_assignment",
+    "excerpt": "confirmPassword: \"bbbbbbbb\","
+  },
+  {
+    "file": "voiceguard/frontend/node_modules/zod/src/v4/classic/tests/refine.test.ts",
+    "line": 93,
+    "pattern": "generic_password_assignment",
+    "excerpt": "password: \"password\","
+  },
+  {
+    "file": "voiceguard/frontend/node_modules/zod/src/v4/classic/tests/refine.test.ts",
+    "line": 94,
+    "pattern": "generic_password_assignment",
+    "excerpt": "confirmPassword: \"password\","
+  },
+  {
+    "file": "voiceguard/frontend/node_modules/zod/src/v4/classic/tests/refine.test.ts",
+    "line": 103,
+    "pattern": "generic_password_assignment",
+    "excerpt": "password: \"password\","
+  },
+  {
+    "file": "voiceguard/frontend/node_modules/zod/src/v4/classic/tests/refine.test.ts",
+    "line": 104,
+    "pattern": "generic_password_assignment",
+    "excerpt": "confirmPassword: \"different\","
+  },
+  {
+    "file": "voiceguard/frontend/node_modules/zod/src/v4/classic/tests/template-literal.test.ts",
+    "line": 170,
+    "pattern": "db_url_with_password",
+    "excerpt": "| `mongodb://${string}:${string}@${string}:${number}`"
+  },
+  {
+    "file": "voiceguard/frontend/node_modules/zod/src/v4/classic/tests/template-literal.test.ts",
+    "line": 171,
+    "pattern": "db_url_with_password",
+    "excerpt": "| `mongodb://${string}:${string}@${string}:${number}/${string}`"
+  },
+  {
+    "file": "voiceguard/frontend/node_modules/zod/src/v4/classic/tests/template-literal.test.ts",
+    "line": 172,
+    "pattern": "db_url_with_password",
+    "excerpt": "| `mongodb://${string}:${string}@${string}:${number}/${string}?${string}`"
+  },
+  {
+    "file": "voiceguard/frontend/node_modules/zod/src/v4/classic/tests/template-literal.test.ts",
+    "line": 644,
+    "pattern": "db_url_with_password",
+    "excerpt": "connectionString.parse(\"mongodb://username:password@host:1234\");"
+  },
+  {
+    "file": "voiceguard/frontend/node_modules/zod/src/v4/classic/tests/template-literal.test.ts",
+    "line": 645,
+    "pattern": "db_url_with_password",
+    "excerpt": "connectionString.parse(\"mongodb://username:password@host:1234/\");"
+  },
+  {
+    "file": "voiceguard/frontend/node_modules/zod/src/v4/classic/tests/template-literal.test.ts",
+    "line": 646,
+    "pattern": "db_url_with_password",
+    "excerpt": "connectionString.parse(\"mongodb://username:password@host:1234/defaultauthdb\");"
+  },
+  {
+    "file": "voiceguard/frontend/node_modules/zod/src/v4/classic/tests/template-literal.test.ts",
+    "line": 647,
+    "pattern": "db_url_with_password",
+    "excerpt": "connectionString.parse(\"mongodb://username:password@host:1234/defaultauthdb?authSource=admin\");"
+  },
+  {
+    "file": "voiceguard/frontend/node_modules/zod/src/v4/classic/tests/template-literal.test.ts",
+    "line": 649,
+    "pattern": "db_url_with_password",
+    "excerpt": "\"mongodb://username:password@host:1234/defaultauthdb?authSource=admin&connectTimeoutMS=300000\""
+  },
+  {
+    "file": "voiceguard/frontend/node_modules/zod/src/v4/classic/tests/template-literal.test.ts",
+    "line": 651,
+    "pattern": "db_url_with_password",
+    "excerpt": "connectionString.parse(\"mongodb://username:password@host:1234/?authSource=admin\");"
+  },
+  {
+    "file": "voiceguard/frontend/node_modules/zod/src/v4/classic/tests/template-literal.test.ts",
+    "line": 652,
+    "pattern": "db_url_with_password",
+    "excerpt": "connectionString.parse(\"mongodb://username:password@host:1234/?authSource=admin&connectTimeoutMS=300000\");"
+  }
+]
