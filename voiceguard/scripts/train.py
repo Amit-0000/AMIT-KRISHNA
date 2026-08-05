@@ -1,20 +1,42 @@
+import argparse
+
 import torch
 import yaml
 from pathlib import Path
-from torch.utils.data import DataLoader
+from torch.utils.data import DataLoader, WeightedRandomSampler
 
 from src.data.protocol import parse_protocol, print_stats
 from src.data.dataset import ASVspoofDataset
 from src.data.transforms import MelSpectrogramTransform
 from src.models.lcnn import LCNN
-from src.training.losses import build_loss
-from src.training.trainer import Trainer
+from src.training.losses import compute_class_weights
+from src.training.trainer import Trainer, load_training_checkpoint, set_seed
+from init_experiment import create_experiment_record
+
+# Winner of the empirical class-imbalance ablation (training/imbalance_experiments/
+# class_imbalance_comparison.md): WeightedRandomSampler, dev EER 0.0870 vs 0.2330
+# (standard CE) and 0.2718 (weighted CE) — decisively better, not assumed.
+CLASS_IMBALANCE_STRATEGY = "weighted_sampler"
+
+
+def parse_args():
+    parser = argparse.ArgumentParser(description="Train LCNN on ASVspoof2019 LA")
+    parser.add_argument(
+        "--resume",
+        action="store_true",
+        help="Resume from checkpoints/last.pt (model + optimizer + scheduler + epoch state) instead of starting fresh.",
+    )
+    return parser.parse_args()
 
 
 def main():
+    args = parse_args()
+
     # Load config
     with open("configs/lcnn.yaml") as f:
         cfg = yaml.safe_load(f)
+
+    set_seed(cfg["training"].get("seed", 42))
 
     # Device
     if torch.cuda.is_available():
@@ -41,13 +63,29 @@ def main():
     print_stats(df_train, "train")
     print_stats(df_dev,   "dev")
 
+    experiment_record = create_experiment_record(
+        "configs/lcnn.yaml",
+        device=device,
+        class_imbalance_strategy=CLASS_IMBALANCE_STRATEGY,
+        data_root=data_root,
+    )
+    print(f"Experiment ID: {experiment_record['experiment_id']}")
+
     train_dataset = ASVspoofDataset(df_train, transform=MelSpectrogramTransform(augment=True))
     dev_dataset   = ASVspoofDataset(df_dev,   transform=MelSpectrogramTransform(augment=False))
+
+    # WeightedRandomSampler — empirically the best class-imbalance strategy
+    # (see CLASS_IMBALANCE_STRATEGY note above), so the loss stays standard
+    # unweighted CrossEntropyLoss and the sampler does the balancing.
+    class_weights = compute_class_weights(df_train)
+    label_to_idx = {"bonafide": 0, "spoof": 1}
+    sample_weights = df_train["label"].map(lambda l: class_weights[label_to_idx[l]]).tolist()
+    sampler = WeightedRandomSampler(sample_weights, num_samples=len(df_train), replacement=True)
 
     train_loader = DataLoader(
         train_dataset,
         batch_size=cfg["data"]["batch_size"],
-        shuffle=True,
+        sampler=sampler,
         num_workers=cfg["data"]["num_workers"],
         pin_memory=True,
     )
@@ -61,7 +99,7 @@ def main():
 
     # Model, loss, optimizer, scheduler
     model     = LCNN()
-    criterion = build_loss(df_train, device)
+    criterion = torch.nn.CrossEntropyLoss()
     optimizer = torch.optim.Adam(
         model.parameters(),
         lr=cfg["training"]["learning_rate"],
@@ -82,9 +120,22 @@ def main():
         checkpoint_dir=cfg["paths"]["checkpoint_dir"],
         log_dir=cfg["paths"]["log_dir"],
         patience=cfg["training"]["patience"],
+        metrics_csv_path=Path("training") / "Training_Log.csv",
     )
 
-    trainer.fit(train_loader, dev_loader, epochs=cfg["training"]["epochs"])
+    start_epoch = 1
+    if args.resume:
+        last_ckpt = Path(cfg["paths"]["checkpoint_dir"]) / "last.pt"
+        if not last_ckpt.exists():
+            raise FileNotFoundError(f"--resume given but no checkpoint at {last_ckpt}")
+        state = load_training_checkpoint(last_ckpt, model, optimizer, scheduler, device=device)
+        trainer.best_eer = state["best_eer"]
+        trainer.best_epoch = state["best_epoch"]
+        trainer.epochs_no_improve = state["epochs_no_improve"]
+        start_epoch = state["start_epoch"]
+        print(f"Resumed from {last_ckpt}: starting at epoch {start_epoch}, best_eer so far {trainer.best_eer:.4f}")
+
+    trainer.fit(train_loader, dev_loader, epochs=cfg["training"]["epochs"], start_epoch=start_epoch)
 
 
 if __name__ == "__main__":
