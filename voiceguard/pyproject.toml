@@ -15,6 +15,7 @@ dependencies = [
     "scipy",
     "scikit-learn",
     "tensorboard",
+    "pandas",
     "fastapi",
     "uvicorn[standard]",
     "gradio",
@@ -24,6 +25,8 @@ dependencies = [
     "matplotlib",
     "python-dotenv",
     "httpx",
+    "psutil",
+    "openpyxl",
 ]
 
 [tool.setuptools.packages.find]
