@@ -2,63 +2,63 @@
   "test_metadata": {
     "project": "VoiceGuard",
     "test_type": "Baseline Load Test",
-    "generated_at": "2026-07-31T08:26:50.175549+00:00",
-    "test_window_start": "2026-07-31T08:25:42.094010396Z",
-    "test_window_end": "2026-07-31T08:26:41.322646632Z"
+    "generated_at": "2026-08-05T20:19:34.858141+00:00",
+    "test_window_start": "2026-08-05T20:17:57.810280057Z",
+    "test_window_end": "2026-08-05T20:18:57.03031182Z"
   },
   "overall_performance": {
     "virtual_users": 100,
     "duration_s": 59.2,
-    "total_requests": 4358,
-    "successful_requests": 3756,
-    "failed_requests": 602,
-    "requests_per_second": 73.58,
-    "avg_response_time_ms": 176.68,
-    "median_response_time_ms": 17.9,
-    "min_response_time_ms": 2.17,
-    "max_response_time_ms": 2091.72,
-    "p90_response_time_ms": 744.93,
-    "p95_response_time_ms": 1276.14,
-    "p99_response_time_ms": 1628.81,
-    "error_rate_pct": 13.81,
-    "success_rate_pct": 86.19,
-    "data_sent_bytes": 13067619,
-    "data_received_bytes": 7246798
+    "total_requests": 4855,
+    "successful_requests": 4163,
+    "failed_requests": 692,
+    "requests_per_second": 81.98,
+    "avg_response_time_ms": 61.09,
+    "median_response_time_ms": 9.95,
+    "min_response_time_ms": 2.42,
+    "max_response_time_ms": 1403.85,
+    "p90_response_time_ms": 96.88,
+    "p95_response_time_ms": 270.99,
+    "p99_response_time_ms": 1035.91,
+    "error_rate_pct": 14.25,
+    "success_rate_pct": 85.75,
+    "data_sent_bytes": null,
+    "data_received_bytes": null
   },
   "endpoint_performance": [
     {
       "endpoint": "GET /api/v1/scans",
       "method": "GET",
-      "requests": 1779,
-      "avg_response_ms": 153.65,
-      "min_ms": 2.86,
-      "max_ms": 1744.12,
-      "p95_ms": 1183.58,
-      "p99_ms": 1520.47,
+      "requests": 1986,
+      "avg_response_ms": 50.49,
+      "min_ms": 3.98,
+      "max_ms": 1278.71,
+      "p95_ms": 221.16,
+      "p99_ms": 1003.59,
       "success_pct": 100.0,
       "failure_pct": 0.0
     },
     {
       "endpoint": "GET /api/v1/scans/{id}",
       "method": "GET",
-      "requests": 726,
-      "avg_response_ms": 160.11,
-      "min_ms": 2.22,
-      "max_ms": 1707.55,
-      "p95_ms": 1277.42,
-      "p99_ms": 1586.91,
+      "requests": 887,
+      "avg_response_ms": 38.07,
+      "min_ms": 2.42,
+      "max_ms": 1242.07,
+      "p95_ms": 116.39,
+      "p99_ms": 819.76,
       "success_pct": 100.0,
       "failure_pct": 0.0
     },
     {
       "endpoint": "GET /api/v1/user/profile",
       "method": "GET",
-      "requests": 1087,
-      "avg_response_ms": 143.98,
-      "min_ms": 2.17,
-      "max_ms": 1697.23,
-      "p95_ms": 1106.31,
-      "p99_ms": 1523.31,
+      "requests": 1190,
+      "avg_response_ms": 47.34,
+      "min_ms": 2.64,
+      "max_ms": 1203.55,
+      "p95_ms": 209.84,
+      "p99_ms": 1006.45,
       "success_pct": 100.0,
       "failure_pct": 0.0
     },
@@ -66,94 +66,94 @@
       "endpoint": "POST /api/v1/auth/login",
       "method": "POST",
       "requests": 100,
-      "avg_response_ms": 323.53,
-      "min_ms": 265.0,
-      "max_ms": 527.78,
-      "p95_ms": 399.91,
-      "p99_ms": 454.99,
+      "avg_response_ms": 313.97,
+      "min_ms": 233.05,
+      "max_ms": 1217.54,
+      "p95_ms": 812.14,
+      "p99_ms": 1102.85,
       "success_pct": 100.0,
       "failure_pct": 0.0
     },
     {
       "endpoint": "POST /api/v1/scans",
       "method": "POST",
-      "requests": 666,
-      "avg_response_ms": 287.57,
-      "min_ms": 18.99,
-      "max_ms": 2091.72,
-      "p95_ms": 1629.63,
-      "p99_ms": 1877.84,
-      "success_pct": 9.61,
-      "failure_pct": 90.39
+      "requests": 692,
+      "avg_response_ms": 108.13,
+      "min_ms": 3.03,
+      "max_ms": 1403.85,
+      "p95_ms": 522.6,
+      "p99_ms": 1146.77,
+      "success_pct": 0.0,
+      "failure_pct": 100.0
     }
   ],
   "http_status_codes": [
     {
       "status_code": "200",
-      "count": 3692,
-      "percentage": 84.72
-    },
-    {
-      "status_code": "201",
-      "count": 64,
-      "percentage": 1.47
+      "count": 4163,
+      "percentage": 85.75
     },
     {
       "status_code": "409",
-      "count": 602,
-      "percentage": 13.81
+      "count": 583,
+      "percentage": 12.01
+    },
+    {
+      "status_code": "429",
+      "count": 109,
+      "percentage": 2.25
     }
   ],
   "response_time_distribution": [
     {
       "time_range_ms": "0-50",
-      "request_count": 3156
+      "request_count": 4030
     },
     {
       "time_range_ms": "51-100",
-      "request_count": 296
+      "request_count": 338
     },
     {
       "time_range_ms": "101-200",
-      "request_count": 141
+      "request_count": 108
     },
     {
       "time_range_ms": "201-500",
-      "request_count": 201
+      "request_count": 193
     },
     {
       "time_range_ms": "501-1000",
-      "request_count": 227
+      "request_count": 114
     },
     {
       "time_range_ms": "1000+",
-      "request_count": 319
+      "request_count": 60
     }
   ],
   "resource_usage_summary": {
     "voiceguard-backend-1": {
-      "avg_cpu_pct": 78.19,
-      "max_cpu_pct": 327.7,
-      "avg_mem_mb": 83.3,
-      "max_mem_mb": 87.27
+      "avg_cpu_pct": 52.12,
+      "max_cpu_pct": 239.39,
+      "avg_mem_mb": 260.49,
+      "max_mem_mb": 261.7
     },
     "voiceguard-postgres-1": {
-      "avg_cpu_pct": 25.55,
-      "max_cpu_pct": 136.46,
-      "avg_mem_mb": 85.73,
-      "max_mem_mb": 183.0
+      "avg_cpu_pct": 9.73,
+      "max_cpu_pct": 66.73,
+      "avg_mem_mb": 82.34,
+      "max_mem_mb": 85.04
     },
     "voiceguard-redis-1": {
-      "avg_cpu_pct": 0.72,
-      "max_cpu_pct": 3.12,
-      "avg_mem_mb": 11.17,
-      "max_mem_mb": 11.44
+      "avg_cpu_pct": 0.43,
+      "max_cpu_pct": 0.57,
+      "avg_mem_mb": 10.17,
+      "max_mem_mb": 10.98
     },
     "voiceguard-frontend-1": {
-      "avg_cpu_pct": 9.3,
-      "max_cpu_pct": 12.56,
-      "avg_mem_mb": 107.83,
-      "max_mem_mb": 108.4
+      "avg_cpu_pct": 6.15,
+      "max_cpu_pct": 8.07,
+      "avg_mem_mb": 107.5,
+      "max_mem_mb": 108.2
     }
   }
 }

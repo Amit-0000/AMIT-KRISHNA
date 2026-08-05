@@ -7,10 +7,10 @@
     "expected_status": "401/422 (never 500 or DB error text)",
     "finding": false,
     "severity": "info",
-    "response_time_ms": 18.2,
+    "response_time_ms": 10.0,
     "test_category": "injection_probe",
     "note": "payload=\"' OR '1'='1\" handled safely",
-    "timestamp": "2026-08-05T19:20:59.029307+00:00"
+    "timestamp": "2026-08-05T20:02:18.341879+00:00"
   },
   {
     "endpoint": "/api/v1/auth/login",
@@ -20,10 +20,10 @@
     "expected_status": "401/422 (never 500 or DB error text)",
     "finding": false,
     "severity": "info",
-    "response_time_ms": 6.3,
+    "response_time_ms": 5.1,
     "test_category": "injection_probe",
     "note": "payload=\"' OR 1=1--\" handled safely",
-    "timestamp": "2026-08-05T19:20:59.035571+00:00"
+    "timestamp": "2026-08-05T20:02:18.346999+00:00"
   },
   {
     "endpoint": "/api/v1/auth/login",
@@ -33,10 +33,10 @@
     "expected_status": "401/422 (never 500 or DB error text)",
     "finding": false,
     "severity": "info",
-    "response_time_ms": 5.7,
+    "response_time_ms": 21.5,
     "test_category": "injection_probe",
     "note": "payload=\"'; DROP TABLE users;--\" handled safely",
-    "timestamp": "2026-08-05T19:20:59.041689+00:00"
+    "timestamp": "2026-08-05T20:02:18.368486+00:00"
   },
   {
     "endpoint": "/api/v1/auth/login",
@@ -46,140 +46,88 @@
     "expected_status": "401/422 (never 500 or DB error text)",
     "finding": false,
     "severity": "info",
-    "response_time_ms": 1.5,
+    "response_time_ms": 4.5,
     "test_category": "injection_probe",
     "note": "payload=\"' UNION SELECT NULL--\" handled safely",
-    "timestamp": "2026-08-05T19:20:59.043193+00:00"
+    "timestamp": "2026-08-05T20:02:18.372998+00:00"
   },
   {
     "endpoint": "/api/v1/auth/login",
     "method": "POST",
     "role": "anon",
-    "status": 422,
+    "status": 429,
     "expected_status": "401/422 (never 500 or DB error text)",
     "finding": false,
     "severity": "info",
-    "response_time_ms": 4.4,
+    "response_time_ms": 4.5,
     "test_category": "injection_probe",
     "note": "payload=\"admin'--\" handled safely",
-    "timestamp": "2026-08-05T19:20:59.047643+00:00"
+    "timestamp": "2026-08-05T20:02:18.377519+00:00"
   },
   {
     "endpoint": "/api/v1/auth/register",
     "method": "POST",
     "role": "anon",
-    "status": 429,
+    "status": 201,
     "expected_status": "201/422 (never 500 or DB error text)",
     "finding": false,
     "severity": "info",
-    "response_time_ms": 7.0,
+    "response_time_ms": 237.2,
     "test_category": "injection_probe",
     "note": "handled safely",
-    "timestamp": "2026-08-05T19:20:59.054665+00:00"
+    "timestamp": "2026-08-05T20:02:18.614757+00:00"
   },
   {
     "endpoint": "/api/v1/auth/register",
     "method": "POST",
     "role": "anon",
-    "status": 429,
+    "status": 201,
     "expected_status": "201/422 (never 500 or DB error text)",
     "finding": false,
     "severity": "info",
-    "response_time_ms": 26.2,
+    "response_time_ms": 236.8,
     "test_category": "injection_probe",
     "note": "handled safely",
-    "timestamp": "2026-08-05T19:20:59.080830+00:00"
+    "timestamp": "2026-08-05T20:02:18.853093+00:00"
   },
   {
     "endpoint": "/api/v1/auth/register",
     "method": "POST",
     "role": "anon",
-    "status": 429,
+    "status": 201,
     "expected_status": "201/422 (never 500 or DB error text)",
     "finding": false,
     "severity": "info",
-    "response_time_ms": 16.5,
+    "response_time_ms": 234.8,
     "test_category": "injection_probe",
     "note": "handled safely",
-    "timestamp": "2026-08-05T19:20:59.097335+00:00"
+    "timestamp": "2026-08-05T20:02:19.087912+00:00"
   },
   {
     "endpoint": "/api/v1/auth/register",
     "method": "POST",
     "role": "anon",
-    "status": 429,
+    "status": 201,
     "expected_status": "201/422 (never 500 or DB error text)",
     "finding": false,
     "severity": "info",
-    "response_time_ms": 11.0,
+    "response_time_ms": 241.3,
     "test_category": "injection_probe",
     "note": "handled safely",
-    "timestamp": "2026-08-05T19:20:59.108381+00:00"
+    "timestamp": "2026-08-05T20:02:19.329193+00:00"
   },
   {
     "endpoint": "/api/v1/auth/register",
     "method": "POST",
     "role": "anon",
-    "status": 429,
+    "status": 201,
     "expected_status": "201/422 (never 500 or DB error text)",
     "finding": false,
     "severity": "info",
-    "response_time_ms": 5.9,
+    "response_time_ms": 239.3,
     "test_category": "injection_probe",
     "note": "handled safely",
-    "timestamp": "2026-08-05T19:20:59.114256+00:00"
-  },
-  {
-    "endpoint": "/api/v1/scans/{scan_id}",
-    "method": "GET",
-    "role": "user_a",
-    "status": 422,
-    "expected_status": "422 (UUID type validation)",
-    "finding": false,
-    "severity": "info",
-    "response_time_ms": 6.0,
-    "test_category": "injection_probe",
-    "note": "handled safely",
-    "timestamp": "2026-08-05T19:20:59.120291+00:00"
-  },
-  {
-    "endpoint": "/api/v1/scans/{scan_id}",
-    "method": "GET",
-    "role": "user_a",
-    "status": 422,
-    "expected_status": "422 (UUID type validation)",
-    "finding": false,
-    "severity": "info",
-    "response_time_ms": 5.9,
-    "test_category": "injection_probe",
-    "note": "handled safely",
-    "timestamp": "2026-08-05T19:20:59.126238+00:00"
-  },
-  {
-    "endpoint": "/api/v1/scans/{scan_id}",
-    "method": "GET",
-    "role": "user_a",
-    "status": 422,
-    "expected_status": "422 (UUID type validation)",
-    "finding": false,
-    "severity": "info",
-    "response_time_ms": 12.1,
-    "test_category": "injection_probe",
-    "note": "handled safely",
-    "timestamp": "2026-08-05T19:20:59.138292+00:00"
-  },
-  {
-    "endpoint": "/api/v1/scans/{scan_id}",
-    "method": "GET",
-    "role": "user_a",
-    "status": 422,
-    "expected_status": "422 (UUID type validation)",
-    "finding": false,
-    "severity": "info",
-    "response_time_ms": 7.4,
-    "test_category": "injection_probe",
-    "note": "handled safely",
-    "timestamp": "2026-08-05T19:20:59.145642+00:00"
+    "timestamp": "2026-08-05T20:02:19.568508+00:00"
   },
   {
     "endpoint": "/api/v1/scans/{scan_id}",
@@ -192,7 +140,59 @@
     "response_time_ms": 5.6,
     "test_category": "injection_probe",
     "note": "handled safely",
-    "timestamp": "2026-08-05T19:20:59.152229+00:00"
+    "timestamp": "2026-08-05T20:02:19.574103+00:00"
+  },
+  {
+    "endpoint": "/api/v1/scans/{scan_id}",
+    "method": "GET",
+    "role": "user_a",
+    "status": 422,
+    "expected_status": "422 (UUID type validation)",
+    "finding": false,
+    "severity": "info",
+    "response_time_ms": 5.6,
+    "test_category": "injection_probe",
+    "note": "handled safely",
+    "timestamp": "2026-08-05T20:02:19.579718+00:00"
+  },
+  {
+    "endpoint": "/api/v1/scans/{scan_id}",
+    "method": "GET",
+    "role": "user_a",
+    "status": 422,
+    "expected_status": "422 (UUID type validation)",
+    "finding": false,
+    "severity": "info",
+    "response_time_ms": 23.2,
+    "test_category": "injection_probe",
+    "note": "handled safely",
+    "timestamp": "2026-08-05T20:02:19.602929+00:00"
+  },
+  {
+    "endpoint": "/api/v1/scans/{scan_id}",
+    "method": "GET",
+    "role": "user_a",
+    "status": 422,
+    "expected_status": "422 (UUID type validation)",
+    "finding": false,
+    "severity": "info",
+    "response_time_ms": 5.5,
+    "test_category": "injection_probe",
+    "note": "handled safely",
+    "timestamp": "2026-08-05T20:02:19.609553+00:00"
+  },
+  {
+    "endpoint": "/api/v1/scans/{scan_id}",
+    "method": "GET",
+    "role": "user_a",
+    "status": 422,
+    "expected_status": "422 (UUID type validation)",
+    "finding": false,
+    "severity": "info",
+    "response_time_ms": 5.6,
+    "test_category": "injection_probe",
+    "note": "handled safely",
+    "timestamp": "2026-08-05T20:02:19.615132+00:00"
   },
   {
     "endpoint": "/api/v1/scans?status=",
@@ -202,36 +202,10 @@
     "expected_status": "422 (enum validation)",
     "finding": false,
     "severity": "info",
-    "response_time_ms": 9.6,
+    "response_time_ms": 5.7,
     "test_category": "injection_probe",
     "note": "handled safely",
-    "timestamp": "2026-08-05T19:20:59.161823+00:00"
-  },
-  {
-    "endpoint": "/api/v1/scans?status=",
-    "method": "GET",
-    "role": "user_a",
-    "status": 422,
-    "expected_status": "422 (enum validation)",
-    "finding": false,
-    "severity": "info",
-    "response_time_ms": 6.9,
-    "test_category": "injection_probe",
-    "note": "handled safely",
-    "timestamp": "2026-08-05T19:20:59.168739+00:00"
-  },
-  {
-    "endpoint": "/api/v1/scans?status=",
-    "method": "GET",
-    "role": "user_a",
-    "status": 422,
-    "expected_status": "422 (enum validation)",
-    "finding": false,
-    "severity": "info",
-    "response_time_ms": 6.1,
-    "test_category": "injection_probe",
-    "note": "handled safely",
-    "timestamp": "2026-08-05T19:20:59.174830+00:00"
+    "timestamp": "2026-08-05T20:02:19.620852+00:00"
   },
   {
     "endpoint": "/api/v1/scans?status=",
@@ -244,7 +218,7 @@
     "response_time_ms": 5.9,
     "test_category": "injection_probe",
     "note": "handled safely",
-    "timestamp": "2026-08-05T19:20:59.180720+00:00"
+    "timestamp": "2026-08-05T20:02:19.626775+00:00"
   },
   {
     "endpoint": "/api/v1/scans?status=",
@@ -254,49 +228,62 @@
     "expected_status": "422 (enum validation)",
     "finding": false,
     "severity": "info",
-    "response_time_ms": 5.4,
+    "response_time_ms": 5.6,
     "test_category": "injection_probe",
     "note": "handled safely",
-    "timestamp": "2026-08-05T19:20:59.186744+00:00"
+    "timestamp": "2026-08-05T20:02:19.632330+00:00"
+  },
+  {
+    "endpoint": "/api/v1/scans?status=",
+    "method": "GET",
+    "role": "user_a",
+    "status": 422,
+    "expected_status": "422 (enum validation)",
+    "finding": false,
+    "severity": "info",
+    "response_time_ms": 6.1,
+    "test_category": "injection_probe",
+    "note": "handled safely",
+    "timestamp": "2026-08-05T20:02:19.639478+00:00"
+  },
+  {
+    "endpoint": "/api/v1/scans?status=",
+    "method": "GET",
+    "role": "user_a",
+    "status": 422,
+    "expected_status": "422 (enum validation)",
+    "finding": false,
+    "severity": "info",
+    "response_time_ms": 6.1,
+    "test_category": "injection_probe",
+    "note": "handled safely",
+    "timestamp": "2026-08-05T20:02:19.645590+00:00"
   },
   {
     "endpoint": "/api/v1/auth/login",
     "method": "POST",
     "role": "anon",
     "status": 429,
-    "expected_status": "~222ms (baseline), no multi-second delay",
+    "expected_status": "~4ms (baseline), no multi-second delay",
     "finding": false,
     "severity": "info",
-    "response_time_ms": 4.1,
+    "response_time_ms": 24.1,
     "test_category": "injection_probe",
-    "note": "time-based payload=\"' OR SLEEP(5)--\" delta=-218ms vs baseline 222ms -- no delay, safe",
-    "timestamp": "2026-08-05T19:20:59.651015+00:00"
+    "note": "time-based payload=\"' OR SLEEP(5)--\" delta=20ms vs baseline 4ms -- no delay, safe",
+    "timestamp": "2026-08-05T20:02:19.683222+00:00"
   },
   {
     "endpoint": "/api/v1/auth/login",
     "method": "POST",
     "role": "anon",
     "status": 429,
-    "expected_status": "~222ms (baseline), no multi-second delay",
+    "expected_status": "~4ms (baseline), no multi-second delay",
     "finding": false,
     "severity": "info",
-    "response_time_ms": 14.3,
+    "response_time_ms": 30.1,
     "test_category": "injection_probe",
-    "note": "time-based payload=\"'; SELECT pg_sleep(5);--\" delta=-207ms vs baseline 222ms -- no delay, safe",
-    "timestamp": "2026-08-05T19:20:59.665356+00:00"
-  },
-  {
-    "endpoint": "/api/v1/auth/login",
-    "method": "POST",
-    "role": "anon",
-    "status": 429,
-    "expected_status": "422 (type validation)",
-    "finding": false,
-    "severity": "info",
-    "response_time_ms": 13.7,
-    "test_category": "injection_probe",
-    "note": "NoSQLi-style operator payload {'$ne': None} -> 429",
-    "timestamp": "2026-08-05T19:20:59.679052+00:00"
+    "note": "time-based payload=\"'; SELECT pg_sleep(5);--\" delta=26ms vs baseline 4ms -- no delay, safe",
+    "timestamp": "2026-08-05T20:02:19.713282+00:00"
   },
   {
     "endpoint": "/api/v1/auth/login",
@@ -308,7 +295,20 @@
     "severity": "info",
     "response_time_ms": 4.0,
     "test_category": "injection_probe",
+    "note": "NoSQLi-style operator payload {'$ne': None} -> 429",
+    "timestamp": "2026-08-05T20:02:19.717288+00:00"
+  },
+  {
+    "endpoint": "/api/v1/auth/login",
+    "method": "POST",
+    "role": "anon",
+    "status": 429,
+    "expected_status": "422 (type validation)",
+    "finding": false,
+    "severity": "info",
+    "response_time_ms": 26.2,
+    "test_category": "injection_probe",
     "note": "NoSQLi-style operator payload {'$gt': ''} -> 429",
-    "timestamp": "2026-08-05T19:20:59.684077+00:00"
+    "timestamp": "2026-08-05T20:02:19.743488+00:00"
   }
 ]

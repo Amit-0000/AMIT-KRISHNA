@@ -1,0 +1,358 @@
+name: QA Suite
+
+# Validation, vulnerability (DAST), unit, load, and E2E (Selenium desktop +
+# Appium mobile-web) testing for VoiceGuard, consolidated into one Excel
+# report artifact. Complements backend.yml/frontend.yml/docker.yml (which
+# gate merges) — this workflow is the full release-readiness sweep.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+defaults:
+  run:
+    working-directory: voiceguard
+
+jobs:
+  unit-tests:
+    name: Unit tests (pytest)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: |
+            voiceguard/api/requirements.txt
+            voiceguard/api/requirements-ml.txt
+
+      - name: Install backend + ML dependencies
+        run: |
+          pip install --no-cache-dir -r api/requirements.txt
+          pip install --no-cache-dir -r api/requirements-ml.txt
+          pip install --no-cache-dir pytest-json-report
+
+      - name: Run pytest suite
+        working-directory: voiceguard/api
+        env:
+          PYTHONPATH: ${{ github.workspace }}/voiceguard
+        run: |
+          python -m pytest -v \
+            --json-report --json-report-file="${{ github.workspace }}/automated_test/unit_test_report.json" \
+            --junitxml="${{ github.workspace }}/automated_test/unit_test_report.xml"
+
+      - name: Upload unit test report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: unit-test-report
+          path: |
+            automated_test/unit_test_report.json
+            automated_test/unit_test_report.xml
+          retention-days: 30
+          if-no-files-found: warn
+
+  vulnerability-dast:
+    name: Vulnerability / DAST
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Bring up postgres/redis/backend
+        run: docker compose up -d --build postgres redis backend
+        env:
+          DOCKER_BUILDKIT: "1"
+
+      - name: Wait for backend health
+        run: |
+          for i in $(seq 1 60); do
+            if curl -sf http://localhost:8000/health >/dev/null; then echo "backend healthy"; exit 0; fi
+            sleep 2
+          done
+          echo "backend did not become healthy in time"; exit 1
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install DAST suite dependencies
+        working-directory: automated_test
+        run: pip install --no-cache-dir requests
+
+      - name: Run DAST pipeline
+        working-directory: automated_test
+        run: python run_all.py
+
+      - name: Dump backend logs on failure
+        if: failure()
+        run: docker compose logs backend --tail 300
+
+      - name: Upload DAST report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: dast-report
+          path: |
+            automated_test/report.json
+            automated_test/results/
+          retention-days: 30
+          if-no-files-found: warn
+
+      - name: Tear down
+        if: always()
+        run: docker compose down -v
+
+  load-test:
+    name: Load test (k6)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Bring up stack with loosened login rate limit
+        run: docker compose -f docker-compose.yml -f performance/docker-compose.loadtest.yml up -d --build postgres redis backend
+
+      - name: Wait for backend health
+        run: |
+          for i in $(seq 1 60); do
+            if curl -sf http://localhost:8000/health >/dev/null; then echo "backend healthy"; exit 0; fi
+            sleep 2
+          done
+          echo "backend did not become healthy in time"; exit 1
+
+      - name: Seed load-test users
+        run: |
+          docker cp performance/seed_users.py voiceguard-backend-1:/app/seed_users.py
+          docker compose exec -T backend python seed_users.py 120
+
+      - name: Run k6 baseline load test
+        run: |
+          docker run --rm --network voiceguard_default \
+            -v "${{ github.workspace }}/voiceguard/performance/k6:/scripts" \
+            -e BASE_URL=http://backend:8000 \
+            grafana/k6:latest run /scripts/baseline_load_test.js \
+            --out json=/scripts/raw_metrics_new.json \
+            --summary-export=/scripts/summary_new.json
+
+      - name: Parse results
+        run: |
+          cp performance/k6/raw_metrics_new.json performance/results/raw_metrics.json
+          cp performance/k6/summary_new.json performance/results/summary.json
+          python performance/parse_results.py
+
+      - name: Build load-test Excel artifact
+        run: python performance/build_excel.py
+
+      - name: Upload load-test report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: load-test-report
+          path: |
+            voiceguard/performance/baseline_results.json
+            voiceguard/performance/baseline_results.csv
+            voiceguard/performance/baseline_report.md
+            voiceguard/performance/VoiceGuard_Baseline_Load_Test_Report.xlsx
+          retention-days: 30
+          if-no-files-found: warn
+
+      - name: Tear down
+        if: always()
+        run: docker compose down -v
+
+  selenium-web:
+    name: Selenium (Web E2E)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Bring up full stack
+        run: docker compose up -d --build postgres redis backend frontend
+
+      - name: Wait for frontend + backend health
+        run: |
+          for i in $(seq 1 60); do
+            b=$(curl -s -o /dev/null -w '%{http_code}' http://localhost:8000/health || true)
+            f=$(curl -s -o /dev/null -w '%{http_code}' http://localhost:5173 || true)
+            if [ "$b" = "200" ] && [ "$f" = "200" ]; then echo "stack healthy"; exit 0; fi
+            sleep 2
+          done
+          echo "stack did not become healthy in time"; exit 1
+
+      - name: Provision the DAST fixture account used by Selenium's login test
+        working-directory: automated_test
+        run: |
+          pip install --no-cache-dir requests
+          python setup_env.py
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install Selenium suite dependencies
+        run: pip install --no-cache-dir -r e2e/requirements.txt
+
+      - name: Run Selenium suite (headless Chrome)
+        working-directory: voiceguard/e2e/selenium
+        run: |
+          python -m pytest -v \
+            --json-report --json-report-file="${{ github.workspace }}/voiceguard/e2e/results/selenium_report.json" \
+            --junitxml="${{ github.workspace }}/voiceguard/e2e/results/selenium_report.xml"
+
+      - name: Upload Selenium report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: selenium-report
+          path: voiceguard/e2e/results/selenium_report.*
+          retention-days: 30
+          if-no-files-found: warn
+
+      - name: Tear down
+        if: always()
+        run: docker compose down -v
+
+  appium-mobile-web:
+    name: Appium (Mobile Web, Android emulator)
+    runs-on: ubuntu-latest
+    # Slow (emulator boot + Appium server) and the app has no native mobile
+    # client — this covers the responsive/mobile-viewport UI path only.
+    # Non-blocking until this job has a proven green baseline.
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Bring up full stack
+        run: docker compose up -d --build postgres redis backend frontend
+
+      - name: Wait for frontend + backend health
+        run: |
+          for i in $(seq 1 60); do
+            b=$(curl -s -o /dev/null -w '%{http_code}' http://localhost:8000/health || true)
+            f=$(curl -s -o /dev/null -w '%{http_code}' http://localhost:5173 || true)
+            if [ "$b" = "200" ] && [ "$f" = "200" ]; then echo "stack healthy"; exit 0; fi
+            sleep 2
+          done
+          echo "stack did not become healthy in time"; exit 1
+
+      - name: Provision the DAST fixture account used by Appium's login test
+        working-directory: automated_test
+        run: |
+          pip install --no-cache-dir requests
+          python setup_env.py
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install Appium suite dependencies
+        run: |
+          pip install --no-cache-dir -r e2e/requirements.txt
+          npm install -g appium
+          appium driver install uiautomator2
+
+      - name: Start Appium server
+        run: |
+          nohup appium --base-path /wd/hub --log-timestamp > "${{ github.workspace }}/appium.log" 2>&1 &
+          disown
+          for i in $(seq 1 30); do
+            curl -sf http://127.0.0.1:4723/wd/hub/status >/dev/null && { echo "appium server up"; exit 0; }
+            sleep 2
+          done
+          echo "appium server did not start in time"; cat "${{ github.workspace }}/appium.log"; exit 1
+
+      - name: Run Appium mobile-web suite on Android emulator
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 33
+          target: google_apis
+          arch: x86_64
+          profile: pixel_5
+          script: |
+            cd "${{ github.workspace }}/voiceguard/e2e/appium"
+            python -m pytest -v \
+              --json-report --json-report-file="${{ github.workspace }}/voiceguard/e2e/results/appium_report.json" \
+              --junitxml="${{ github.workspace }}/voiceguard/e2e/results/appium_report.xml"
+        env:
+          APPIUM_SERVER_URL: http://127.0.0.1:4723/wd/hub
+          APPIUM_BASE_URL: http://10.0.2.2:5173
+
+      - name: Upload Appium report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: appium-report
+          path: voiceguard/e2e/results/appium_report.*
+          retention-days: 30
+          if-no-files-found: warn
+
+      - name: Tear down
+        if: always()
+        run: docker compose down -v
+
+  build-report:
+    name: Build consolidated Excel report
+    runs-on: ubuntu-latest
+    needs: [unit-tests, vulnerability-dast, load-test, selenium-web, appium-mobile-web]
+    if: always()
+    defaults:
+      run:
+        working-directory: .
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install report-builder dependencies
+        run: pip install --no-cache-dir openpyxl
+
+      - name: Download all test artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+
+      - name: Assemble artifacts into expected report-builder layout
+        # actions/download-artifact preserves whatever path structure each
+        # producing job's upload-artifact step happened to record, which
+        # isn't worth hard-coding here — find each expected file by name
+        # instead of guessing its nested path.
+        run: |
+          mkdir -p automated_test/results voiceguard/performance voiceguard/e2e/results
+          find artifacts -name unit_test_report.json -exec cp {} automated_test/ \;
+          find artifacts/dast-report -name report.json -exec cp {} automated_test/ \;
+          find artifacts/dast-report -path "*/results/*.json" -exec cp {} automated_test/results/ \;
+          find artifacts -name baseline_results.json -exec cp {} voiceguard/performance/ \;
+          find artifacts -name selenium_report.json -exec cp {} voiceguard/e2e/results/ \;
+          find artifacts -name appium_report.json -exec cp {} voiceguard/e2e/results/ \; || true
+          echo "--- assembled tree ---"
+          find automated_test voiceguard/performance voiceguard/e2e/results -type f
+
+      - name: Build master Excel report
+        run: python voiceguard/reports/build_master_test_report.py
+
+      - name: Upload master report
+        uses: actions/upload-artifact@v4
+        with:
+          name: VoiceGuard_App_Testing_Report
+          path: voiceguard/reports/VoiceGuard_App_Testing_Report.xlsx
+          retention-days: 90

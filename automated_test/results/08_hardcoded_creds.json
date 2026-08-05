@@ -1,201 +1,219 @@
 [
   {
-    "file": "automated_test/report.json",
-    "line": 2599,
-    "pattern": "generic_password_assignment",
-    "excerpt": "\"note\": \"false positive (third-party dependency fixture), pattern=generic_password_assignment, line 859: *   PWD: '/Users/maciej',\","
-  },
-  {
-    "file": "automated_test/report.json",
-    "line": 2612,
-    "pattern": "generic_password_assignment",
-    "excerpt": "\"note\": \"false positive (third-party dependency fixture), pattern=generic_password_assignment, line 831: password: 's00pers3cret'\","
-  },
-  {
-    "file": "automated_test/report.json",
-    "line": 2625,
-    "pattern": "generic_password_assignment",
-    "excerpt": "\"note\": \"false positive (third-party dependency fixture), pattern=generic_password_assignment, line 1015: password: 'rapunz3l'\","
-  },
-  {
-    "file": "automated_test/report.json",
-    "line": 2638,
-    "pattern": "db_url_with_password",
-    "excerpt": "\"note\": \"false positive (third-party dependency fixture), pattern=db_url_with_password, line 58: const keyv = new Keyv('mongodb://user:pass@localhost:27017/dbna"
-  },
-  {
-    "file": "automated_test/report.json",
-    "line": 2651,
-    "pattern": "db_url_with_password",
-    "excerpt": "\"note\": \"false positive (third-party dependency fixture), pattern=db_url_with_password, line 60: const keyv = new Keyv('postgresql://user:pass@localhost:5432/db"
-  },
-  {
-    "file": "automated_test/report.json",
-    "line": 2664,
-    "pattern": "db_url_with_password",
-    "excerpt": "\"note\": \"false positive (third-party dependency fixture), pattern=db_url_with_password, line 61: const keyv = new Keyv('mysql://user:pass@localhost:3306/dbname'"
-  },
-  {
-    "file": "automated_test/report.json",
-    "line": 2833,
-    "pattern": "db_url_with_password",
-    "excerpt": "\"note\": \"false positive (third-party dependency fixture), pattern=db_url_with_password, line 170: | `mongodb://${string}:${string}@${string}:${number}`\","
-  },
-  {
-    "file": "automated_test/report.json",
-    "line": 2846,
-    "pattern": "db_url_with_password",
-    "excerpt": "\"note\": \"false positive (third-party dependency fixture), pattern=db_url_with_password, line 171: | `mongodb://${string}:${string}@${string}:${number}/${string}"
-  },
-  {
-    "file": "automated_test/report.json",
-    "line": 2859,
-    "pattern": "db_url_with_password",
-    "excerpt": "\"note\": \"false positive (third-party dependency fixture), pattern=db_url_with_password, line 172: | `mongodb://${string}:${string}@${string}:${number}/${string}"
-  },
-  {
-    "file": "automated_test/report.json",
-    "line": 2872,
-    "pattern": "db_url_with_password",
-    "excerpt": "\"note\": \"false positive (third-party dependency fixture), pattern=db_url_with_password, line 644: connectionString.parse(\\\"mongodb://username:password@host:1234"
-  },
-  {
-    "file": "automated_test/report.json",
-    "line": 2885,
-    "pattern": "db_url_with_password",
-    "excerpt": "\"note\": \"false positive (third-party dependency fixture), pattern=db_url_with_password, line 645: connectionString.parse(\\\"mongodb://username:password@host:1234"
-  },
-  {
-    "file": "automated_test/report.json",
-    "line": 2898,
-    "pattern": "db_url_with_password",
-    "excerpt": "\"note\": \"false positive (third-party dependency fixture), pattern=db_url_with_password, line 646: connectionString.parse(\\\"mongodb://username:password@host:1234"
-  },
-  {
-    "file": "automated_test/report.json",
-    "line": 2911,
-    "pattern": "db_url_with_password",
-    "excerpt": "\"note\": \"false positive (third-party dependency fixture), pattern=db_url_with_password, line 647: connectionString.parse(\\\"mongodb://username:password@host:1234"
-  },
-  {
-    "file": "automated_test/report.json",
-    "line": 2924,
-    "pattern": "db_url_with_password",
-    "excerpt": "\"note\": \"false positive (third-party dependency fixture), pattern=db_url_with_password, line 649: \\\"mongodb://username:password@host:1234/defaultauthdb?authSour"
-  },
-  {
-    "file": "automated_test/report.json",
-    "line": 2937,
-    "pattern": "db_url_with_password",
-    "excerpt": "\"note\": \"false positive (third-party dependency fixture), pattern=db_url_with_password, line 651: connectionString.parse(\\\"mongodb://username:password@host:1234"
-  },
-  {
-    "file": "automated_test/report.json",
-    "line": 2950,
-    "pattern": "db_url_with_password",
-    "excerpt": "\"note\": \"false positive (third-party dependency fixture), pattern=db_url_with_password, line 652: connectionString.parse(\\\"mongodb://username:password@host:1234"
-  },
-  {
     "file": "automated_test/results/08_hardcoded_creds.json",
     "line": 6,
-    "pattern": "db_url_with_password",
-    "excerpt": "\"excerpt\": \"\\u2014 Connection string: postgresql+asyncpg://user:pass@host:5432/db?ssl=require\""
+    "pattern": "generic_password_assignment",
+    "excerpt": "\"excerpt\": \"\\\"note\\\": \\\"false positive (third-party dependency fixture), pattern=generic_password_assignment, line 859: *   PWD: '/Users/maciej',\\\",\""
   },
   {
     "file": "automated_test/results/08_hardcoded_creds.json",
     "line": 12,
     "pattern": "generic_password_assignment",
-    "excerpt": "\"excerpt\": \"*   PWD: '/Users/maciej',\""
+    "excerpt": "\"excerpt\": \"\\\"note\\\": \\\"false positive (third-party dependency fixture), pattern=generic_password_assignment, line 831: password: 's00pers3cret'\\\",\""
   },
   {
     "file": "automated_test/results/08_hardcoded_creds.json",
     "line": 18,
     "pattern": "generic_password_assignment",
-    "excerpt": "\"excerpt\": \"password: 's00pers3cret'\""
+    "excerpt": "\"excerpt\": \"\\\"note\\\": \\\"false positive (third-party dependency fixture), pattern=generic_password_assignment, line 1015: password: 'rapunz3l'\\\",\""
   },
   {
     "file": "automated_test/results/08_hardcoded_creds.json",
     "line": 24,
-    "pattern": "generic_password_assignment",
-    "excerpt": "\"excerpt\": \"password: 'rapunz3l'\""
+    "pattern": "db_url_with_password",
+    "excerpt": "\"excerpt\": \"\\\"note\\\": \\\"false positive (third-party dependency fixture), pattern=db_url_with_password, line 58: const keyv = new Keyv('mongodb://user:pass@local"
   },
   {
     "file": "automated_test/results/08_hardcoded_creds.json",
     "line": 30,
     "pattern": "db_url_with_password",
-    "excerpt": "\"excerpt\": \"const keyv = new Keyv('mongodb://user:pass@localhost:27017/dbname');\""
+    "excerpt": "\"excerpt\": \"\\\"note\\\": \\\"false positive (third-party dependency fixture), pattern=db_url_with_password, line 60: const keyv = new Keyv('postgresql://user:pass@lo"
   },
   {
     "file": "automated_test/results/08_hardcoded_creds.json",
     "line": 36,
     "pattern": "db_url_with_password",
-    "excerpt": "\"excerpt\": \"const keyv = new Keyv('postgresql://user:pass@localhost:5432/dbname');\""
+    "excerpt": "\"excerpt\": \"\\\"note\\\": \\\"false positive (third-party dependency fixture), pattern=db_url_with_password, line 61: const keyv = new Keyv('mysql://user:pass@localho"
   },
   {
     "file": "automated_test/results/08_hardcoded_creds.json",
     "line": 42,
     "pattern": "db_url_with_password",
-    "excerpt": "\"excerpt\": \"const keyv = new Keyv('mysql://user:pass@localhost:3306/dbname');\""
+    "excerpt": "\"excerpt\": \"\\\"note\\\": \\\"false positive (third-party dependency fixture), pattern=db_url_with_password, line 170: | `mongodb://${string}:${string}@${string}:${nu"
+  },
+  {
+    "file": "automated_test/results/08_hardcoded_creds.json",
+    "line": 48,
+    "pattern": "db_url_with_password",
+    "excerpt": "\"excerpt\": \"\\\"note\\\": \\\"false positive (third-party dependency fixture), pattern=db_url_with_password, line 171: | `mongodb://${string}:${string}@${string}:${nu"
+  },
+  {
+    "file": "automated_test/results/08_hardcoded_creds.json",
+    "line": 54,
+    "pattern": "db_url_with_password",
+    "excerpt": "\"excerpt\": \"\\\"note\\\": \\\"false positive (third-party dependency fixture), pattern=db_url_with_password, line 172: | `mongodb://${string}:${string}@${string}:${nu"
+  },
+  {
+    "file": "automated_test/results/08_hardcoded_creds.json",
+    "line": 60,
+    "pattern": "db_url_with_password",
+    "excerpt": "\"excerpt\": \"\\\"note\\\": \\\"false positive (third-party dependency fixture), pattern=db_url_with_password, line 644: connectionString.parse(\\\\\\\"mongodb://username:p"
+  },
+  {
+    "file": "automated_test/results/08_hardcoded_creds.json",
+    "line": 66,
+    "pattern": "db_url_with_password",
+    "excerpt": "\"excerpt\": \"\\\"note\\\": \\\"false positive (third-party dependency fixture), pattern=db_url_with_password, line 645: connectionString.parse(\\\\\\\"mongodb://username:p"
+  },
+  {
+    "file": "automated_test/results/08_hardcoded_creds.json",
+    "line": 72,
+    "pattern": "db_url_with_password",
+    "excerpt": "\"excerpt\": \"\\\"note\\\": \\\"false positive (third-party dependency fixture), pattern=db_url_with_password, line 646: connectionString.parse(\\\\\\\"mongodb://username:p"
+  },
+  {
+    "file": "automated_test/results/08_hardcoded_creds.json",
+    "line": 78,
+    "pattern": "db_url_with_password",
+    "excerpt": "\"excerpt\": \"\\\"note\\\": \\\"false positive (third-party dependency fixture), pattern=db_url_with_password, line 647: connectionString.parse(\\\\\\\"mongodb://username:p"
+  },
+  {
+    "file": "automated_test/results/08_hardcoded_creds.json",
+    "line": 84,
+    "pattern": "db_url_with_password",
+    "excerpt": "\"excerpt\": \"\\\"note\\\": \\\"false positive (third-party dependency fixture), pattern=db_url_with_password, line 649: \\\\\\\"mongodb://username:password@host:1234/defau"
+  },
+  {
+    "file": "automated_test/results/08_hardcoded_creds.json",
+    "line": 90,
+    "pattern": "db_url_with_password",
+    "excerpt": "\"excerpt\": \"\\\"note\\\": \\\"false positive (third-party dependency fixture), pattern=db_url_with_password, line 651: connectionString.parse(\\\\\\\"mongodb://username:p"
+  },
+  {
+    "file": "automated_test/results/08_hardcoded_creds.json",
+    "line": 96,
+    "pattern": "db_url_with_password",
+    "excerpt": "\"excerpt\": \"\\\"note\\\": \\\"false positive (third-party dependency fixture), pattern=db_url_with_password, line 652: connectionString.parse(\\\\\\\"mongodb://username:p"
+  },
+  {
+    "file": "automated_test/results/08_hardcoded_creds.json",
+    "line": 102,
+    "pattern": "db_url_with_password",
+    "excerpt": "\"excerpt\": \"\\\"excerpt\\\": \\\"\\\\u2014 Connection string: postgresql+asyncpg://user:pass@host:5432/db?ssl=require\\\"\""
+  },
+  {
+    "file": "automated_test/results/08_hardcoded_creds.json",
+    "line": 108,
+    "pattern": "generic_password_assignment",
+    "excerpt": "\"excerpt\": \"\\\"excerpt\\\": \\\"*   PWD: '/Users/maciej',\\\"\""
+  },
+  {
+    "file": "automated_test/results/08_hardcoded_creds.json",
+    "line": 114,
+    "pattern": "generic_password_assignment",
+    "excerpt": "\"excerpt\": \"\\\"excerpt\\\": \\\"password: 's00pers3cret'\\\"\""
   },
   {
     "file": "automated_test/results/08_hardcoded_creds.json",
     "line": 120,
-    "pattern": "db_url_with_password",
-    "excerpt": "\"excerpt\": \"| `mongodb://${string}:${string}@${string}:${number}`\""
+    "pattern": "generic_password_assignment",
+    "excerpt": "\"excerpt\": \"\\\"excerpt\\\": \\\"password: 'rapunz3l'\\\"\""
   },
   {
     "file": "automated_test/results/08_hardcoded_creds.json",
     "line": 126,
     "pattern": "db_url_with_password",
-    "excerpt": "\"excerpt\": \"| `mongodb://${string}:${string}@${string}:${number}/${string}`\""
+    "excerpt": "\"excerpt\": \"\\\"excerpt\\\": \\\"const keyv = new Keyv('mongodb://user:pass@localhost:27017/dbname');\\\"\""
   },
   {
     "file": "automated_test/results/08_hardcoded_creds.json",
     "line": 132,
     "pattern": "db_url_with_password",
-    "excerpt": "\"excerpt\": \"| `mongodb://${string}:${string}@${string}:${number}/${string}?${string}`\""
+    "excerpt": "\"excerpt\": \"\\\"excerpt\\\": \\\"const keyv = new Keyv('postgresql://user:pass@localhost:5432/dbname');\\\"\""
   },
   {
     "file": "automated_test/results/08_hardcoded_creds.json",
     "line": 138,
     "pattern": "db_url_with_password",
-    "excerpt": "\"excerpt\": \"connectionString.parse(\\\"mongodb://username:password@host:1234\\\");\""
+    "excerpt": "\"excerpt\": \"\\\"excerpt\\\": \\\"const keyv = new Keyv('mysql://user:pass@localhost:3306/dbname');\\\"\""
   },
   {
     "file": "automated_test/results/08_hardcoded_creds.json",
     "line": 144,
     "pattern": "db_url_with_password",
-    "excerpt": "\"excerpt\": \"connectionString.parse(\\\"mongodb://username:password@host:1234/\\\");\""
+    "excerpt": "\"excerpt\": \"\\\"excerpt\\\": \\\"| `mongodb://${string}:${string}@${string}:${number}`\\\"\""
   },
   {
     "file": "automated_test/results/08_hardcoded_creds.json",
     "line": 150,
     "pattern": "db_url_with_password",
-    "excerpt": "\"excerpt\": \"connectionString.parse(\\\"mongodb://username:password@host:1234/defaultauthdb\\\");\""
+    "excerpt": "\"excerpt\": \"\\\"excerpt\\\": \\\"| `mongodb://${string}:${string}@${string}:${number}/${string}`\\\"\""
   },
   {
     "file": "automated_test/results/08_hardcoded_creds.json",
     "line": 156,
     "pattern": "db_url_with_password",
-    "excerpt": "\"excerpt\": \"connectionString.parse(\\\"mongodb://username:password@host:1234/defaultauthdb?authSource=admin\\\");\""
+    "excerpt": "\"excerpt\": \"\\\"excerpt\\\": \\\"| `mongodb://${string}:${string}@${string}:${number}/${string}?${string}`\\\"\""
   },
   {
     "file": "automated_test/results/08_hardcoded_creds.json",
     "line": 162,
     "pattern": "db_url_with_password",
-    "excerpt": "\"excerpt\": \"\\\"mongodb://username:password@host:1234/defaultauthdb?authSource=admin&connectTimeoutMS=300000\\\"\""
+    "excerpt": "\"excerpt\": \"\\\"excerpt\\\": \\\"connectionString.parse(\\\\\\\"mongodb://username:password@host:1234\\\\\\\");\\\"\""
   },
   {
     "file": "automated_test/results/08_hardcoded_creds.json",
     "line": 168,
     "pattern": "db_url_with_password",
-    "excerpt": "\"excerpt\": \"connectionString.parse(\\\"mongodb://username:password@host:1234/?authSource=admin\\\");\""
+    "excerpt": "\"excerpt\": \"\\\"excerpt\\\": \\\"connectionString.parse(\\\\\\\"mongodb://username:password@host:1234/\\\\\\\");\\\"\""
   },
   {
     "file": "automated_test/results/08_hardcoded_creds.json",
     "line": 174,
     "pattern": "db_url_with_password",
-    "excerpt": "\"excerpt\": \"connectionString.parse(\\\"mongodb://username:password@host:1234/?authSource=admin&connectTimeoutMS=300000\\\");\""
+    "excerpt": "\"excerpt\": \"\\\"excerpt\\\": \\\"connectionString.parse(\\\\\\\"mongodb://username:password@host:1234/defaultauthdb\\\\\\\");\\\"\""
+  },
+  {
+    "file": "automated_test/results/08_hardcoded_creds.json",
+    "line": 180,
+    "pattern": "db_url_with_password",
+    "excerpt": "\"excerpt\": \"\\\"excerpt\\\": \\\"connectionString.parse(\\\\\\\"mongodb://username:password@host:1234/defaultauthdb?authSource=admin\\\\\\\");\\\"\""
+  },
+  {
+    "file": "automated_test/results/08_hardcoded_creds.json",
+    "line": 186,
+    "pattern": "db_url_with_password",
+    "excerpt": "\"excerpt\": \"\\\"excerpt\\\": \\\"\\\\\\\"mongodb://username:password@host:1234/defaultauthdb?authSource=admin&connectTimeoutMS=300000\\\\\\\"\\\"\""
+  },
+  {
+    "file": "automated_test/results/08_hardcoded_creds.json",
+    "line": 192,
+    "pattern": "db_url_with_password",
+    "excerpt": "\"excerpt\": \"\\\"excerpt\\\": \\\"connectionString.parse(\\\\\\\"mongodb://username:password@host:1234/?authSource=admin\\\\\\\");\\\"\""
+  },
+  {
+    "file": "automated_test/results/08_hardcoded_creds.json",
+    "line": 198,
+    "pattern": "db_url_with_password",
+    "excerpt": "\"excerpt\": \"\\\"excerpt\\\": \\\"connectionString.parse(\\\\\\\"mongodb://username:password@host:1234/?authSource=admin&connectTimeoutMS=300000\\\\\\\");\\\"\""
+  },
+  {
+    "file": "automated_test/results/08_hardcoded_creds.json",
+    "line": 204,
+    "pattern": "jwt_secret_assignment",
+    "excerpt": "\"excerpt\": \"JWT_SECRET=b6f1e6c1a6e94e3f8a6c1b9d2f4e7a1c9d3b5f8e0a2c4d6f8b1e3a5c7d9f0b2e4\""
+  },
+  {
+    "file": "automated_test/results/08_hardcoded_creds.json",
+    "line": 210,
+    "pattern": "generic_password_assignment",
+    "excerpt": "\"excerpt\": \"password: 'password',\""
+  },
+  {
+    "file": "automated_test/results/08_hardcoded_creds.json",
+    "line": 216,
+    "pattern": "generic_password_assignment",
+    "excerpt": "\"excerpt\": \"const PASSWORD = 'LoadTest!2345';\""
   },
   {
     "file": "voiceguard/api/.env.example",

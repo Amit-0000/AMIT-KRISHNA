@@ -7,6 +7,7 @@ from __future__ import annotations
 import io
 import struct
 import sys
+import time
 from pathlib import Path
 
 import requests
@@ -17,10 +18,17 @@ from http_client import load_input  # noqa: E402
 
 def make_valid_wav_bytes(seconds: float = 1.0) -> bytes:
     """Minimal valid 16-bit PCM mono WAV so upload validation (min 1024 bytes,
-    real audio content for downstream preprocessing) passes."""
+    real audio content for downstream preprocessing) passes.
+
+    Seeds the first sample with the current timestamp so re-running this
+    script produces a distinct sha256 each time — otherwise identical silent
+    bytes trip the API's duplicate-upload check on a second run against
+    already-seeded data."""
     sample_rate = 16000
     n_samples = int(sample_rate * seconds)
-    data = struct.pack("<" + "h" * n_samples, *([0] * n_samples))
+    samples = [0] * n_samples
+    samples[0] = int(time.time_ns()) % 30000 - 15000
+    data = struct.pack("<" + "h" * n_samples, *samples)
     byte_rate = sample_rate * 2
     header = b"RIFF" + struct.pack("<I", 36 + len(data)) + b"WAVEfmt "
     header += struct.pack("<IHHIIHH", 16, 1, 1, sample_rate, byte_rate, 2, 16)

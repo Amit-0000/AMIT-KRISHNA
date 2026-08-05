@@ -66,7 +66,16 @@ def register(email: str, password: str, display_name: str) -> None:
         raise RuntimeError(f"register failed for {email}: {r.status_code} {r.text}")
 
 
-def verify(email: str) -> None:
+def verify(email: str, password: str) -> None:
+    # Idempotency: the fixture accounts persist across container recreations
+    # (named postgres volume), but each new backend container starts with an
+    # empty console-email log — so a prior run's verification can't be
+    # re-derived from logs on a later run. If login already works, the
+    # account is already verified; skip the log-grep token lookup entirely.
+    probe = requests.post(f"{API}/auth/login", json={"email": email, "password": password}, timeout=10)
+    if probe.status_code == 200:
+        print(f"  {email} already verified (login succeeded), skipping")
+        return
     token = get_verification_token(email)
     r = requests.post(f"{API}/auth/verify-email", json={"token": token}, timeout=10)
     if r.status_code != 200:
@@ -99,14 +108,28 @@ def promote_to_admin(email: str) -> None:
     print(f"  promoted {email} to admin: {result.stdout.strip()}")
 
 
+def already_provisioned(email: str, password: str) -> bool:
+    """True if this account can already log in (registered + verified from a
+    prior run) — skips both register() and verify() so re-running this
+    script against already-seeded data doesn't burn register-rate-limit
+    budget (5/hour/IP) on calls whose outcome we already know."""
+    r = requests.post(f"{API}/auth/login", json={"email": email, "password": password}, timeout=10)
+    return r.status_code == 200
+
+
 def main() -> None:
+    pending = {k: u for k, u in USERS.items() if not already_provisioned(u["email"], u["password"])}
+    if len(pending) < len(USERS):
+        skipped = [u["email"] for k, u in USERS.items() if k not in pending]
+        print(f"=== Skipping register+verify for already-provisioned accounts: {skipped} ===")
+
     print("=== Registering test accounts ===")
-    for key, u in USERS.items():
+    for key, u in pending.items():
         register(u["email"], u["password"], u["display_name"])
 
     print("=== Verifying emails ===")
-    for key, u in USERS.items():
-        verify(u["email"])
+    for key, u in pending.items():
+        verify(u["email"], u["password"])
 
     print("=== Promoting admin account ===")
     promote_to_admin(USERS["admin"]["email"])
