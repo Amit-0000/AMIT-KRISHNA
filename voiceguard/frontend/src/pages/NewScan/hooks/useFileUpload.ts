@@ -2,9 +2,14 @@ import { useCallback, useEffect, useReducer, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import type { UploadState, ValidationError } from '../types'
 import { submitScan } from '../services/uploadApi'
+import { parseApiError } from '@/lib/apiError'
 
 // ─── Constants ────────────────────────────────────────────────────────────────
-
+// Mirrors api.core.audio_formats.ALLOWED_AUDIO_EXTENSIONS and
+// Settings.MAX_UPLOAD_SIZE_BYTES — kept in sync by hand since the two
+// codebases don't share a generated contract. A mismatch here just means a
+// slower round-trip to discover the same rejection server-side, not a
+// security gap (the server re-validates everything regardless).
 const ACCEPTED_MIME: Record<string, string> = {
   'audio/wav': 'WAV',
   'audio/x-wav': 'WAV',
@@ -20,9 +25,9 @@ const ACCEPTED_MIME: Record<string, string> = {
   'audio/x-m4a': 'M4A',
   'video/mp4': 'M4A',
 }
-const ACCEPTED_EXT = /\.(wav|mp3|ogg|flac|aiff|aif|m4a)$/i
-const MAX_SIZE = 50 * 1024 * 1024    // 50 MB
-const MAX_DURATION = 600              // 10 minutes
+const ACCEPTED_EXT = /\.(wav|mp3|ogg|flac|aiff|m4a)$/i
+const MAX_SIZE = 10 * 1024 * 1024    // 10 MB — matches MAX_UPLOAD_SIZE_BYTES
+const MAX_DURATION = 600              // 10 minutes — client-side courtesy check only; not server-enforced in this slice
 
 // ─── State machine ────────────────────────────────────────────────────────────
 
@@ -158,7 +163,7 @@ export function useFileUpload() {
       if (file.size > MAX_SIZE) {
         errors.push({
           code: 'size',
-          message: `File is ${(file.size / 1024 / 1024).toFixed(1)} MB — maximum is 50 MB.`,
+          message: `File is ${(file.size / 1024 / 1024).toFixed(1)} MB — maximum is 10 MB.`,
         })
       }
 
@@ -228,14 +233,16 @@ export function useFileUpload() {
     } catch (err: unknown) {
       if (signal.aborted) return
 
-      let message = 'Upload failed. Please check your connection and try again.'
-
-      if (err && typeof err === 'object' && 'response' in err) {
-        const status = (err as { response?: { status?: number } }).response?.status
-        if (status === 413) message = 'File is too large for the server. Try compressing or trimming the audio.'
-        else if (status === 415) message = 'Audio format rejected by server. Try converting to WAV or MP3.'
-        else if (status === 429) message = 'Daily scan limit reached. Please try again tomorrow.'
-        else if (status === 503) message = 'Service temporarily unavailable. Please try again in a moment.'
+      // The backend already computes a precise, user-facing message for
+      // every rejection reason (too large, wrong format, duplicate, rate
+      // limited, ...) — surface that directly instead of re-guessing it
+      // from the status code.
+      const parsed = parseApiError(err)
+      let message = parsed.status === null
+        ? 'Upload failed. Please check your connection and try again.'
+        : parsed.message
+      if (parsed.status === 429 && parsed.retryAfter) {
+        message = `${message} Try again in ${parsed.retryAfter}s.`
       }
 
       dispatch({ type: 'UPLOAD_ERROR', message })

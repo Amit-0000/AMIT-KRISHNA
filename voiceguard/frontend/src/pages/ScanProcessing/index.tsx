@@ -131,7 +131,7 @@ export function ScanProcessingPage() {
   if (!scanId) return null
 
   const handleRetry = () => {
-    resetMockCount(scanId)
+    resetMockCount()
     setRetryKey((k) => k + 1)
   }
 

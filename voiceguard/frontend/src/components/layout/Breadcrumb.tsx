@@ -4,7 +4,12 @@ import { cn } from '@/lib/utils'
 import { ROUTE_LABELS } from './nav-config'
 import type { BreadcrumbItem } from '@/types'
 
-function buildCrumbs(pathname: string): BreadcrumbItem[] {
+const DYNAMIC_SEGMENT_LABELS: Record<string, string> = {
+  scanId: 'Scan Result',
+  articleSlug: 'Article',
+}
+
+function buildCrumbs(pathname: string, params: Readonly<Record<string, string | undefined>>): BreadcrumbItem[] {
   const crumbs: BreadcrumbItem[] = []
 
   // Always root the breadcrumb at Dashboard for authenticated routes
@@ -25,10 +30,14 @@ function buildCrumbs(pathname: string): BreadcrumbItem[] {
     // Skip first segment if it's already shown as root
     if (accumulated === '/dashboard' && !isLast) continue
 
+    const dynamicParamKey = Object.keys(params).find((key) => params[key] === seg)
+
     if (knownLabel) {
       crumbs.push({ label: knownLabel, href: isLast ? undefined : accumulated })
+    } else if (dynamicParamKey && DYNAMIC_SEGMENT_LABELS[dynamicParamKey]) {
+      crumbs.push({ label: DYNAMIC_SEGMENT_LABELS[dynamicParamKey], href: isLast ? undefined : accumulated })
     } else {
-      // Dynamic segment — show abbreviated ID or a generic label
+      // Dynamic segment with no friendly label — show an abbreviated ID
       const label = seg.length > 12 ? seg.slice(0, 8) + '…' : seg
       crumbs.push({ label, href: isLast ? undefined : accumulated })
     }
@@ -45,20 +54,9 @@ interface BreadcrumbProps {
 export function Breadcrumb({ className, overrides }: BreadcrumbProps) {
   const location = useLocation()
   const params = useParams()
-  const crumbs = overrides ?? buildCrumbs(location.pathname)
+  const finalCrumbs = overrides ?? buildCrumbs(location.pathname, params)
 
-  if (crumbs.length === 0) return null
-
-  // Dynamic scan ID crumb label
-  const finalCrumbs = crumbs.map((c) => {
-    if (params.scanId && c.label === params.scanId) {
-      return { ...c, label: 'Scan Result' }
-    }
-    if (params.articleSlug && c.label === params.articleSlug) {
-      return { ...c, label: 'Article' }
-    }
-    return c
-  })
+  if (finalCrumbs.length === 0) return null
 
   return (
     <nav

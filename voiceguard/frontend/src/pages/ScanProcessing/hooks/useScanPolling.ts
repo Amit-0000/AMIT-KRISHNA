@@ -1,6 +1,6 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { pollScanStatus, type PollPhase } from '../services/processingApi'
+import { pollScanStatus, startAIProcessing, type PollPhase } from '../services/processingApi'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -32,6 +32,11 @@ const COMPLETION_PAUSE_MS = 750
 export function useScanPolling(scanId: string): PollingState {
   const navigate = useNavigate()
   const [state, setState] = useState<PollingState>(INITIAL)
+  // Guards startAIProcessing to fire at most once per mount — the backend
+  // is idempotent-safe against a duplicate call regardless (see
+  // processingApi.startAIProcessing), this just avoids firing it on every
+  // 1.2s poll while the scan is still mid-pipeline.
+  const aiProcessingStarted = useRef(false)
 
   // ── Elapsed timer ────────────────────────────────────────────────────────────
   useEffect(() => {
@@ -52,6 +57,11 @@ export function useScanPolling(scanId: string): PollingState {
 
       try {
         const update = await pollScanStatus(scanId)
+
+        if (update.status === 'ready_for_ai' && !aiProcessingStarted.current) {
+          aiProcessingStarted.current = true
+          await startAIProcessing(scanId)
+        }
 
         if (cancelled) return
 

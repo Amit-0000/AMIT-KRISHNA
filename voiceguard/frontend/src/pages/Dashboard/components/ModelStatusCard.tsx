@@ -62,11 +62,13 @@ export function ModelStatusCard({ status, loading = false }: ModelStatusCardProp
           <>
             {[
               { label: 'Version',       value: status.version },
-              { label: 'EER',           value: `${status.eer_pct}%` },
-              { label: 'Avg inference', value: `${status.avg_inference_ms}ms` },
-              { label: 'Uptime',        value: `${status.uptime_pct}%` },
-              { label: 'Parameters',    value: status.parameters.toLocaleString() },
-            ].map(({ label, value }) => (
+              status.eer_pct != null ? { label: 'EER', value: `${status.eer_pct}%` } : null,
+              status.avg_inference_ms != null ? { label: 'Avg inference', value: `${status.avg_inference_ms}ms` } : null,
+              status.uptime_pct != null ? { label: 'Uptime', value: `${status.uptime_pct}%` } : null,
+              status.parameters != null ? { label: 'Parameters', value: status.parameters.toLocaleString() } : null,
+            ]
+              .filter((row): row is { label: string; value: string } => row !== null)
+              .map(({ label, value }) => (
               <div key={label} className="flex items-center justify-between gap-3">
                 <span className="text-xs text-text-tertiary">{label}</span>
                 <span className="text-xs font-semibold text-text-primary font-mono">{value}</span>

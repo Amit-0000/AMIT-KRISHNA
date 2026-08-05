@@ -34,6 +34,10 @@ export function ProductPreviewCard() {
   const springY = useSpring(rotateY, { stiffness: 200, damping: 30 })
   const shadowX = useTransform(springY, [-8, 8], [-10, 10])
   const shadowY = useTransform(springX, [-8, 8], [10, -10])
+  const boxShadow = useTransform(
+    [shadowX, shadowY],
+    ([x, y]) => `${x as number}px ${y as number}px 40px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.08)`
+  )
 
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
     if (reducedMotion) return
@@ -99,17 +103,7 @@ export function ProductPreviewCard() {
 
       {/* Card */}
       <motion.div
-        style={
-          reducedMotion
-            ? {}
-            : {
-                boxShadow: useTransform(
-                  [shadowX, shadowY],
-                  ([x, y]) =>
-                    `${x as number}px ${y as number}px 40px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.08)`
-                ),
-              }
-        }
+        style={reducedMotion ? {} : { boxShadow }}
         className="relative rounded-2xl bg-bg-surface border border-white/8 overflow-hidden"
       >
         {/* Card header */}

@@ -56,14 +56,20 @@ export interface ActivityItem {
 
 export type ModelHealth = 'healthy' | 'degraded' | 'down'
 
+// eer_pct/avg_inference_ms/uptime_pct/parameters are optional: the backend
+// only populates what it can genuinely measure at serve time (there's no
+// uptime-monitoring subsystem or offline EER tracking wired up yet) — see
+// api/dashboard/schemas.py's ModelStatusResponse docstring. ModelStatusCard
+// skips rendering a stat row when its value is undefined rather than
+// showing a fabricated number.
 export interface ModelStatus {
   version: string
   health: ModelHealth
-  eer_pct: number
-  avg_inference_ms: number
+  eer_pct?: number
+  avg_inference_ms?: number
   last_checked: string
-  uptime_pct: number
-  parameters: number
+  uptime_pct?: number
+  parameters?: number
 }
 
 // ─── Dashboard aggregate ──────────────────────────────────────────────────────

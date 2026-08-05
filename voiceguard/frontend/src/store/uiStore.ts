@@ -40,7 +40,7 @@ function applyTheme(theme: Theme) {
 
 export const useUIStore = create<UIState>()(
   persist(
-    (set, _get) => ({
+    (set) => ({
       // ── Sidebar ────────────────────────────────────────────────────────────
       sidebarCollapsed: false,
       mobileDrawerOpen: false,

@@ -81,25 +81,52 @@ export const scanApi = {
   upload: (file: File, onProgress?: (pct: number) => void) => {
     const form = new FormData()
     form.append('file', file)
-    return api.post<{ scan_id: string }>('/scans', form, {
+    return api.post<{ scan: import('@/types').ScanRecord }>('/scans', form, {
       headers: { 'Content-Type': 'multipart/form-data' },
       onUploadProgress: (e) => {
         if (e.total && onProgress) onProgress(Math.round((e.loaded * 100) / e.total))
       },
     })
   },
-  status: (scanId: string) =>
-    api.get<import('@/types').ScanResult>(`/scans/${scanId}`),
-  history: (page = 1, pageSize = 20) =>
-    api.get<import('@/types').PaginatedResponse<import('@/types').ScanResult>>(
-      '/scans',
-      { params: { page, page_size: pageSize } }
-    ),
+  status: (scanId: string) => api.get<{ scan: import('@/types').ScanRecord }>(`/scans/${scanId}`),
+  pollStatus: (scanId: string) =>
+    api.get<{ scan: import('@/types').ScanRecordStatusOnly }>(`/scans/${scanId}/status`),
+  history: (
+    params: {
+      page?: number
+      page_size?: number
+      status?: import('@/types').ScanRecordStatus
+      sort?: 'created_at' | '-created_at'
+    } = {}
+  ) =>
+    api.get<{ scans: import('@/types').ScanRecord[] } & import('@/types').ScanListMeta>('/scans', { params }),
+  cancel: (scanId: string) => api.post<{ scan: import('@/types').ScanRecord }>(`/scans/${scanId}/cancel`),
   delete: (scanId: string) => api.delete(`/scans/${scanId}`),
+  // ── AI Processing Pipeline (Vertical Slice 03) ────────────────────────────
+  process: (scanId: string) => api.post(`/scans/${scanId}/process`),
+  result: (scanId: string) => api.get<{ result: import('@/types').AIScanResult }>(`/scans/${scanId}/result`),
+  technical: (scanId: string) =>
+    api.get<{ technical: import('@/types').AIScanTechnical }>(`/scans/${scanId}/technical`),
+  explanation: (scanId: string) =>
+    api.get<{ explanation: import('@/types').AIScanExplanation }>(`/scans/${scanId}/explanation`),
+  // submitFeedback (per-scan verdict correction) has no backend route yet —
+  // distinct from feedbackApi.submit (general product feedback) below, which
+  // is live.
   submitFeedback: (scanId: string, verdict: import('@/types').Verdict) =>
     api.post(`/scans/${scanId}/feedback`, { user_verdict: verdict }),
   share: (scanId: string) =>
     api.post<{ share_url: string }>(`/scans/${scanId}/share`),
+  // Public, unauthenticated lookup for the /r/:scanId shared-result page —
+  // a separate route from result() above since it must not require the
+  // owner's session. `scanId` here is really the opaque share token minted
+  // by share() above, not the scan's own id.
+  sharedResult: (scanId: string) =>
+    api.get<{ result: import('@/types').AIScanResult }>(`/scans/shared/${scanId}`),
+}
+
+export const modelsApi = {
+  list: () => api.get<{ models: import('@/types').ModelVersionInfo[] }>('/models'),
+  current: () => api.get<{ model: Record<string, unknown> }>('/models/current'),
 }
 
 // ─── Notification endpoints ───────────────────────────────────────────────────
@@ -111,4 +138,25 @@ export const notificationApi = {
     api.patch(`/notifications/${id}/read`),
   markAllRead: () =>
     api.post('/notifications/mark-all-read'),
+}
+
+// ─── User / profile endpoints ─────────────────────────────────────────────────
+
+export const userApi = {
+  profile: () => api.get<{ user: import('@/types').User }>('/user/profile'),
+  updateProfile: (display_name: string) =>
+    api.patch<{ user: import('@/types').User }>('/user/profile', { display_name }),
+  completeOnboarding: () =>
+    api.patch<{ user: import('@/types').User }>('/user/profile', { onboarding_completed: true }),
+  changePassword: (current_password: string, new_password: string) =>
+    api.post('/user/change-password', { current_password, new_password }),
+}
+
+// ─── Feedback endpoints ────────────────────────────────────────────────────────
+// General product feedback — distinct from scanApi.submitFeedback (per-scan
+// verdict correction).
+
+export const feedbackApi = {
+  submit: (payload: { category: string; message: string; scan_id?: string; email?: string }) =>
+    api.post('/feedback', payload),
 }

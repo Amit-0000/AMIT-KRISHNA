@@ -1,82 +1,15 @@
 import { useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import {
-  X,
-  CheckCircle2,
-  AlertTriangle,
-  Info,
-  Bell,
-  BellOff,
-  CheckCheck,
-  Shield,
-} from 'lucide-react'
-import { useNavigate } from 'react-router-dom'
+import { X, Bell, BellOff, CheckCheck } from 'lucide-react'
+import { Link, useNavigate } from 'react-router-dom'
 import { useUIStore } from '@/store/uiStore'
 import { notificationApi } from '@/services/api'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { Button } from '@/components/ui/button'
 import { formatRelativeTime } from '@/lib/utils'
 import { cn } from '@/lib/utils'
-import type { AppNotification, NotificationType } from '@/types'
-
-// ─── Seed mock data when no API available ────────────────────────────────────
-
-const MOCK_NOTIFICATIONS: AppNotification[] = [
-  {
-    id: '1',
-    type: 'scan_complete',
-    title: 'Scan complete',
-    body: 'voice_message.wav — AI Generated (91.4% confidence)',
-    read: false,
-    created_at: new Date(Date.now() - 5 * 60 * 1000).toISOString(),
-    action_url: '/history',
-  },
-  {
-    id: '2',
-    type: 'scan_complete',
-    title: 'Scan complete',
-    body: 'interview_audio.mp3 — Human (96.2% confidence)',
-    read: false,
-    created_at: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
-    action_url: '/history',
-  },
-  {
-    id: '3',
-    type: 'system',
-    title: 'Model updated',
-    body: 'LCNN upgraded to v2.1.0. New: improved codec resistance.',
-    read: true,
-    created_at: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(),
-  },
-  {
-    id: '4',
-    type: 'feedback_thanks',
-    title: 'Thanks for your feedback',
-    body: 'Your correction helps improve future detections.',
-    read: true,
-    created_at: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(),
-  },
-]
-
-// ─── Icon per type ────────────────────────────────────────────────────────────
-
-function NotifIcon({ type }: { type: NotificationType }) {
-  const cls = 'w-4 h-4 flex-shrink-0'
-  switch (type) {
-    case 'scan_complete':
-      return <CheckCircle2 className={cn(cls, 'text-human')} />
-    case 'scan_failed':
-      return <AlertTriangle className={cn(cls, 'text-ai')} />
-    case 'alert':
-      return <AlertTriangle className={cn(cls, 'text-uncertain')} />
-    case 'feedback_thanks':
-      return <Shield className={cn(cls, 'text-brand')} />
-    case 'system':
-      return <Info className={cn(cls, 'text-brand')} />
-    default:
-      return <Info className={cn(cls, 'text-text-secondary')} />
-  }
-}
+import { NotifIcon } from '@/lib/notifications'
+import type { AppNotification } from '@/types'
 
 // ─── Single item ──────────────────────────────────────────────────────────────
 
@@ -163,7 +96,9 @@ export function NotificationCenter() {
     if (notifications.length > 0) return
     notificationApi.list()
       .then(({ data }) => setNotifications(data))
-      .catch(() => setNotifications(MOCK_NOTIFICATIONS))
+      .catch(() => {
+        /* panel just shows its empty state; the full /notifications page has the real error state */
+      })
   }, [isOpen, notifications.length, setNotifications])
 
   // Keyboard: Escape closes
@@ -276,12 +211,10 @@ export function NotificationCenter() {
                 variant="ghost"
                 size="sm"
                 className="w-full text-text-tertiary hover:text-text-primary"
-                onClick={() => {
-                  setOpen(false)
-                }}
+                onClick={() => setOpen(false)}
                 asChild
               >
-                <a href="/notifications">View all notifications</a>
+                <Link to="/notifications">View all notifications</Link>
               </Button>
             </div>
           </motion.aside>

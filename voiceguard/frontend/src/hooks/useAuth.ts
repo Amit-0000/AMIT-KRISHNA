@@ -16,11 +16,13 @@ export function useAuth(): AuthHook {
   const isLoading = useAuthStore((s) => s.isLoading)
   const logout = useAuthStore((s) => s.logout)
   const setUser = useAuthStore((s) => s.setUser)
-  const checkSession = useAuthStore((s) => s.checkSession)
 
-  useEffect(() => {
-    checkSession()
-  }, [checkSession])
+  // Session bootstrap runs once for the app's lifetime in <AppInit> (App.tsx).
+  // Do not also call checkSession() here: this hook is used by components
+  // (e.g. UserMenu) that live inside <AuthGuard>'s children, which unmounts
+  // its children while isLoading is true. Triggering another checkSession()
+  // on mount would flip isLoading, unmount this component, flip it back,
+  // remount it, and re-trigger the check -- an infinite loop.
 
   // Listen for 401 events from the API interceptor
   useEffect(() => {

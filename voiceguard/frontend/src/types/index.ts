@@ -59,13 +59,151 @@ export interface ScanResult {
   user_verdict: Verdict | null
 }
 
-export interface ScanProcessingUpdate {
+// ─── Scan lifecycle (Audio Upload & Scan Management) ──────────────────────────
+// Distinct from ScanResult/ScanStatus above: those model the future
+// AI-inference result (verdict, confidence, ...), which this slice does not
+// produce. ScanRecord mirrors api.scans.schemas.ScanResponse exactly — the
+// scan's lifecycle up to READY_FOR_AI, before any AI analysis exists.
+
+export type ScanRecordStatus =
+  | 'created'
+  | 'validating'
+  | 'uploading'
+  | 'queued'
+  | 'preprocessing'
+  | 'ready_for_ai'
+  // ── AI Processing Pipeline (Vertical Slice 03) ────────────────────────────
+  | 'preparing_model'
+  | 'loading_model'
+  | 'ai_preprocessing'
+  | 'feature_extraction'
+  | 'running_inference'
+  | 'postprocessing'
+  | 'generating_explanation'
+  | 'saving_results'
+  | 'completed'
+  | 'failed'
+  | 'validation_failed'
+  | 'upload_failed'
+  | 'cancelled'
+  | 'expired'
+  | 'model_load_failed'
+  | 'ai_preprocessing_failed'
+  | 'feature_extraction_failed'
+  | 'inference_failed'
+  | 'postprocessing_failed'
+  | 'result_persistence_failed'
+
+export interface ScanRecord {
+  id: string
+  status: ScanRecordStatus
+  original_filename: string
+  file_extension: string
+  declared_mime_type: string | null
+  file_size_bytes: number
+  sha256_checksum: string
+  duration_seconds: number | null
+  scan_metadata: Record<string, unknown> | null
+  error_code: string | null
+  error_message: string | null
+  retry_count: number
+  created_at: string
+  updated_at: string
+  queued_at: string | null
+  preprocessing_started_at: string | null
+  ready_at: string | null
+  completed_at: string | null
+  failed_at: string | null
+  cancelled_at: string | null
+  expires_at: string | null
+}
+
+export interface ScanRecordStatusOnly {
+  id: string
+  status: ScanRecordStatus
+  error_code: string | null
+  error_message: string | null
+  updated_at: string
+}
+
+export interface ScanListMeta {
+  page: number
+  page_size: number
+  total: number
+  total_pages: number
+}
+
+// ─── AI Processing Pipeline result (Vertical Slice 03) ─────────────────────────
+// Distinct from `ScanResult`/`Verdict` above: those were scaffolded ahead of
+// this slice and now back the real GET /dashboard and GET
+// /dashboard/recent-scans endpoints (frontend/src/pages/Dashboard). These
+// mirror api.inference.schemas' actual response shapes for GET
+// /scans/{id}/result|technical|explanation instead.
+
+export type AIVerdict = 'human' | 'ai_generated' | 'uncertain'
+
+export interface AIScanResult {
   scan_id: string
-  status: ScanStatus
-  progress_pct: number
-  current_step: string
-  error_code?: string
-  error_message?: string
+  verdict: AIVerdict
+  confidence: number
+  model_version: string
+  processing_time_ms: number
+  inference_time_ms: number
+  created_at: string
+}
+
+export interface StageTiming {
+  stage: string
+  attempt: number
+  status: 'succeeded' | 'failed'
+  duration_ms: number
+}
+
+export interface AIScanTechnical {
+  scan_id: string
+  label: 'bonafide' | 'spoof'
+  verdict: AIVerdict
+  confidence: number
+  raw_bonafide_score: number
+  raw_spoof_score: number
+  threshold_used: number
+  is_below_threshold: boolean
+  feature_extractor_name: string
+  feature_extractor_version: string
+  model_name: string
+  model_version: string
+  model_architecture: string
+  processing_time_ms: number
+  inference_time_ms: number
+  stage_timings: StageTiming[]
+  created_at: string
+}
+
+export interface SalientRegion {
+  start_s: number
+  end_s: number
+  importance: number
+}
+
+export interface AIScanExplanation {
+  scan_id: string
+  salient_regions: SalientRegion[]
+  notes: string[]
+  warnings: string[]
+  feature_extractor: string
+  model_version: string
+}
+
+export interface ModelVersionInfo {
+  id: string
+  name: string
+  version: string
+  architecture: string
+  status: 'active' | 'inactive' | 'deprecated'
+  feature_extractor_name: string
+  feature_extractor_version: string
+  loaded_at: string | null
+  created_at: string
 }
 
 // ─── Notifications ────────────────────────────────────────────────────────────

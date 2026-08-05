@@ -1,5 +1,5 @@
 import { scanApi } from '@/services/api'
-import type { ScanResult } from '@/types'
+import type { ScanRecord } from '@/types'
 
 export interface UploadResult {
   scan_id: string
@@ -10,10 +10,10 @@ export async function submitScan(
   onProgress: (pct: number) => void
 ): Promise<UploadResult> {
   const { data } = await scanApi.upload(file, onProgress)
-  return { scan_id: data.scan_id }
+  return { scan_id: data.scan.id }
 }
 
-export async function getScanStatus(scanId: string): Promise<ScanResult> {
+export async function getScanStatus(scanId: string): Promise<ScanRecord> {
   const { data } = await scanApi.status(scanId)
-  return data
+  return data.scan
 }
