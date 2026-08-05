@@ -1,0 +1,96 @@
+name: Backend
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "voiceguard/api/**"
+      - "voiceguard/src/**"
+      - "voiceguard/pyproject.toml"
+      - "voiceguard/requirements*.txt"
+      - "voiceguard/api/requirements*.txt"
+      - ".github/workflows/backend.yml"
+  pull_request:
+    branches: [main]
+    paths:
+      - "voiceguard/api/**"
+      - "voiceguard/src/**"
+      - "voiceguard/pyproject.toml"
+      - "voiceguard/requirements*.txt"
+      - "voiceguard/api/requirements*.txt"
+      - ".github/workflows/backend.yml"
+  workflow_dispatch:
+
+defaults:
+  run:
+    working-directory: voiceguard
+
+jobs:
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: |
+            voiceguard/api/requirements.txt
+            voiceguard/requirements.txt
+
+      - name: Install ruff
+        run: pip install ruff==0.8.4
+
+      # Non-blocking: this repo has no prior lint baseline. Report findings
+      # without failing the build until a baseline is established deliberately.
+      - name: Run ruff (report only)
+        run: ruff check . --output-format=github || true
+
+  test:
+    name: Test (pytest)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: |
+            voiceguard/api/requirements.txt
+            voiceguard/api/requirements-ml.txt
+
+      - name: Install backend dependencies
+        run: pip install --no-cache-dir -r api/requirements.txt
+
+      - name: Install ML dependencies (CPU-only torch)
+        run: pip install --no-cache-dir -r api/requirements-ml.txt
+
+      - name: Install coverage tooling
+        run: pip install --no-cache-dir coverage
+
+      - name: Run backend test suite
+        working-directory: voiceguard/api
+        env:
+          PYTHONPATH: ${{ github.workspace }}/voiceguard
+        run: coverage run -m pytest -v
+
+      - name: Coverage summary
+        working-directory: voiceguard/api
+        run: coverage report -m
+
+      - name: Coverage XML (for artifact upload)
+        working-directory: voiceguard/api
+        run: coverage xml
+
+      - name: Upload coverage report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: backend-coverage
+          path: voiceguard/api/coverage.xml
+          retention-days: 14

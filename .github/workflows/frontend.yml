@@ -1,0 +1,52 @@
+name: Frontend
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "voiceguard/frontend/**"
+      - ".github/workflows/frontend.yml"
+  pull_request:
+    branches: [main]
+    paths:
+      - "voiceguard/frontend/**"
+      - ".github/workflows/frontend.yml"
+  workflow_dispatch:
+
+defaults:
+  run:
+    working-directory: voiceguard/frontend
+
+jobs:
+  build:
+    name: Lint, typecheck, build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+          cache-dependency-path: voiceguard/frontend/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Lint (eslint)
+        run: npm run lint
+
+      - name: Typecheck (tsc)
+        run: npx tsc -b --noEmit
+
+      - name: Build (vite)
+        run: npm run build
+
+      - name: Upload build output
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: frontend-dist
+          path: voiceguard/frontend/dist
+          retention-days: 14

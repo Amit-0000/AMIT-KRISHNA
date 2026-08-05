@@ -1,0 +1,44 @@
+name: Docker
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "voiceguard/api/**"
+      - "voiceguard/src/**"
+      - "voiceguard/Dockerfile"
+      - "voiceguard/requirements*.txt"
+      - "voiceguard/pyproject.toml"
+      - ".github/workflows/docker.yml"
+  pull_request:
+    branches: [main]
+    paths:
+      - "voiceguard/api/**"
+      - "voiceguard/src/**"
+      - "voiceguard/Dockerfile"
+      - "voiceguard/requirements*.txt"
+      - "voiceguard/pyproject.toml"
+      - ".github/workflows/docker.yml"
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Build backend image (api/Dockerfile.ml)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      # Builds the same image docker-compose.yml's `backend` service uses.
+      # Build-only sanity check — nothing is pushed to a registry.
+      - name: Build image
+        uses: docker/build-push-action@v6
+        with:
+          context: voiceguard
+          file: voiceguard/api/Dockerfile.ml
+          push: false
+          tags: voiceguard-backend-ml:ci
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
