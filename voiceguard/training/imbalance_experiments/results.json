@@ -1,0 +1,41 @@
+{
+  "results": {
+    "standard_ce": {
+      "best_epoch": 8,
+      "best_dev_eer": 0.23301,
+      "dev_accuracy_at_best": 0.897,
+      "dev_precision_at_best": 0.897,
+      "dev_recall_at_best": 1.0,
+      "dev_f1_at_best": 0.945704,
+      "dev_roc_auc_at_best": 0.836175
+    },
+    "weighted_ce": {
+      "best_epoch": 6,
+      "best_dev_eer": 0.271845,
+      "dev_accuracy_at_best": 0.721,
+      "dev_precision_at_best": 0.961194,
+      "dev_recall_at_best": 0.717949,
+      "dev_f1_at_best": 0.821953,
+      "dev_roc_auc_at_best": 0.788767
+    },
+    "weighted_sampler": {
+      "best_epoch": 8,
+      "best_dev_eer": 0.086957,
+      "dev_accuracy_at_best": 0.93,
+      "dev_precision_at_best": 0.982497,
+      "dev_recall_at_best": 0.938685,
+      "dev_f1_at_best": 0.960091,
+      "dev_roc_auc_at_best": 0.97161
+    }
+  },
+  "winner": "weighted_sampler",
+  "config": {
+    "seed": 42,
+    "epochs": 8,
+    "train_subset_n": 2000,
+    "dev_subset_n": 1000,
+    "batch_size": 32,
+    "lr": 0.0001,
+    "weight_decay": 0.0001
+  }
+}

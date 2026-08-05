@@ -1,0 +1,68 @@
+{
+  "experiment_id": "LCNN_20260801T124604Z",
+  "datetime_utc": "2026-08-01T12:46:04.485447+00:00",
+  "git_commit_hash": "bf8cc78f2a541af0059b985f49c0630447820761",
+  "git_working_tree_dirty": true,
+  "dataset": {
+    "name": "ASVspoof2019 LA",
+    "source": "Kaggle awsaf49/asvpoof-2019-dataset",
+    "path": "C:\\Users\\amitk\\AMIT-KRISHNA\\voiceguard\\data",
+    "protocol_files_sha256": "f5efc7385ea6ff810c0debf68cead3fc27200511f3e7d692057de08810018d38"
+  },
+  "config_file": "C:\\Users\\amitk\\AMIT-KRISHNA\\voiceguard\\configs\\lcnn.yaml",
+  "config": {
+    "model": "lcnn",
+    "data": {
+      "sample_rate": 16000,
+      "max_seconds": 4,
+      "batch_size": 32,
+      "num_workers": 4
+    },
+    "training": {
+      "epochs": 50,
+      "learning_rate": 0.0001,
+      "weight_decay": 0.0001,
+      "patience": 10,
+      "seed": 42
+    },
+    "scheduler": {
+      "T_max": 50,
+      "eta_min": 1e-06
+    },
+    "paths": {
+      "data_root": "data",
+      "checkpoint_dir": "checkpoints",
+      "log_dir": "runs/lcnn"
+    }
+  },
+  "class_imbalance_strategy": "weighted_sampler",
+  "random_seed": 42,
+  "learning_rate": 0.0001,
+  "optimizer": "Adam",
+  "weight_decay": 0.0001,
+  "scheduler": "CosineAnnealingLR",
+  "scheduler_config": {
+    "T_max": 50,
+    "eta_min": 1e-06
+  },
+  "batch_size": 32,
+  "epoch_count_configured": 50,
+  "early_stopping_patience": 10,
+  "mixed_precision_enabled": false,
+  "serving_equivalent_preprocessing_enabled": true,
+  "num_workers": 4,
+  "device": "cpu",
+  "hardware": {
+    "platform": "Windows-11-10.0.26200-SP0",
+    "processor": "Intel64 Family 6 Model 154 Stepping 3, GenuineIntel",
+    "cpu_count_logical": 20,
+    "cpu_count_physical": 14,
+    "ram_total_gb": 31.73,
+    "cuda_available": false,
+    "mps_available": false,
+    "gpu_name": null
+  },
+  "python_version": "3.12.10 (tags/v3.12.10:0cc8128, Apr  8 2025, 12:21:36) [MSC v.1943 64 bit (AMD64)]",
+  "torch_version": "2.13.0+cpu",
+  "torchaudio_version": "2.11.0+cpu"
+}
