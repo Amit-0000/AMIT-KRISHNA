@@ -1,0 +1,53 @@
+{
+  "evaluation_timestamp_utc": "2026-07-30T21:23:46Z",
+  "model": {
+    "architecture": "AudioCNN",
+    "name": "audio_cnn",
+    "version": "v1",
+    "checkpoint_filename": "deepfake_cnn.pth",
+    "checkpoint_path": "checkpoints/deepfake_cnn.pth",
+    "checkpoint_sha256": "0fbe937e222a057ea56457334b41558f56a5c1472fa720b7083aa1c3bc70d4e7",
+    "checkpoint_provenance": "Vendored from upstream GitHub repo Devil-92/Fake-Audio-Detector (src/audio_detection/model.py architecture, models/deepfake_cnn.pth checkpoint), recovered from a prior local review clone and integrated into VoiceGuard's checkpoints/ directory.",
+    "feature_extractor": "logmel64db v1",
+    "confidence_threshold": 0.60,
+    "label_mapping": {"Genuine": "bonafide", "Deepfake": "spoof"}
+  },
+  "dataset": {
+    "source": "Kaggle: mohammedabdeldayem/the-fake-or-real-dataset",
+    "primary_variant": "for-norm/for-norm/testing (matches upstream repo's own training/eval preprocessing recipe: pad/trim to 4s @ 16kHz)",
+    "secondary_variant_appendix": "for-2sec/for-2seconds/testing (pre-clipped 2-second variant; kept only as a secondary robustness data point, NOT used for the primary upstream-comparison verdict)",
+    "sampling_method": "random.sample(seed=42) of 50 real + 50 fake from 80 candidate files per class per variant, collected via paginated Kaggle dataset file listing",
+    "n_samples_per_variant": 100,
+    "class_balance": "50 bonafide / 50 spoof (perfectly balanced) in both variants"
+  },
+  "inference_path": {
+    "description": "Real production HTTP API only, no direct model calls, no mocked inference.",
+    "steps": [
+      "POST /api/v1/auth/register + /verify-email + /login (real user accounts)",
+      "POST /api/v1/scans (multipart file upload)",
+      "GET /api/v1/scans/{id} (poll until ready_for_ai)",
+      "POST /api/v1/scans/{id}/process (triggers real AI pipeline background job)",
+      "GET /api/v1/scans/{id} (poll until completed)",
+      "GET /api/v1/scans/{id}/technical (real inference result: verdict, confidence, raw_bonafide_score, raw_spoof_score, inference_time_ms)"
+    ],
+    "accounts_used": 4,
+    "note": "4 accounts used only to stay under the app's own per-user scan-creation rate limit (30/hour); this is normal multi-tenant usage, not a bypass of any control."
+  },
+  "hardware": {
+    "host_os": "Microsoft Windows 11 Home Single Language, 10.0.26200 Build 26200",
+    "inference_container_os": "Debian GNU/Linux 13 (trixie), kernel 6.18.33.2-microsoft-standard-WSL2 (via Docker Desktop/WSL2)",
+    "cpu_count_visible_to_container": 20,
+    "torch_num_threads": 10,
+    "total_physical_memory_host": "32,492 MB",
+    "gpu": "None used — CPU-only inference (torch cpu build, MODEL_DEVICE=auto resolved to cpu)"
+  },
+  "software": {
+    "python_version": "3.12.13",
+    "torch_version": "2.9.1+cpu",
+    "torchaudio_version": "2.9.1+cpu",
+    "librosa_version": "0.11.0",
+    "numpy_version": "2.4.6",
+    "fastapi_version": "0.115.6",
+    "deployment": "docker compose (postgres:16-alpine, redis:7-alpine, backend api/Dockerfile + manually installed ML deps, frontend vite dev server)"
+  }
+}
