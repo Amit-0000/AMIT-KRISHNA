@@ -1,3 +1,16 @@
+"""Benchmarks the deployed AudioCNN checkpoint (checkpoints/deepfake_cnn.pth)
+on the official ASVspoof2019 LA eval split, using the exact same evaluation
+methodology (src.evaluation.metrics) as scripts/evaluate.py uses for LCNN, so
+the two models' numbers are directly comparable per the Phase 5 benchmark
+requirement.
+
+Feature extraction reuses api.inference.feature_extraction's registered
+"logmel64db" extractor verbatim (the same code path production inference
+uses for AudioCNN) rather than reimplementing it, so these numbers reflect
+real deployment behavior. Waveform preprocessing reuses
+src.data.dataset.serving_equivalent_preprocess for the same reason LCNN's
+training/eval does.
+"""
 import time
 
 import pandas as pd
@@ -9,8 +22,7 @@ from tqdm import tqdm
 
 from src.data.protocol import parse_protocol
 from src.data.dataset import ASVspoofDataset
-from src.data.transforms import MelSpectrogramTransform
-from src.models.lcnn import LCNN
+from src.models.audio_cnn import AudioCNN
 from src.evaluation.eer import compute_eer_per_attack
 from src.evaluation.metrics import (
     compute_full_metrics,
@@ -23,10 +35,20 @@ from src.evaluation.metrics import (
 REPORT_DIR = Path("training")
 
 
-def measure_inference_latency(model: LCNN, dataset: ASVspoofDataset, device: torch.device, n_samples: int = 200) -> list[float]:
+def logmel64db_transform(waveform: torch.Tensor) -> torch.Tensor:
+    """Wraps the production "logmel64db" extractor as an
+    ASVspoofDataset-compatible transform (waveform -> feature tensor),
+    exactly like MelSpectrogramTransform does for LCNN."""
+    from api.inference.feature_extraction import extract_features
+
+    feature = extract_features(waveform, extractor_name="logmel64db", extractor_version="v1")
+    return feature.tensor
+
+
+def measure_inference_latency(model: AudioCNN, dataset: ASVspoofDataset, device: torch.device, n_samples: int = 200) -> list[float]:
     """Per-sample forward-pass latency in ms — mirrors production
-    (src.inference.predict.predict runs one file at a time), not batched
-    throughput, since that's what actually gets reported to users."""
+    (api.inference.adapters.audio_cnn_adapter.AudioCNNAdapter.predict runs
+    one file at a time), not batched throughput."""
     n = min(n_samples, len(dataset))
     timings = []
     with torch.no_grad():
@@ -50,7 +72,8 @@ def main():
     else:
         device = torch.device("cpu")
 
-    # Load eval set — the OFFICIAL ASVspoof eval split only, never train/dev.
+    # Load eval set — the OFFICIAL ASVspoof eval split only, identical to
+    # scripts/evaluate.py's LCNN evaluation (same files, same labels).
     data_root = Path(cfg["paths"]["data_root"])
     protocols = data_root / "ASVspoof2019_LA_cm_protocols"
 
@@ -59,13 +82,14 @@ def main():
         data_root / "ASVspoof2019_LA_eval" / "flac",
     )
 
-    dataset = ASVspoofDataset(df_eval, transform=MelSpectrogramTransform(augment=False))
+    dataset = ASVspoofDataset(df_eval, transform=logmel64db_transform)
     loader  = DataLoader(dataset, batch_size=cfg["data"]["batch_size"],
                          shuffle=False, num_workers=0)
 
-    # Load best checkpoint
-    model = LCNN()
-    model.load_state_dict(torch.load("checkpoints/best.pt", map_location=device, weights_only=True))
+    # Load the deployed AudioCNN checkpoint — same load path as
+    # AudioCNNAdapter.load_model (weights_only=True, bare state_dict).
+    model = AudioCNN()
+    model.load_state_dict(torch.load("checkpoints/deepfake_cnn.pth", map_location=device, weights_only=True))
     model = model.to(device)
     model.eval()
 
@@ -74,17 +98,15 @@ def main():
     all_preds   = []
 
     with torch.no_grad():
-        for x, labels in tqdm(loader, desc="Evaluating"):
+        for x, labels in tqdm(loader, desc="Evaluating AudioCNN"):
             x = x.to(device)
-            logits = model(x)
-            scores = torch.softmax(logits, dim=1)[:, 1]
-            preds  = logits.argmax(dim=1)
+            logits = model(x)  # [B] raw logit — AudioCNN.forward, unlike LCNN, returns a single logit per example
+            scores = torch.sigmoid(logits)
+            preds  = (scores >= 0.5).long()
             all_scores.extend(scores.cpu().tolist())
             all_labels.extend(labels.tolist())
             all_preds.extend(preds.cpu().tolist())
 
-    # Per-attack EER (ASVspoof-specific — not part of the shared metrics module,
-    # since AudioCNN's benchmark has no ASVspoof attack-type breakdown to compare against)
     attack_types = df_eval["attack_type"].tolist()
     per_attack   = compute_eer_per_attack(all_labels, all_scores, attack_types)
 
@@ -123,20 +145,20 @@ def main():
 
     REPORT_DIR.mkdir(parents=True, exist_ok=True)
 
-    save_confusion_matrix_plot(metrics, "LCNN Confusion Matrix (ASVspoof eval)", REPORT_DIR / "Confusion_Matrix.png")
-    save_roc_curve_plot(all_labels, all_scores, metrics["roc_auc"], "LCNN ROC Curve (ASVspoof eval)", REPORT_DIR / "ROC_Curve.png")
-    save_pr_curve_plot(all_labels, all_scores, metrics["pr_auc"], "LCNN Precision-Recall Curve (ASVspoof eval)", REPORT_DIR / "Precision_Recall_Curve.png")
+    save_confusion_matrix_plot(metrics, "AudioCNN Confusion Matrix (ASVspoof eval)", REPORT_DIR / "AudioCNN_Confusion_Matrix.png")
+    save_roc_curve_plot(all_labels, all_scores, metrics["roc_auc"], "AudioCNN ROC Curve (ASVspoof eval)", REPORT_DIR / "AudioCNN_ROC_Curve.png")
+    save_pr_curve_plot(all_labels, all_scores, metrics["pr_auc"], "AudioCNN Precision-Recall Curve (ASVspoof eval)", REPORT_DIR / "AudioCNN_Precision_Recall_Curve.png")
 
     metrics_df = pd.DataFrame([{"metric": k, "value": v} for k, v in metrics.items()])
     per_attack_df = pd.DataFrame(
         [{"attack_type": k, "eer": v} for k, v in sorted(per_attack.items()) if k != "overall"]
     )
-    with pd.ExcelWriter(REPORT_DIR / "Benchmark_Results.xlsx") as writer:
+    with pd.ExcelWriter(REPORT_DIR / "AudioCNN_Benchmark_Results.xlsx") as writer:
         metrics_df.to_excel(writer, sheet_name="overall_metrics", index=False)
         per_attack_df.to_excel(writer, sheet_name="per_attack_eer", index=False)
 
-    print(f"\nSaved: {REPORT_DIR/'Confusion_Matrix.png'}, {REPORT_DIR/'ROC_Curve.png'}, "
-          f"{REPORT_DIR/'Precision_Recall_Curve.png'}, {REPORT_DIR/'Benchmark_Results.xlsx'}")
+    print(f"\nSaved: {REPORT_DIR/'AudioCNN_Confusion_Matrix.png'}, {REPORT_DIR/'AudioCNN_ROC_Curve.png'}, "
+          f"{REPORT_DIR/'AudioCNN_Precision_Recall_Curve.png'}, {REPORT_DIR/'AudioCNN_Benchmark_Results.xlsx'}")
 
 
 if __name__ == "__main__":

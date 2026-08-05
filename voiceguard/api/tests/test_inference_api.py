@@ -249,3 +249,81 @@ async def test_current_model_reports_available_after_a_scan_is_processed(
     assert models[0]["name"] == "lcnn"
     assert models[0]["status"] == "active"
 
+
+# ── Multi-model: AudioCNN driving the exact same API surface ────────────────
+# No new endpoints, no renamed endpoints — the same six routes covered above
+# for LCNN, exercised again with a different active model to prove the API
+# layer never needed to know which architecture produced the result.
+
+
+async def _complete_scan_with_audio_cnn(client: AsyncClient, db_session: AsyncSession, audio_cnn_checkpoint) -> str:
+    from api.inference import model_registry
+
+    await model_registry.register_model_version(
+        db_session, architecture="AudioCNN", name="audio_cnn", version="v1", checkpoint_path=audio_cnn_checkpoint
+    )
+    await model_registry.switch_active_model(db_session, name="audio_cnn", version="v1")
+    return await _complete_scan(client, db_session)
+
+
+async def test_result_available_after_completion_with_audio_cnn_active(
+    client: AsyncClient, captured_emails, db_session: AsyncSession, audio_cnn_checkpoint
+):
+    await _register_verify_login(client, captured_emails, email="m@example.com")
+    scan_id = await _complete_scan_with_audio_cnn(client, db_session, audio_cnn_checkpoint)
+
+    resp = await client.get(f"/api/v1/scans/{scan_id}/result")
+    assert resp.status_code == 200
+    result = resp.json()["data"]["result"]
+    assert result["scan_id"] == scan_id
+    assert result["verdict"] in ("human", "ai_generated", "uncertain")
+    assert result["model_version"] == "audio_cnn:v1"
+
+
+async def test_technical_reports_audio_cnn_provenance(
+    client: AsyncClient, captured_emails, db_session: AsyncSession, audio_cnn_checkpoint
+):
+    await _register_verify_login(client, captured_emails, email="n@example.com")
+    scan_id = await _complete_scan_with_audio_cnn(client, db_session, audio_cnn_checkpoint)
+
+    resp = await client.get(f"/api/v1/scans/{scan_id}/technical")
+    assert resp.status_code == 200
+    technical = resp.json()["data"]["technical"]
+    assert technical["label"] in ("bonafide", "spoof")  # never "Genuine"/"Deepfake"
+    assert technical["model_name"] == "audio_cnn"
+    assert technical["model_architecture"] == "AudioCNN"
+    assert technical["feature_extractor_name"] == "logmel64db"
+    assert len(technical["stage_timings"]) == 8
+
+
+async def test_explanation_reports_unavailable_for_audio_cnn(
+    client: AsyncClient, captured_emails, db_session: AsyncSession, audio_cnn_checkpoint
+):
+    await _register_verify_login(client, captured_emails, email="o@example.com")
+    scan_id = await _complete_scan_with_audio_cnn(client, db_session, audio_cnn_checkpoint)
+
+    resp = await client.get(f"/api/v1/scans/{scan_id}/explanation")
+    assert resp.status_code == 200
+    explanation = resp.json()["data"]["explanation"]
+    assert explanation["salient_regions"] == []
+    assert len(explanation["warnings"]) == 1
+    assert explanation["feature_extractor"] == "logmel64db:v1"
+
+
+async def test_list_models_reports_both_architectures(
+    client: AsyncClient, captured_emails, db_session: AsyncSession, ai_checkpoint, audio_cnn_checkpoint
+):
+    from api.inference import model_registry
+
+    await _register_verify_login(client, captured_emails, email="p@example.com")
+    await model_registry.get_active_model_version(db_session)  # bootstraps LCNN
+    await model_registry.register_model_version(
+        db_session, architecture="AudioCNN", name="audio_cnn", version="v1", checkpoint_path=audio_cnn_checkpoint
+    )
+
+    resp = await client.get("/api/v1/models")
+    assert resp.status_code == 200
+    models = {m["name"]: m for m in resp.json()["data"]["models"]}
+    assert set(models.keys()) == {"lcnn", "audio_cnn"}
+    assert models["lcnn"]["status"] == "active"
+    assert models["audio_cnn"]["status"] == "inactive"
