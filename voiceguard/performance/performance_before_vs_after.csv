@@ -1,0 +1,38 @@
+=== OVERALL METRICS ===
+Metric,Before,After,% Change,Direction
+Requests/sec,24.95,73.58,194.91,higher_better
+Avg Response Time (ms),1736.9,176.68,-89.83,lower_better
+Median Response Time (ms),1.74,17.9,928.74,lower_better
+P90 Response Time (ms),60.76,744.93,1126.02,lower_better
+P95 Response Time (ms),30006.9,1276.14,-95.75,lower_better
+P99 Response Time (ms),32340.68,1628.81,-94.96,lower_better
+Max Response Time (ms),59997.99,2091.72,-96.51,lower_better
+Success Rate (%),1.25,86.19,6795.2,higher_better
+Error Rate (%),98.75,13.81,-86.02,lower_better
+Total Requests,1517,4358,187.28,context
+Successful Requests,19,3756,19668.42,higher_better
+Failed Requests,1498,602,-59.81,lower_better
+
+=== ENDPOINT PERFORMANCE ===
+Endpoint,Method,Before Avg (ms),After Avg (ms),Before P95 (ms),After P95 (ms),Before P99 (ms),After P99 (ms),Before Success %,After Success %
+GET /api/v1/scans,GET,143.43,153.65,31.04,1183.58,828.44,1520.47,0.6,100.0
+GET /api/v1/scans/{id},GET,33.39,160.11,254.45,1277.42,396.86,1586.91,0.0,100.0
+GET /api/v1/user/profile,GET,102.62,143.98,52.36,1106.31,579.09,1523.31,0.27,100.0
+POST /api/v1/auth/login,POST,29076.37,323.53,35172.63,399.91,59997.36,454.99,15.48,100.0
+POST /api/v1/scans,POST,164.59,287.57,19.19,1629.63,825.35,1877.84,0.0,9.61
+
+=== RESOURCE USAGE ===
+Container,Before Avg CPU %,After Avg CPU %,Before Max CPU %,After Max CPU %,Before Avg Mem (MB),After Avg Mem (MB),Before Max Mem (MB),After Max Mem (MB)
+voiceguard-backend-1,19.81,78.19,99.46,327.7,84.05,83.3,85.17,87.27
+voiceguard-frontend-1,8.05,9.3,9.45,12.56,53.55,107.83,54.16,108.4
+voiceguard-postgres-1,1.23,25.55,15.31,136.46,87.06,85.73,99.55,183.0
+voiceguard-redis-1,0.47,0.72,0.58,3.12,10.29,11.17,10.91,11.44
+
+=== HTTP STATUS DISTRIBUTION ===
+Status Code,Before Count,Before %,After Count,After %
+0,3,0.2,0,0
+200,19,1.25,3692,84.72
+201,0,0,64,1.47
+401,1424,93.87,0,0
+409,0,0,602,13.81
+500,71,4.68,0,0

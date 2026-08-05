@@ -1,0 +1,251 @@
+{
+  "test_metadata": {
+    "project": "VoiceGuard",
+    "test_type": "Before vs After Performance Fix Comparison",
+    "root_cause": "bcrypt.checkpw/hashpw executed synchronously inside async auth routes, blocking the single asyncio event loop for ~150-300ms per call",
+    "fix_summary": [
+      "api/core/security.py: hash_password/verify_password now run bcrypt via asyncio.to_thread instead of directly on the event loop",
+      "api/core/config.py + api/.env.example: DB_POOL_MIN_SIZE/MAX_SIZE raised 5/20 -> 10/50 (pool exhaustion surfaced once bcrypt stopped serializing requests and real concurrency hit the database)",
+      "api/core/config.py: REDIS_POOL_MAX_SIZE raised 10 -> 50 (same reason, for the rate-limiter's Redis connections)",
+      "performance/k6/baseline_load_test.js: session cookies are now captured from the login response and attached explicitly as a Cookie header on every subsequent request \u2014 a test-harness fix (this k6 build's implicit per-VU cookie jar did not reliably persist across iterations under load), not a change to the traffic mix, VU/stage profile, or thresholds"
+    ]
+  },
+  "overall_comparison": [
+    {
+      "metric": "Requests/sec",
+      "before": 24.95,
+      "after": 73.58,
+      "pct_change": 194.91,
+      "direction": "higher_better"
+    },
+    {
+      "metric": "Avg Response Time (ms)",
+      "before": 1736.9,
+      "after": 176.68,
+      "pct_change": -89.83,
+      "direction": "lower_better"
+    },
+    {
+      "metric": "Median Response Time (ms)",
+      "before": 1.74,
+      "after": 17.9,
+      "pct_change": 928.74,
+      "direction": "lower_better"
+    },
+    {
+      "metric": "P90 Response Time (ms)",
+      "before": 60.76,
+      "after": 744.93,
+      "pct_change": 1126.02,
+      "direction": "lower_better"
+    },
+    {
+      "metric": "P95 Response Time (ms)",
+      "before": 30006.9,
+      "after": 1276.14,
+      "pct_change": -95.75,
+      "direction": "lower_better"
+    },
+    {
+      "metric": "P99 Response Time (ms)",
+      "before": 32340.68,
+      "after": 1628.81,
+      "pct_change": -94.96,
+      "direction": "lower_better"
+    },
+    {
+      "metric": "Max Response Time (ms)",
+      "before": 59997.99,
+      "after": 2091.72,
+      "pct_change": -96.51,
+      "direction": "lower_better"
+    },
+    {
+      "metric": "Success Rate (%)",
+      "before": 1.25,
+      "after": 86.19,
+      "pct_change": 6795.2,
+      "direction": "higher_better"
+    },
+    {
+      "metric": "Error Rate (%)",
+      "before": 98.75,
+      "after": 13.81,
+      "pct_change": -86.02,
+      "direction": "lower_better"
+    },
+    {
+      "metric": "Total Requests",
+      "before": 1517,
+      "after": 4358,
+      "pct_change": 187.28,
+      "direction": "context"
+    },
+    {
+      "metric": "Successful Requests",
+      "before": 19,
+      "after": 3756,
+      "pct_change": 19668.42,
+      "direction": "higher_better"
+    },
+    {
+      "metric": "Failed Requests",
+      "before": 1498,
+      "after": 602,
+      "pct_change": -59.81,
+      "direction": "lower_better"
+    }
+  ],
+  "endpoint_comparison": [
+    {
+      "endpoint": "GET /api/v1/scans",
+      "method": "GET",
+      "before_avg_ms": 143.43,
+      "after_avg_ms": 153.65,
+      "before_p95_ms": 31.04,
+      "after_p95_ms": 1183.58,
+      "before_p99_ms": 828.44,
+      "after_p99_ms": 1520.47,
+      "before_success_pct": 0.6,
+      "after_success_pct": 100.0
+    },
+    {
+      "endpoint": "GET /api/v1/scans/{id}",
+      "method": "GET",
+      "before_avg_ms": 33.39,
+      "after_avg_ms": 160.11,
+      "before_p95_ms": 254.45,
+      "after_p95_ms": 1277.42,
+      "before_p99_ms": 396.86,
+      "after_p99_ms": 1586.91,
+      "before_success_pct": 0.0,
+      "after_success_pct": 100.0
+    },
+    {
+      "endpoint": "GET /api/v1/user/profile",
+      "method": "GET",
+      "before_avg_ms": 102.62,
+      "after_avg_ms": 143.98,
+      "before_p95_ms": 52.36,
+      "after_p95_ms": 1106.31,
+      "before_p99_ms": 579.09,
+      "after_p99_ms": 1523.31,
+      "before_success_pct": 0.27,
+      "after_success_pct": 100.0
+    },
+    {
+      "endpoint": "POST /api/v1/auth/login",
+      "method": "POST",
+      "before_avg_ms": 29076.37,
+      "after_avg_ms": 323.53,
+      "before_p95_ms": 35172.63,
+      "after_p95_ms": 399.91,
+      "before_p99_ms": 59997.36,
+      "after_p99_ms": 454.99,
+      "before_success_pct": 15.48,
+      "after_success_pct": 100.0
+    },
+    {
+      "endpoint": "POST /api/v1/scans",
+      "method": "POST",
+      "before_avg_ms": 164.59,
+      "after_avg_ms": 287.57,
+      "before_p95_ms": 19.19,
+      "after_p95_ms": 1629.63,
+      "before_p99_ms": 825.35,
+      "after_p99_ms": 1877.84,
+      "before_success_pct": 0.0,
+      "after_success_pct": 9.61
+    }
+  ],
+  "resource_comparison": [
+    {
+      "container": "voiceguard-backend-1",
+      "before_avg_cpu_pct": 19.81,
+      "after_avg_cpu_pct": 78.19,
+      "before_max_cpu_pct": 99.46,
+      "after_max_cpu_pct": 327.7,
+      "before_avg_mem_mb": 84.05,
+      "after_avg_mem_mb": 83.3,
+      "before_max_mem_mb": 85.17,
+      "after_max_mem_mb": 87.27
+    },
+    {
+      "container": "voiceguard-frontend-1",
+      "before_avg_cpu_pct": 8.05,
+      "after_avg_cpu_pct": 9.3,
+      "before_max_cpu_pct": 9.45,
+      "after_max_cpu_pct": 12.56,
+      "before_avg_mem_mb": 53.55,
+      "after_avg_mem_mb": 107.83,
+      "before_max_mem_mb": 54.16,
+      "after_max_mem_mb": 108.4
+    },
+    {
+      "container": "voiceguard-postgres-1",
+      "before_avg_cpu_pct": 1.23,
+      "after_avg_cpu_pct": 25.55,
+      "before_max_cpu_pct": 15.31,
+      "after_max_cpu_pct": 136.46,
+      "before_avg_mem_mb": 87.06,
+      "after_avg_mem_mb": 85.73,
+      "before_max_mem_mb": 99.55,
+      "after_max_mem_mb": 183.0
+    },
+    {
+      "container": "voiceguard-redis-1",
+      "before_avg_cpu_pct": 0.47,
+      "after_avg_cpu_pct": 0.72,
+      "before_max_cpu_pct": 0.58,
+      "after_max_cpu_pct": 3.12,
+      "before_avg_mem_mb": 10.29,
+      "after_avg_mem_mb": 11.17,
+      "before_max_mem_mb": 10.91,
+      "after_max_mem_mb": 11.44
+    }
+  ],
+  "http_status_comparison": [
+    {
+      "status_code": "0",
+      "before_count": 3,
+      "before_pct": 0.2,
+      "after_count": 0,
+      "after_pct": 0
+    },
+    {
+      "status_code": "200",
+      "before_count": 19,
+      "before_pct": 1.25,
+      "after_count": 3692,
+      "after_pct": 84.72
+    },
+    {
+      "status_code": "201",
+      "before_count": 0,
+      "before_pct": 0,
+      "after_count": 64,
+      "after_pct": 1.47
+    },
+    {
+      "status_code": "401",
+      "before_count": 1424,
+      "before_pct": 93.87,
+      "after_count": 0,
+      "after_pct": 0
+    },
+    {
+      "status_code": "409",
+      "before_count": 0,
+      "before_pct": 0,
+      "after_count": 602,
+      "after_pct": 13.81
+    },
+    {
+      "status_code": "500",
+      "before_count": 71,
+      "before_pct": 4.68,
+      "after_count": 0,
+      "after_pct": 0
+    }
+  ]
+}

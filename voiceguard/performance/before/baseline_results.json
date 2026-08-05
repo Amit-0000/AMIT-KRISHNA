@@ -1,0 +1,164 @@
+{
+  "test_metadata": {
+    "project": "VoiceGuard",
+    "test_type": "Baseline Load Test",
+    "generated_at": "2026-07-31T03:40:52.047031+00:00",
+    "test_window_start": "2026-07-31T03:38:40.699809921Z",
+    "test_window_end": "2026-07-31T03:39:41.511735319Z"
+  },
+  "overall_performance": {
+    "virtual_users": 100,
+    "duration_s": 60.8,
+    "total_requests": 1517,
+    "successful_requests": 19,
+    "failed_requests": 1498,
+    "requests_per_second": 24.95,
+    "avg_response_time_ms": 1736.9,
+    "median_response_time_ms": 1.74,
+    "min_response_time_ms": 0.75,
+    "max_response_time_ms": 59997.99,
+    "p90_response_time_ms": 60.76,
+    "p95_response_time_ms": 30006.9,
+    "p99_response_time_ms": 32340.68,
+    "error_rate_pct": 98.75,
+    "success_rate_pct": 1.25,
+    "data_sent_bytes": 3670929,
+    "data_received_bytes": 478960
+  },
+  "endpoint_performance": [
+    {
+      "endpoint": "GET /api/v1/scans",
+      "method": "GET",
+      "requests": 828,
+      "avg_response_ms": 143.43,
+      "min_ms": 0.75,
+      "max_ms": 31460.1,
+      "p95_ms": 31.04,
+      "p99_ms": 828.44,
+      "success_pct": 0.6,
+      "failure_pct": 99.4
+    },
+    {
+      "endpoint": "GET /api/v1/scans/{id}",
+      "method": "GET",
+      "requests": 22,
+      "avg_response_ms": 33.39,
+      "min_ms": 0.95,
+      "max_ms": 431.2,
+      "p95_ms": 254.45,
+      "p99_ms": 396.86,
+      "success_pct": 0.0,
+      "failure_pct": 100.0
+    },
+    {
+      "endpoint": "GET /api/v1/user/profile",
+      "method": "GET",
+      "requests": 371,
+      "avg_response_ms": 102.62,
+      "min_ms": 0.83,
+      "max_ms": 30334.34,
+      "p95_ms": 52.36,
+      "p99_ms": 579.09,
+      "success_pct": 0.27,
+      "failure_pct": 99.73
+    },
+    {
+      "endpoint": "POST /api/v1/auth/login",
+      "method": "POST",
+      "requests": 84,
+      "avg_response_ms": 29076.37,
+      "min_ms": 1384.95,
+      "max_ms": 59997.99,
+      "p95_ms": 35172.63,
+      "p99_ms": 59997.36,
+      "success_pct": 15.48,
+      "failure_pct": 84.52
+    },
+    {
+      "endpoint": "POST /api/v1/scans",
+      "method": "POST",
+      "requests": 212,
+      "avg_response_ms": 164.59,
+      "min_ms": 1.47,
+      "max_ms": 30203.86,
+      "p95_ms": 19.19,
+      "p99_ms": 825.35,
+      "success_pct": 0.0,
+      "failure_pct": 100.0
+    }
+  ],
+  "http_status_codes": [
+    {
+      "status_code": "0",
+      "count": 3,
+      "percentage": 0.2
+    },
+    {
+      "status_code": "200",
+      "count": 19,
+      "percentage": 1.25
+    },
+    {
+      "status_code": "401",
+      "count": 1424,
+      "percentage": 93.87
+    },
+    {
+      "status_code": "500",
+      "count": 71,
+      "percentage": 4.68
+    }
+  ],
+  "response_time_distribution": [
+    {
+      "time_range_ms": "0-50",
+      "request_count": 1362
+    },
+    {
+      "time_range_ms": "51-100",
+      "request_count": 8
+    },
+    {
+      "time_range_ms": "101-200",
+      "request_count": 12
+    },
+    {
+      "time_range_ms": "201-500",
+      "request_count": 15
+    },
+    {
+      "time_range_ms": "501-1000",
+      "request_count": 26
+    },
+    {
+      "time_range_ms": "1000+",
+      "request_count": 94
+    }
+  ],
+  "resource_usage_summary": {
+    "voiceguard-backend-1": {
+      "avg_cpu_pct": 19.81,
+      "max_cpu_pct": 99.46,
+      "avg_mem_mb": 84.05,
+      "max_mem_mb": 85.17
+    },
+    "voiceguard-postgres-1": {
+      "avg_cpu_pct": 1.23,
+      "max_cpu_pct": 15.31,
+      "avg_mem_mb": 87.06,
+      "max_mem_mb": 99.55
+    },
+    "voiceguard-redis-1": {
+      "avg_cpu_pct": 0.47,
+      "max_cpu_pct": 0.58,
+      "avg_mem_mb": 10.29,
+      "max_mem_mb": 10.91
+    },
+    "voiceguard-frontend-1": {
+      "avg_cpu_pct": 8.05,
+      "max_cpu_pct": 9.45,
+      "avg_mem_mb": 53.55,
+      "max_mem_mb": 54.16
+    }
+  }
+}
