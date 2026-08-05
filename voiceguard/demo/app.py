@@ -1,11 +1,12 @@
 import sys
 import os
+from pathlib import Path
 
-sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
+REPO_ROOT = Path(os.path.dirname(os.path.dirname(__file__)))
+sys.path.insert(0, str(REPO_ROOT))
 
 import torch
 import gradio as gr
-from pathlib import Path
 from huggingface_hub import hf_hub_download
 
 from src.inference.predict import load_model, predict
@@ -18,12 +19,26 @@ matplotlib.use("Agg")  # non-interactive backend for Gradio
 import matplotlib.pyplot as plt
 import numpy as np
 
-# Download checkpoint from HF Hub on first run; cache locally after that.
-# TODO: Replace with your own HuggingFace model repo. See NEXT_STEPS.md — Step 3.
-_HF_REPO = "imsoumya18/audio-deepfake-detector"
-CHECKPOINT = Path(
-    hf_hub_download(repo_id=_HF_REPO, filename="lcnn_best.pt")
-)
+# Checkpoint resolution: a local checkpoint (same file api/main.py's /predict
+# endpoint uses) takes priority so the demo works offline out of the box.
+# Set HF_MODEL_REPO to pull from your own HuggingFace Hub model repo instead
+# (e.g. after training your own checkpoint and uploading it there) — see
+# README.md's "ML Models" section for the upload steps.
+_LOCAL_CHECKPOINT = Path(os.environ.get("MODEL_CHECKPOINT_PATH", str(REPO_ROOT / "checkpoints" / "best.pt")))
+_HF_REPO = os.environ.get("HF_MODEL_REPO")
+_HF_FILENAME = os.environ.get("HF_MODEL_FILENAME", "lcnn_best.pt")
+
+if _LOCAL_CHECKPOINT.exists():
+    CHECKPOINT = _LOCAL_CHECKPOINT
+elif _HF_REPO:
+    CHECKPOINT = Path(hf_hub_download(repo_id=_HF_REPO, filename=_HF_FILENAME))
+else:
+    raise RuntimeError(
+        f"No model checkpoint found at {_LOCAL_CHECKPOINT} and HF_MODEL_REPO is "
+        "not set. Either place a trained LCNN checkpoint there, or set "
+        "HF_MODEL_REPO to a HuggingFace Hub repo containing your checkpoint. "
+        "See README.md's \"ML Models\" section."
+    )
 
 def get_device() -> torch.device:
     if torch.cuda.is_available():

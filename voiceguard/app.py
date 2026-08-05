@@ -19,10 +19,26 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import numpy as np
 
-# TODO: Replace with your own HuggingFace model repo once you've uploaded the
-# checkpoint. See NEXT_STEPS.md — Step 3 for exact commands.
-_HF_REPO = "imsoumya18/audio-deepfake-detector"
-CHECKPOINT = Path(hf_hub_download(repo_id=_HF_REPO, filename="lcnn_best.pt"))
+# Checkpoint resolution: a local checkpoint (same file api/main.py's /predict
+# endpoint uses) takes priority so the demo works offline out of the box.
+# Set HF_MODEL_REPO to pull from your own HuggingFace Hub model repo instead
+# (e.g. after training your own checkpoint and uploading it there) — see
+# README.md's "ML Models" section for the upload steps.
+_LOCAL_CHECKPOINT = Path(os.environ.get("MODEL_CHECKPOINT_PATH", "checkpoints/best.pt"))
+_HF_REPO = os.environ.get("HF_MODEL_REPO")
+_HF_FILENAME = os.environ.get("HF_MODEL_FILENAME", "lcnn_best.pt")
+
+if _LOCAL_CHECKPOINT.exists():
+    CHECKPOINT = _LOCAL_CHECKPOINT
+elif _HF_REPO:
+    CHECKPOINT = Path(hf_hub_download(repo_id=_HF_REPO, filename=_HF_FILENAME))
+else:
+    raise RuntimeError(
+        f"No model checkpoint found at {_LOCAL_CHECKPOINT} and HF_MODEL_REPO is "
+        "not set. Either place a trained LCNN checkpoint there, or set "
+        "HF_MODEL_REPO to a HuggingFace Hub repo containing your checkpoint. "
+        "See README.md's \"ML Models\" section."
+    )
 
 
 def get_device() -> torch.device:
