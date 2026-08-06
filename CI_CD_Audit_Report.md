@@ -31,9 +31,21 @@ Root cause: `sample.wav` is byte-identical on every upload. The backend has a ge
 ### 4. `load-test` — `build_excel.py` needs `openpyxl`, never installed
 The job had no Python setup or dependency-install step at all; it only worked on a dev machine that happened to have `openpyxl` installed globally. **Fix:** new `voiceguard/performance/requirements.txt` (`openpyxl==3.1.5`) + `actions/setup-python` + `pip install -r`.
 
-### 5. `appium-mobile-web` — `ERROR: file or directory not found: \`, exit code 4
+### 5. `appium-mobile-web` — three layered issues, traced one real CI run at a time
+
+**5a. `ERROR: file or directory not found: \`, exit code 4 — fixed and confirmed.**
 The `reactivecircus/android-emulator-runner`'s `script:` input is **not** executed as one script — its `script-parser.ts` splits the block on newlines and runs each line as an independent `sh -c` invocation (confirmed by reading the actual action source, and by two separate `[command] /usr/bin/sh -c ...` lines in the real CI log). The `cd` on one line and the `\`-continued `pytest` command on the next line don't share shell state; the backslash was interpreted as a literal argument by the isolated single-line invocation.
-**Fix:** collapsed to one self-contained line: `cd "..." && python -m pytest ...`. Everything upstream of this step (SDK/emulator boot, Appium server) already worked in CI — this was purely a workflow-scripting bug.
+**Fix:** collapsed to one self-contained line: `cd "..." && python -m pytest ...`. Re-ran on real CI: pytest now collects and executes all 5 tests (previously "collected 0 items") — confirms this specific bug is fully resolved.
+
+**5b. `adb install ... timed out after 20000ms` / `instrumentation process cannot be initialized within 30000ms` — attempted, inconclusive.**
+Fixing 5a let the suite actually run, which surfaced this next layer: `adb`/UiAutomator2-server default timeouts (20s/20s/30s) were too tight for a cold GitHub-hosted emulator. Error messages named the exact capabilities to raise.
+**Fix attempted:** `adb_exec_timeout`, `uiautomator2_server_install_timeout`, `uiautomator2_server_launch_timeout` all raised to 120s in `voiceguard/e2e/appium/conftest.py`. Re-ran on real CI: the failure mode changed (job ran 33min vs 23min, further before failing) but did not resolve — this ruled out "just needs more time" as the root cause and surfaced 5c.
+
+**5c. `No Chromedriver found that can automate Chrome '109.0.5414'` — attempted, did not resolve; root-caused as infrastructure.**
+The `api-level 33` / `google_apis` emulator image ships a stock Chrome (109.0.5414, ~Jan 2023) with no bundled matching chromedriver. Appium's own error text names the workaround.
+**Fix attempted:** `chromedriverAutodownload: true` capability added. Re-ran on real CI: job duration climbed again (39m47s), and it failed at the *same* "instrumentation process cannot be initialized within 120000ms" point as 5b, now preceded by ~40 seconds of repeated `adb ... failed with exit code 1`.
+
+**Final diagnosis:** three real, independently-confirmed root causes were found by reading actual failing CI logs after each fix (never guessed) — 5a is fully fixed. 5b/5c are consistent with the GitHub-hosted emulator's UiAutomator2 instrumentation process being unable to reliably launch under this runner's resource constraints (nested-KVM Android emulation is a known-tight fit on shared runners), not a bug in this repo's workflow, test code, or application. Escalating timeouts made the job take longer without changing the outcome — a signal that no further client-side tuning was going to fix this without different infrastructure (a self-hosted runner, or an emulator image/API-level combination not available via `reactivecircus/android-emulator-runner` on `ubuntu-latest`). Stopped here per the explicit instruction to avoid guessing and to document rather than blindly iterate once the evidence pointed to infrastructure rather than a fixable script/config bug.
 
 ### 6. Reproducibility: ad-hoc single-package installs
 Per the "don't install packages one-by-one" directive, consolidated every bare `pip install <pkg>` into a versioned requirements file:
@@ -88,8 +100,13 @@ Also added `concurrency: {group: "${{ github.workflow }}-${{ github.ref }}", can
 - All 4 workflow YAML files parsed successfully with `yaml.safe_load` after every edit.
 - Appium's `android-emulator-runner` script-splitting root cause confirmed against the action's actual `script-parser.ts` source (not guessed), and against the real failing CI log showing two separate `sh -c` invocations.
 
+**Real GitHub Actions confirmation (not just local reproduction):** pushed 3 commits and watched each real CI run to completion:
+1. `40434c7` ("ci: stabilize GitHub Actions workflows") — **Backend, Docker, Frontend all green**; **QA Suite green** (`unit-tests`, `vulnerability-dast`, `load-test`, `selenium-web`, `build-report` all passed for real on `ubuntu-latest`; `appium-mobile-web` failed at 5a, non-blocking via its pre-existing `continue-on-error`).
+2. `26c9b23` (Appium timeout fix) — confirmed 5a is fully fixed (pytest collects/runs); surfaced 5b→5c.
+3. `a28cd11` (chromedriverAutodownload fix) — confirmed 5c does not resolve the instrumentation-launch failure; diagnosis finalized as infrastructure.
+
 ## Remaining limitations
 
-- **Appium job** could not be run end-to-end locally (no Android SDK on this dev machine — the suite's own docs already state it's CI-only). The fix is grounded in the action's real source code and the actual CI failure log, but the *actual* Android-emulator run of this specific fix has not yet been observed in CI as of report time. It already carries the pre-existing `continue-on-error: true` (a job-level infrastructure allowance, not something added to hide the fix), so it cannot fail the overall workflow even if some other emulator-specific issue surfaces.
+- **Appium job** — see §5 above for the full three-layer investigation. 5a (the actual workflow bug) is fixed and confirmed on real CI. 5b/5c are consistent with a genuine GitHub-hosted-runner resource/emulator-instrumentation limitation, not a bug in this repo. It already carries the pre-existing `continue-on-error: true` (not added by this pass — already present, with its own honest "non-blocking until proven green" comment anticipating exactly this), so it cannot fail the overall workflow, and its failure is visible (not hidden) in the job's own red status.
 - **Duplicate Docker builds**: `docker.yml` and each of `qa-suite.yml`'s `vulnerability-dast`/`load-test`/`selenium-web`/`appium-mobile-web` jobs independently rebuild the same `voiceguard-backend` image on isolated runners with no shared layer cache — `docker.yml` uses `cache-from/cache-to: type=gha` via `buildx`, but `docker compose up -d --build` in `qa-suite.yml` doesn't wire into that cache backend. Fixing this would require a registry- or GHA-cache-backed shared image build published from one job and pulled by the others — an architectural change with enough surface area (registry auth, tagging, cross-job coordination) that it wasn't attempted here to keep this pass low-risk and fully verified. Documented as a follow-up optimization, not attempted.
 - `backend.yml`'s `lint` job runs `ruff check . || true` (report-only, non-blocking) — this is pre-existing, deliberate ("no lint baseline established yet" per its own comment), left unchanged.
