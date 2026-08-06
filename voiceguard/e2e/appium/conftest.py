@@ -46,6 +46,10 @@ def driver():
     options.adb_exec_timeout = 120_000
     options.uiautomator2_server_install_timeout = 120_000
     options.uiautomator2_server_launch_timeout = 120_000
+    # The api-level 33 google_apis emulator image ships a stock Chrome
+    # (109.0.5414) with no bundled chromedriver matching it — Appium's own
+    # error names this exact capability as the workaround.
+    options.set_capability("chromedriverAutodownload", True)
 
     drv = webdriver.Remote(APPIUM_SERVER_URL, options=options)
     drv.implicitly_wait(5)
