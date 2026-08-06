@@ -37,6 +37,15 @@ def driver():
     options.browser_name = "Chrome"
     options.set_capability("chromeOptions", {"args": ["--disable-fullscreen"]})
     options.new_command_timeout = 120
+    # GitHub-hosted runners' emulator is a cold KVM instance with no APK/
+    # instrumentation cache, and the default timeouts here (20s/20s/30s) were
+    # observed timing out installing/launching the UiAutomator2 server on it
+    # (adb install + instrumentation bring-up routinely take longer than that
+    # under CI resource contention, even though the emulator itself had
+    # already finished booting). Give it real headroom instead of racing it.
+    options.adb_exec_timeout = 120_000
+    options.uiautomator2_server_install_timeout = 120_000
+    options.uiautomator2_server_launch_timeout = 120_000
 
     drv = webdriver.Remote(APPIUM_SERVER_URL, options=options)
     drv.implicitly_wait(5)
