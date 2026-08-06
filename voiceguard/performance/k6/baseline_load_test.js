@@ -12,7 +12,22 @@ const BASE_URL = __ENV.BASE_URL || 'http://backend:8000';
 const SEEDED_USER_COUNT = 120;
 const PASSWORD = 'LoadTest!2345';
 
-const sampleWav = open('./sample.wav', 'b');
+const sampleWavBase = new Uint8Array(open('./sample.wav', 'b'));
+
+// The backend rejects a second upload of byte-identical content from the
+// same user (api/scans/service.py's find_active_duplicate, a real
+// duplicate-detection feature — see automated_test/lib/fixtures.py for the
+// same fix applied to the DAST suite). Each VU is a fixed seeded user
+// making several upload attempts, so every attempt needs distinct content:
+// perturb the first 16-bit PCM sample (offset 44, right after the 44-byte
+// canonical WAV header) with a value unique to this call.
+function uniqueWavBytes() {
+  const buf = sampleWavBase.slice();
+  const view = new DataView(buf.buffer);
+  const unique = (Date.now() + __VU * 100000 + __ITER * 37) % 30000 - 15000;
+  view.setInt16(44, unique, true);
+  return buf.buffer;
+}
 
 const uploadCount = new Counter('scan_uploads_total');
 
@@ -134,7 +149,7 @@ export default function () {
     // Scan upload — capped per VU to respect the 30/hour/user rate limit
     if (vuUploadCount < 5) {
       const payload = {
-        file: http.file(sampleWav, `loadtest_${__VU}_${__ITER}.wav`, 'audio/wav'),
+        file: http.file(uniqueWavBytes(), `loadtest_${__VU}_${__ITER}.wav`, 'audio/wav'),
       };
       const res = http.post(`${BASE_URL}/api/v1/scans`, payload, {
         headers: authHeaders(),
@@ -165,7 +180,7 @@ export default function () {
 
 export function handleSummary(data) {
   return {
-    '/results/summary.json': JSON.stringify(data, null, 2),
+    '/scripts/summary_new.json': JSON.stringify(data, null, 2),
     stdout: '',
   };
 }

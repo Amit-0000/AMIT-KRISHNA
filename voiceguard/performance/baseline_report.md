@@ -1,57 +1,56 @@
 # VoiceGuard Baseline Load Test Report
 
-Generated: 2026-08-05T20:19:34.858141+00:00
+Generated: 2026-08-06T10:48:05.163729+00:00
 
 ## Overall Performance
 
 | Metric | Value |
 | --- | --- |
 | Virtual Users | 100 |
-| Duration S | 59.2 |
-| Total Requests | 4855 |
-| Successful Requests | 4163 |
-| Failed Requests | 692 |
-| Requests Per Second | 81.98 |
-| Avg Response Time Ms | 61.09 |
-| Median Response Time Ms | 9.95 |
-| Min Response Time Ms | 2.42 |
-| Max Response Time Ms | 1403.85 |
-| P90 Response Time Ms | 96.88 |
-| P95 Response Time Ms | 270.99 |
-| P99 Response Time Ms | 1035.91 |
-| Error Rate Pct | 14.25 |
-| Success Rate Pct | 85.75 |
-| Data Sent Bytes | None |
-| Data Received Bytes | None |
+| Duration S | 59.3 |
+| Total Requests | 4919 |
+| Successful Requests | 4919 |
+| Failed Requests | 0 |
+| Requests Per Second | 82.93 |
+| Avg Response Time Ms | 45.55 |
+| Median Response Time Ms | 6.67 |
+| Min Response Time Ms | 2.31 |
+| Max Response Time Ms | 1298.29 |
+| P90 Response Time Ms | 87.8 |
+| P95 Response Time Ms | 241.69 |
+| P99 Response Time Ms | 791.93 |
+| Error Rate Pct | 0.0 |
+| Success Rate Pct | 100.0 |
+| Data Sent Bytes | 10211253 |
+| Data Received Bytes | 6858033 |
 
 ## Endpoint Performance
 
 | Endpoint | Method | Requests | Avg (ms) | P95 (ms) | P99 (ms) | Success % |
 | --- | --- | --- | --- | --- | --- | --- |
-| GET /api/v1/scans | GET | 1986 | 50.49 | 221.16 | 1003.59 | 100.0 |
-| GET /api/v1/scans/{id} | GET | 887 | 38.07 | 116.39 | 819.76 | 100.0 |
-| GET /api/v1/user/profile | GET | 1190 | 47.34 | 209.84 | 1006.45 | 100.0 |
-| POST /api/v1/auth/login | POST | 100 | 313.97 | 812.14 | 1102.85 | 100.0 |
-| POST /api/v1/scans | POST | 692 | 108.13 | 522.6 | 1146.77 | 0.0 |
+| GET /api/v1/scans | GET | 2063 | 31.75 | 118.14 | 632.9 | 100.0 |
+| GET /api/v1/scans/{id} | GET | 821 | 35.25 | 131.5 | 771.5 | 100.0 |
+| GET /api/v1/user/profile | GET | 1460 | 33.27 | 143.21 | 740.78 | 100.0 |
+| POST /api/v1/auth/login | POST | 100 | 261.47 | 406.21 | 464.93 | 100.0 |
+| POST /api/v1/scans | POST | 475 | 115.55 | 536.98 | 1097.97 | 100.0 |
 
 ## HTTP Status Codes
 
 | Status | Count | % |
 | --- | --- | --- |
-| 200 | 4163 | 85.75 |
-| 409 | 583 | 12.01 |
-| 429 | 109 | 2.25 |
+| 200 | 4444 | 90.34 |
+| 201 | 475 | 9.66 |
 
 ## Response Time Distribution
 
 | Range (ms) | Count |
 | --- | --- |
-| 0-50 | 4030 |
-| 51-100 | 338 |
-| 101-200 | 108 |
-| 201-500 | 193 |
-| 501-1000 | 114 |
-| 1000+ | 60 |
+| 0-50 | 4237 |
+| 51-100 | 215 |
+| 101-200 | 129 |
+| 201-500 | 233 |
+| 501-1000 | 82 |
+| 1000+ | 11 |
 
 ## Resource Usage Summary
 

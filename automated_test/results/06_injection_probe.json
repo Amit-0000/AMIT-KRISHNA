@@ -7,10 +7,10 @@
     "expected_status": "401/422 (never 500 or DB error text)",
     "finding": false,
     "severity": "info",
-    "response_time_ms": 13.2,
+    "response_time_ms": 12.3,
     "test_category": "injection_probe",
     "note": "payload=\"' OR '1'='1\" handled safely",
-    "timestamp": "2026-08-06T05:59:09.217732+00:00"
+    "timestamp": "2026-08-06T11:08:55.153754+00:00"
   },
   {
     "endpoint": "/api/v1/auth/login",
@@ -20,10 +20,10 @@
     "expected_status": "401/422 (never 500 or DB error text)",
     "finding": false,
     "severity": "info",
-    "response_time_ms": 29.0,
+    "response_time_ms": 6.5,
     "test_category": "injection_probe",
     "note": "payload=\"' OR 1=1--\" handled safely",
-    "timestamp": "2026-08-06T05:59:09.247020+00:00"
+    "timestamp": "2026-08-06T11:08:55.160357+00:00"
   },
   {
     "endpoint": "/api/v1/auth/login",
@@ -33,10 +33,10 @@
     "expected_status": "401/422 (never 500 or DB error text)",
     "finding": false,
     "severity": "info",
-    "response_time_ms": 6.0,
+    "response_time_ms": 4.5,
     "test_category": "injection_probe",
     "note": "payload=\"'; DROP TABLE users;--\" handled safely",
-    "timestamp": "2026-08-06T05:59:09.253226+00:00"
+    "timestamp": "2026-08-06T11:08:55.164988+00:00"
   },
   {
     "endpoint": "/api/v1/auth/login",
@@ -46,10 +46,10 @@
     "expected_status": "401/422 (never 500 or DB error text)",
     "finding": false,
     "severity": "info",
-    "response_time_ms": 24.1,
+    "response_time_ms": 16.1,
     "test_category": "injection_probe",
     "note": "payload=\"' UNION SELECT NULL--\" handled safely",
-    "timestamp": "2026-08-06T05:59:09.277566+00:00"
+    "timestamp": "2026-08-06T11:08:55.181212+00:00"
   },
   {
     "endpoint": "/api/v1/auth/login",
@@ -59,10 +59,10 @@
     "expected_status": "401/422 (never 500 or DB error text)",
     "finding": false,
     "severity": "info",
-    "response_time_ms": 14.1,
+    "response_time_ms": 11.7,
     "test_category": "injection_probe",
     "note": "payload=\"admin'--\" handled safely",
-    "timestamp": "2026-08-06T05:59:09.291813+00:00"
+    "timestamp": "2026-08-06T11:08:55.193038+00:00"
   },
   {
     "endpoint": "/api/v1/auth/register",
@@ -72,10 +72,10 @@
     "expected_status": "201/422 (never 500 or DB error text)",
     "finding": false,
     "severity": "info",
-    "response_time_ms": 266.2,
+    "response_time_ms": 245.0,
     "test_category": "injection_probe",
     "note": "handled safely",
-    "timestamp": "2026-08-06T05:59:09.558213+00:00"
+    "timestamp": "2026-08-06T11:08:55.438203+00:00"
   },
   {
     "endpoint": "/api/v1/auth/register",
@@ -85,10 +85,10 @@
     "expected_status": "201/422 (never 500 or DB error text)",
     "finding": false,
     "severity": "info",
-    "response_time_ms": 278.4,
+    "response_time_ms": 290.4,
     "test_category": "injection_probe",
     "note": "handled safely",
-    "timestamp": "2026-08-06T05:59:09.836798+00:00"
+    "timestamp": "2026-08-06T11:08:55.728790+00:00"
   },
   {
     "endpoint": "/api/v1/auth/register",
@@ -98,10 +98,10 @@
     "expected_status": "201/422 (never 500 or DB error text)",
     "finding": false,
     "severity": "info",
-    "response_time_ms": 280.2,
+    "response_time_ms": 250.7,
     "test_category": "injection_probe",
     "note": "handled safely",
-    "timestamp": "2026-08-06T05:59:10.117196+00:00"
+    "timestamp": "2026-08-06T11:08:55.979628+00:00"
   },
   {
     "endpoint": "/api/v1/auth/register",
@@ -111,10 +111,10 @@
     "expected_status": "201/422 (never 500 or DB error text)",
     "finding": false,
     "severity": "info",
-    "response_time_ms": 270.6,
+    "response_time_ms": 240.8,
     "test_category": "injection_probe",
     "note": "handled safely",
-    "timestamp": "2026-08-06T05:59:10.388014+00:00"
+    "timestamp": "2026-08-06T11:08:56.220633+00:00"
   },
   {
     "endpoint": "/api/v1/auth/register",
@@ -124,10 +124,10 @@
     "expected_status": "201/422 (never 500 or DB error text)",
     "finding": false,
     "severity": "info",
-    "response_time_ms": 281.4,
+    "response_time_ms": 227.5,
     "test_category": "injection_probe",
     "note": "handled safely",
-    "timestamp": "2026-08-06T05:59:10.669625+00:00"
+    "timestamp": "2026-08-06T11:08:56.448346+00:00"
   },
   {
     "endpoint": "/api/v1/scans/{scan_id}",
@@ -137,10 +137,10 @@
     "expected_status": "422 (UUID type validation)",
     "finding": false,
     "severity": "info",
-    "response_time_ms": 19.1,
+    "response_time_ms": 12.7,
     "test_category": "injection_probe",
     "note": "handled safely",
-    "timestamp": "2026-08-06T05:59:10.688922+00:00"
+    "timestamp": "2026-08-06T11:08:56.461169+00:00"
   },
   {
     "endpoint": "/api/v1/scans/{scan_id}",
@@ -150,10 +150,10 @@
     "expected_status": "422 (UUID type validation)",
     "finding": false,
     "severity": "info",
-    "response_time_ms": 30.3,
+    "response_time_ms": 28.3,
     "test_category": "injection_probe",
     "note": "handled safely",
-    "timestamp": "2026-08-06T05:59:10.719343+00:00"
+    "timestamp": "2026-08-06T11:08:56.489594+00:00"
   },
   {
     "endpoint": "/api/v1/scans/{scan_id}",
@@ -163,10 +163,10 @@
     "expected_status": "422 (UUID type validation)",
     "finding": false,
     "severity": "info",
-    "response_time_ms": 15.2,
+    "response_time_ms": 5.5,
     "test_category": "injection_probe",
     "note": "handled safely",
-    "timestamp": "2026-08-06T05:59:10.734701+00:00"
+    "timestamp": "2026-08-06T11:08:56.495230+00:00"
   },
   {
     "endpoint": "/api/v1/scans/{scan_id}",
@@ -176,10 +176,10 @@
     "expected_status": "422 (UUID type validation)",
     "finding": false,
     "severity": "info",
-    "response_time_ms": 15.3,
+    "response_time_ms": 13.7,
     "test_category": "injection_probe",
     "note": "handled safely",
-    "timestamp": "2026-08-06T05:59:10.750179+00:00"
+    "timestamp": "2026-08-06T11:08:56.509069+00:00"
   },
   {
     "endpoint": "/api/v1/scans/{scan_id}",
@@ -189,10 +189,10 @@
     "expected_status": "422 (UUID type validation)",
     "finding": false,
     "severity": "info",
-    "response_time_ms": 6.1,
+    "response_time_ms": 18.2,
     "test_category": "injection_probe",
     "note": "handled safely",
-    "timestamp": "2026-08-06T05:59:10.756506+00:00"
+    "timestamp": "2026-08-06T11:08:56.527389+00:00"
   },
   {
     "endpoint": "/api/v1/scans?status=",
@@ -202,10 +202,10 @@
     "expected_status": "422 (enum validation)",
     "finding": false,
     "severity": "info",
-    "response_time_ms": 6.7,
+    "response_time_ms": 5.3,
     "test_category": "injection_probe",
     "note": "handled safely",
-    "timestamp": "2026-08-06T05:59:10.763383+00:00"
+    "timestamp": "2026-08-06T11:08:56.532806+00:00"
   },
   {
     "endpoint": "/api/v1/scans?status=",
@@ -215,10 +215,10 @@
     "expected_status": "422 (enum validation)",
     "finding": false,
     "severity": "info",
-    "response_time_ms": 18.1,
+    "response_time_ms": 18.8,
     "test_category": "injection_probe",
     "note": "handled safely",
-    "timestamp": "2026-08-06T05:59:10.781684+00:00"
+    "timestamp": "2026-08-06T11:08:56.551725+00:00"
   },
   {
     "endpoint": "/api/v1/scans?status=",
@@ -228,10 +228,10 @@
     "expected_status": "422 (enum validation)",
     "finding": false,
     "severity": "info",
-    "response_time_ms": 35.0,
+    "response_time_ms": 5.8,
     "test_category": "injection_probe",
     "note": "handled safely",
-    "timestamp": "2026-08-06T05:59:10.816910+00:00"
+    "timestamp": "2026-08-06T11:08:56.557674+00:00"
   },
   {
     "endpoint": "/api/v1/scans?status=",
@@ -241,10 +241,10 @@
     "expected_status": "422 (enum validation)",
     "finding": false,
     "severity": "info",
-    "response_time_ms": 13.4,
+    "response_time_ms": 5.9,
     "test_category": "injection_probe",
     "note": "handled safely",
-    "timestamp": "2026-08-06T05:59:10.830633+00:00"
+    "timestamp": "2026-08-06T11:08:56.563730+00:00"
   },
   {
     "endpoint": "/api/v1/scans?status=",
@@ -254,23 +254,10 @@
     "expected_status": "422 (enum validation)",
     "finding": false,
     "severity": "info",
-    "response_time_ms": 9.0,
+    "response_time_ms": 7.3,
     "test_category": "injection_probe",
     "note": "handled safely",
-    "timestamp": "2026-08-06T05:59:10.839952+00:00"
-  },
-  {
-    "endpoint": "/api/v1/auth/login",
-    "method": "POST",
-    "role": "anon",
-    "status": 429,
-    "expected_status": "~6ms (baseline), no multi-second delay",
-    "finding": false,
-    "severity": "info",
-    "response_time_ms": 4.8,
-    "test_category": "injection_probe",
-    "note": "time-based payload=\"' OR SLEEP(5)--\" delta=-1ms vs baseline 6ms -- no delay, safe",
-    "timestamp": "2026-08-06T05:59:10.862566+00:00"
+    "timestamp": "2026-08-06T11:08:56.571162+00:00"
   },
   {
     "endpoint": "/api/v1/auth/login",
@@ -282,8 +269,21 @@
     "severity": "info",
     "response_time_ms": 4.9,
     "test_category": "injection_probe",
-    "note": "time-based payload=\"'; SELECT pg_sleep(5);--\" delta=-1ms vs baseline 6ms -- no delay, safe",
-    "timestamp": "2026-08-06T05:59:10.867662+00:00"
+    "note": "time-based payload=\"' OR SLEEP(5)--\" delta=-1ms vs baseline 6ms -- no delay, safe",
+    "timestamp": "2026-08-06T11:08:56.592537+00:00"
+  },
+  {
+    "endpoint": "/api/v1/auth/login",
+    "method": "POST",
+    "role": "anon",
+    "status": 429,
+    "expected_status": "~6ms (baseline), no multi-second delay",
+    "finding": false,
+    "severity": "info",
+    "response_time_ms": 11.1,
+    "test_category": "injection_probe",
+    "note": "time-based payload=\"'; SELECT pg_sleep(5);--\" delta=6ms vs baseline 6ms -- no delay, safe",
+    "timestamp": "2026-08-06T11:08:56.603782+00:00"
   },
   {
     "endpoint": "/api/v1/auth/login",
@@ -293,10 +293,10 @@
     "expected_status": "422 (type validation)",
     "finding": false,
     "severity": "info",
-    "response_time_ms": 5.2,
+    "response_time_ms": 19.7,
     "test_category": "injection_probe",
     "note": "NoSQLi-style operator payload {'$ne': None} -> 429",
-    "timestamp": "2026-08-06T05:59:10.872971+00:00"
+    "timestamp": "2026-08-06T11:08:56.623636+00:00"
   },
   {
     "endpoint": "/api/v1/auth/login",
@@ -306,9 +306,9 @@
     "expected_status": "422 (type validation)",
     "finding": false,
     "severity": "info",
-    "response_time_ms": 5.1,
+    "response_time_ms": 12.2,
     "test_category": "injection_probe",
     "note": "NoSQLi-style operator payload {'$gt': ''} -> 429",
-    "timestamp": "2026-08-06T05:59:10.878218+00:00"
+    "timestamp": "2026-08-06T11:08:56.636002+00:00"
   }
 ]

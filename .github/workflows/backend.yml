@@ -21,6 +21,10 @@ on:
       - ".github/workflows/backend.yml"
   workflow_dispatch:
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 defaults:
   run:
     working-directory: voiceguard
@@ -30,10 +34,10 @@ jobs:
     name: Lint
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Set up Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v7
         with:
           python-version: "3.12"
           cache: pip
@@ -53,10 +57,10 @@ jobs:
     name: Test (pytest)
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Set up Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v7
         with:
           python-version: "3.12"
           cache: pip
@@ -69,9 +73,6 @@ jobs:
 
       - name: Install ML dependencies (CPU-only torch)
         run: pip install --no-cache-dir -r api/requirements-ml.txt
-
-      - name: Install coverage tooling
-        run: pip install --no-cache-dir coverage
 
       - name: Run backend test suite
         working-directory: voiceguard/api
@@ -89,7 +90,7 @@ jobs:
 
       - name: Upload coverage report
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: backend-coverage
           path: voiceguard/api/coverage.xml

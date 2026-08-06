@@ -2,63 +2,63 @@
   "test_metadata": {
     "project": "VoiceGuard",
     "test_type": "Baseline Load Test",
-    "generated_at": "2026-08-05T20:19:34.858141+00:00",
-    "test_window_start": "2026-08-05T20:17:57.810280057Z",
-    "test_window_end": "2026-08-05T20:18:57.03031182Z"
+    "generated_at": "2026-08-06T10:48:05.163729+00:00",
+    "test_window_start": "2026-08-06T10:46:49.509239936Z",
+    "test_window_end": "2026-08-06T10:47:48.823618811Z"
   },
   "overall_performance": {
     "virtual_users": 100,
-    "duration_s": 59.2,
-    "total_requests": 4855,
-    "successful_requests": 4163,
-    "failed_requests": 692,
-    "requests_per_second": 81.98,
-    "avg_response_time_ms": 61.09,
-    "median_response_time_ms": 9.95,
-    "min_response_time_ms": 2.42,
-    "max_response_time_ms": 1403.85,
-    "p90_response_time_ms": 96.88,
-    "p95_response_time_ms": 270.99,
-    "p99_response_time_ms": 1035.91,
-    "error_rate_pct": 14.25,
-    "success_rate_pct": 85.75,
-    "data_sent_bytes": null,
-    "data_received_bytes": null
+    "duration_s": 59.3,
+    "total_requests": 4919,
+    "successful_requests": 4919,
+    "failed_requests": 0,
+    "requests_per_second": 82.93,
+    "avg_response_time_ms": 45.55,
+    "median_response_time_ms": 6.67,
+    "min_response_time_ms": 2.31,
+    "max_response_time_ms": 1298.29,
+    "p90_response_time_ms": 87.8,
+    "p95_response_time_ms": 241.69,
+    "p99_response_time_ms": 791.93,
+    "error_rate_pct": 0.0,
+    "success_rate_pct": 100.0,
+    "data_sent_bytes": 10211253,
+    "data_received_bytes": 6858033
   },
   "endpoint_performance": [
     {
       "endpoint": "GET /api/v1/scans",
       "method": "GET",
-      "requests": 1986,
-      "avg_response_ms": 50.49,
-      "min_ms": 3.98,
-      "max_ms": 1278.71,
-      "p95_ms": 221.16,
-      "p99_ms": 1003.59,
+      "requests": 2063,
+      "avg_response_ms": 31.75,
+      "min_ms": 2.95,
+      "max_ms": 1002.86,
+      "p95_ms": 118.14,
+      "p99_ms": 632.9,
       "success_pct": 100.0,
       "failure_pct": 0.0
     },
     {
       "endpoint": "GET /api/v1/scans/{id}",
       "method": "GET",
-      "requests": 887,
-      "avg_response_ms": 38.07,
+      "requests": 821,
+      "avg_response_ms": 35.25,
       "min_ms": 2.42,
-      "max_ms": 1242.07,
-      "p95_ms": 116.39,
-      "p99_ms": 819.76,
+      "max_ms": 1004.46,
+      "p95_ms": 131.5,
+      "p99_ms": 771.5,
       "success_pct": 100.0,
       "failure_pct": 0.0
     },
     {
       "endpoint": "GET /api/v1/user/profile",
       "method": "GET",
-      "requests": 1190,
-      "avg_response_ms": 47.34,
-      "min_ms": 2.64,
-      "max_ms": 1203.55,
-      "p95_ms": 209.84,
-      "p99_ms": 1006.45,
+      "requests": 1460,
+      "avg_response_ms": 33.27,
+      "min_ms": 2.31,
+      "max_ms": 936.43,
+      "p95_ms": 143.21,
+      "p99_ms": 740.78,
       "success_pct": 100.0,
       "failure_pct": 0.0
     },
@@ -66,68 +66,63 @@
       "endpoint": "POST /api/v1/auth/login",
       "method": "POST",
       "requests": 100,
-      "avg_response_ms": 313.97,
-      "min_ms": 233.05,
-      "max_ms": 1217.54,
-      "p95_ms": 812.14,
-      "p99_ms": 1102.85,
+      "avg_response_ms": 261.47,
+      "min_ms": 226.67,
+      "max_ms": 648.35,
+      "p95_ms": 406.21,
+      "p99_ms": 464.93,
       "success_pct": 100.0,
       "failure_pct": 0.0
     },
     {
       "endpoint": "POST /api/v1/scans",
       "method": "POST",
-      "requests": 692,
-      "avg_response_ms": 108.13,
-      "min_ms": 3.03,
-      "max_ms": 1403.85,
-      "p95_ms": 522.6,
-      "p99_ms": 1146.77,
-      "success_pct": 0.0,
-      "failure_pct": 100.0
+      "requests": 475,
+      "avg_response_ms": 115.55,
+      "min_ms": 21.79,
+      "max_ms": 1298.29,
+      "p95_ms": 536.98,
+      "p99_ms": 1097.97,
+      "success_pct": 100.0,
+      "failure_pct": 0.0
     }
   ],
   "http_status_codes": [
     {
       "status_code": "200",
-      "count": 4163,
-      "percentage": 85.75
+      "count": 4444,
+      "percentage": 90.34
     },
     {
-      "status_code": "409",
-      "count": 583,
-      "percentage": 12.01
-    },
-    {
-      "status_code": "429",
-      "count": 109,
-      "percentage": 2.25
+      "status_code": "201",
+      "count": 475,
+      "percentage": 9.66
     }
   ],
   "response_time_distribution": [
     {
       "time_range_ms": "0-50",
-      "request_count": 4030
+      "request_count": 4237
     },
     {
       "time_range_ms": "51-100",
-      "request_count": 338
+      "request_count": 215
     },
     {
       "time_range_ms": "101-200",
-      "request_count": 108
+      "request_count": 129
     },
     {
       "time_range_ms": "201-500",
-      "request_count": 193
+      "request_count": 233
     },
     {
       "time_range_ms": "501-1000",
-      "request_count": 114
+      "request_count": 82
     },
     {
       "time_range_ms": "1000+",
-      "request_count": 60
+      "request_count": 11
     }
   ],
   "resource_usage_summary": {

@@ -7,10 +7,10 @@
     "expected_status": "401 (or network N/A)",
     "finding": false,
     "severity": "info",
-    "response_time_ms": 10.7,
+    "response_time_ms": 12.1,
     "test_category": "authn_bypass",
     "note": "correctly rejected (401)",
-    "timestamp": "2026-08-06T05:58:52.398862+00:00"
+    "timestamp": "2026-08-06T11:08:39.387237+00:00"
   },
   {
     "endpoint": "/api/v1/auth/me",
@@ -20,15 +20,275 @@
     "expected_status": "401 (or network N/A)",
     "finding": false,
     "severity": "info",
-    "response_time_ms": 5.7,
+    "response_time_ms": 12.9,
     "test_category": "authn_bypass",
     "note": "correctly rejected (401)",
-    "timestamp": "2026-08-06T05:58:52.404825+00:00"
+    "timestamp": "2026-08-06T11:08:39.400318+00:00"
   },
   {
     "endpoint": "/api/v1/auth/me",
     "method": "GET",
     "role": "expired_token",
+    "status": 401,
+    "expected_status": "401 (or network N/A)",
+    "finding": false,
+    "severity": "info",
+    "response_time_ms": 4.8,
+    "test_category": "authn_bypass",
+    "note": "correctly rejected (401)",
+    "timestamp": "2026-08-06T11:08:39.405209+00:00"
+  },
+  {
+    "endpoint": "/api/v1/user/profile",
+    "method": "GET",
+    "role": "no_token",
+    "status": 401,
+    "expected_status": "401 (or network N/A)",
+    "finding": false,
+    "severity": "info",
+    "response_time_ms": 4.1,
+    "test_category": "authn_bypass",
+    "note": "correctly rejected (401)",
+    "timestamp": "2026-08-06T11:08:39.409413+00:00"
+  },
+  {
+    "endpoint": "/api/v1/user/profile",
+    "method": "GET",
+    "role": "malformed_token",
+    "status": 401,
+    "expected_status": "401 (or network N/A)",
+    "finding": false,
+    "severity": "info",
+    "response_time_ms": 4.0,
+    "test_category": "authn_bypass",
+    "note": "correctly rejected (401)",
+    "timestamp": "2026-08-06T11:08:39.413532+00:00"
+  },
+  {
+    "endpoint": "/api/v1/user/profile",
+    "method": "GET",
+    "role": "expired_token",
+    "status": 401,
+    "expected_status": "401 (or network N/A)",
+    "finding": false,
+    "severity": "info",
+    "response_time_ms": 11.8,
+    "test_category": "authn_bypass",
+    "note": "correctly rejected (401)",
+    "timestamp": "2026-08-06T11:08:39.425464+00:00"
+  },
+  {
+    "endpoint": "/api/v1/user/profile",
+    "method": "PATCH",
+    "role": "no_token",
+    "status": 401,
+    "expected_status": "401 (or network N/A)",
+    "finding": false,
+    "severity": "info",
+    "response_time_ms": 4.0,
+    "test_category": "authn_bypass",
+    "note": "correctly rejected (401)",
+    "timestamp": "2026-08-06T11:08:39.429612+00:00"
+  },
+  {
+    "endpoint": "/api/v1/user/profile",
+    "method": "PATCH",
+    "role": "malformed_token",
+    "status": 401,
+    "expected_status": "401 (or network N/A)",
+    "finding": false,
+    "severity": "info",
+    "response_time_ms": 3.7,
+    "test_category": "authn_bypass",
+    "note": "correctly rejected (401)",
+    "timestamp": "2026-08-06T11:08:39.433398+00:00"
+  },
+  {
+    "endpoint": "/api/v1/user/profile",
+    "method": "PATCH",
+    "role": "expired_token",
+    "status": 401,
+    "expected_status": "401 (or network N/A)",
+    "finding": false,
+    "severity": "info",
+    "response_time_ms": 4.8,
+    "test_category": "authn_bypass",
+    "note": "correctly rejected (401)",
+    "timestamp": "2026-08-06T11:08:39.438316+00:00"
+  },
+  {
+    "endpoint": "/api/v1/user/change-password",
+    "method": "POST",
+    "role": "no_token",
+    "status": 401,
+    "expected_status": "401 (or network N/A)",
+    "finding": false,
+    "severity": "info",
+    "response_time_ms": 5.2,
+    "test_category": "authn_bypass",
+    "note": "correctly rejected (401)",
+    "timestamp": "2026-08-06T11:08:39.443633+00:00"
+  },
+  {
+    "endpoint": "/api/v1/user/change-password",
+    "method": "POST",
+    "role": "malformed_token",
+    "status": 401,
+    "expected_status": "401 (or network N/A)",
+    "finding": false,
+    "severity": "info",
+    "response_time_ms": 15.7,
+    "test_category": "authn_bypass",
+    "note": "correctly rejected (401)",
+    "timestamp": "2026-08-06T11:08:39.459438+00:00"
+  },
+  {
+    "endpoint": "/api/v1/user/change-password",
+    "method": "POST",
+    "role": "expired_token",
+    "status": 401,
+    "expected_status": "401 (or network N/A)",
+    "finding": false,
+    "severity": "info",
+    "response_time_ms": 5.0,
+    "test_category": "authn_bypass",
+    "note": "correctly rejected (401)",
+    "timestamp": "2026-08-06T11:08:39.464547+00:00"
+  },
+  {
+    "endpoint": "/api/v1/scans",
+    "method": "POST",
+    "role": "no_token",
+    "status": 401,
+    "expected_status": "401 (or network N/A)",
+    "finding": false,
+    "severity": "info",
+    "response_time_ms": 25.7,
+    "test_category": "authn_bypass",
+    "note": "correctly rejected (401)",
+    "timestamp": "2026-08-06T11:08:39.490410+00:00"
+  },
+  {
+    "endpoint": "/api/v1/scans",
+    "method": "POST",
+    "role": "malformed_token",
+    "status": 401,
+    "expected_status": "401 (or network N/A)",
+    "finding": false,
+    "severity": "info",
+    "response_time_ms": 18.7,
+    "test_category": "authn_bypass",
+    "note": "correctly rejected (401)",
+    "timestamp": "2026-08-06T11:08:39.509268+00:00"
+  },
+  {
+    "endpoint": "/api/v1/scans",
+    "method": "POST",
+    "role": "expired_token",
+    "status": 401,
+    "expected_status": "401 (or network N/A)",
+    "finding": false,
+    "severity": "info",
+    "response_time_ms": 4.7,
+    "test_category": "authn_bypass",
+    "note": "correctly rejected (401)",
+    "timestamp": "2026-08-06T11:08:39.514075+00:00"
+  },
+  {
+    "endpoint": "/api/v1/scans",
+    "method": "GET",
+    "role": "no_token",
+    "status": 401,
+    "expected_status": "401 (or network N/A)",
+    "finding": false,
+    "severity": "info",
+    "response_time_ms": 3.7,
+    "test_category": "authn_bypass",
+    "note": "correctly rejected (401)",
+    "timestamp": "2026-08-06T11:08:39.517904+00:00"
+  },
+  {
+    "endpoint": "/api/v1/scans",
+    "method": "GET",
+    "role": "malformed_token",
+    "status": 401,
+    "expected_status": "401 (or network N/A)",
+    "finding": false,
+    "severity": "info",
+    "response_time_ms": 4.2,
+    "test_category": "authn_bypass",
+    "note": "correctly rejected (401)",
+    "timestamp": "2026-08-06T11:08:39.522168+00:00"
+  },
+  {
+    "endpoint": "/api/v1/scans",
+    "method": "GET",
+    "role": "expired_token",
+    "status": 401,
+    "expected_status": "401 (or network N/A)",
+    "finding": false,
+    "severity": "info",
+    "response_time_ms": 16.0,
+    "test_category": "authn_bypass",
+    "note": "correctly rejected (401)",
+    "timestamp": "2026-08-06T11:08:39.538305+00:00"
+  },
+  {
+    "endpoint": "/api/v1/scans/e7633676-e305-4383-8aea-9e2105150bc6",
+    "method": "GET",
+    "role": "no_token",
+    "status": 401,
+    "expected_status": "401 (or network N/A)",
+    "finding": false,
+    "severity": "info",
+    "response_time_ms": 3.7,
+    "test_category": "authn_bypass",
+    "note": "correctly rejected (401)",
+    "timestamp": "2026-08-06T11:08:39.542081+00:00"
+  },
+  {
+    "endpoint": "/api/v1/scans/e7633676-e305-4383-8aea-9e2105150bc6",
+    "method": "GET",
+    "role": "malformed_token",
+    "status": 401,
+    "expected_status": "401 (or network N/A)",
+    "finding": false,
+    "severity": "info",
+    "response_time_ms": 4.1,
+    "test_category": "authn_bypass",
+    "note": "correctly rejected (401)",
+    "timestamp": "2026-08-06T11:08:39.546302+00:00"
+  },
+  {
+    "endpoint": "/api/v1/scans/e7633676-e305-4383-8aea-9e2105150bc6",
+    "method": "GET",
+    "role": "expired_token",
+    "status": 401,
+    "expected_status": "401 (or network N/A)",
+    "finding": false,
+    "severity": "info",
+    "response_time_ms": 10.4,
+    "test_category": "authn_bypass",
+    "note": "correctly rejected (401)",
+    "timestamp": "2026-08-06T11:08:39.556861+00:00"
+  },
+  {
+    "endpoint": "/api/v1/scans/e7633676-e305-4383-8aea-9e2105150bc6/status",
+    "method": "GET",
+    "role": "no_token",
+    "status": 401,
+    "expected_status": "401 (or network N/A)",
+    "finding": false,
+    "severity": "info",
+    "response_time_ms": 4.0,
+    "test_category": "authn_bypass",
+    "note": "correctly rejected (401)",
+    "timestamp": "2026-08-06T11:08:39.560946+00:00"
+  },
+  {
+    "endpoint": "/api/v1/scans/e7633676-e305-4383-8aea-9e2105150bc6/status",
+    "method": "GET",
+    "role": "malformed_token",
     "status": 401,
     "expected_status": "401 (or network N/A)",
     "finding": false,
@@ -36,167 +296,24 @@
     "response_time_ms": 4.3,
     "test_category": "authn_bypass",
     "note": "correctly rejected (401)",
-    "timestamp": "2026-08-06T05:58:52.409258+00:00"
+    "timestamp": "2026-08-06T11:08:39.565467+00:00"
   },
   {
-    "endpoint": "/api/v1/user/profile",
-    "method": "GET",
-    "role": "no_token",
-    "status": 401,
-    "expected_status": "401 (or network N/A)",
-    "finding": false,
-    "severity": "info",
-    "response_time_ms": 21.1,
-    "test_category": "authn_bypass",
-    "note": "correctly rejected (401)",
-    "timestamp": "2026-08-06T05:58:52.430554+00:00"
-  },
-  {
-    "endpoint": "/api/v1/user/profile",
-    "method": "GET",
-    "role": "malformed_token",
-    "status": 401,
-    "expected_status": "401 (or network N/A)",
-    "finding": false,
-    "severity": "info",
-    "response_time_ms": 24.4,
-    "test_category": "authn_bypass",
-    "note": "correctly rejected (401)",
-    "timestamp": "2026-08-06T05:58:52.455099+00:00"
-  },
-  {
-    "endpoint": "/api/v1/user/profile",
+    "endpoint": "/api/v1/scans/e7633676-e305-4383-8aea-9e2105150bc6/status",
     "method": "GET",
     "role": "expired_token",
     "status": 401,
     "expected_status": "401 (or network N/A)",
     "finding": false,
     "severity": "info",
-    "response_time_ms": 14.9,
+    "response_time_ms": 13.7,
     "test_category": "authn_bypass",
     "note": "correctly rejected (401)",
-    "timestamp": "2026-08-06T05:58:52.470112+00:00"
+    "timestamp": "2026-08-06T11:08:39.579288+00:00"
   },
   {
-    "endpoint": "/api/v1/user/profile",
-    "method": "PATCH",
-    "role": "no_token",
-    "status": 401,
-    "expected_status": "401 (or network N/A)",
-    "finding": false,
-    "severity": "info",
-    "response_time_ms": 5.1,
-    "test_category": "authn_bypass",
-    "note": "correctly rejected (401)",
-    "timestamp": "2026-08-06T05:58:52.475341+00:00"
-  },
-  {
-    "endpoint": "/api/v1/user/profile",
-    "method": "PATCH",
-    "role": "malformed_token",
-    "status": 401,
-    "expected_status": "401 (or network N/A)",
-    "finding": false,
-    "severity": "info",
-    "response_time_ms": 21.6,
-    "test_category": "authn_bypass",
-    "note": "correctly rejected (401)",
-    "timestamp": "2026-08-06T05:58:52.497131+00:00"
-  },
-  {
-    "endpoint": "/api/v1/user/profile",
-    "method": "PATCH",
-    "role": "expired_token",
-    "status": 401,
-    "expected_status": "401 (or network N/A)",
-    "finding": false,
-    "severity": "info",
-    "response_time_ms": 5.3,
-    "test_category": "authn_bypass",
-    "note": "correctly rejected (401)",
-    "timestamp": "2026-08-06T05:58:52.502575+00:00"
-  },
-  {
-    "endpoint": "/api/v1/user/change-password",
+    "endpoint": "/api/v1/scans/e7633676-e305-4383-8aea-9e2105150bc6/cancel",
     "method": "POST",
-    "role": "no_token",
-    "status": 401,
-    "expected_status": "401 (or network N/A)",
-    "finding": false,
-    "severity": "info",
-    "response_time_ms": 5.6,
-    "test_category": "authn_bypass",
-    "note": "correctly rejected (401)",
-    "timestamp": "2026-08-06T05:58:52.508336+00:00"
-  },
-  {
-    "endpoint": "/api/v1/user/change-password",
-    "method": "POST",
-    "role": "malformed_token",
-    "status": 401,
-    "expected_status": "401 (or network N/A)",
-    "finding": false,
-    "severity": "info",
-    "response_time_ms": 18.9,
-    "test_category": "authn_bypass",
-    "note": "correctly rejected (401)",
-    "timestamp": "2026-08-06T05:58:52.527441+00:00"
-  },
-  {
-    "endpoint": "/api/v1/user/change-password",
-    "method": "POST",
-    "role": "expired_token",
-    "status": 401,
-    "expected_status": "401 (or network N/A)",
-    "finding": false,
-    "severity": "info",
-    "response_time_ms": 23.8,
-    "test_category": "authn_bypass",
-    "note": "correctly rejected (401)",
-    "timestamp": "2026-08-06T05:58:52.551405+00:00"
-  },
-  {
-    "endpoint": "/api/v1/scans",
-    "method": "POST",
-    "role": "no_token",
-    "status": 401,
-    "expected_status": "401 (or network N/A)",
-    "finding": false,
-    "severity": "info",
-    "response_time_ms": 24.6,
-    "test_category": "authn_bypass",
-    "note": "correctly rejected (401)",
-    "timestamp": "2026-08-06T05:58:52.576105+00:00"
-  },
-  {
-    "endpoint": "/api/v1/scans",
-    "method": "POST",
-    "role": "malformed_token",
-    "status": 401,
-    "expected_status": "401 (or network N/A)",
-    "finding": false,
-    "severity": "info",
-    "response_time_ms": 20.0,
-    "test_category": "authn_bypass",
-    "note": "correctly rejected (401)",
-    "timestamp": "2026-08-06T05:58:52.596212+00:00"
-  },
-  {
-    "endpoint": "/api/v1/scans",
-    "method": "POST",
-    "role": "expired_token",
-    "status": 401,
-    "expected_status": "401 (or network N/A)",
-    "finding": false,
-    "severity": "info",
-    "response_time_ms": 5.1,
-    "test_category": "authn_bypass",
-    "note": "correctly rejected (401)",
-    "timestamp": "2026-08-06T05:58:52.601495+00:00"
-  },
-  {
-    "endpoint": "/api/v1/scans",
-    "method": "GET",
     "role": "no_token",
     "status": 401,
     "expected_status": "401 (or network N/A)",
@@ -205,194 +322,142 @@
     "response_time_ms": 4.4,
     "test_category": "authn_bypass",
     "note": "correctly rejected (401)",
-    "timestamp": "2026-08-06T05:58:52.606044+00:00"
+    "timestamp": "2026-08-06T11:08:39.583789+00:00"
   },
   {
-    "endpoint": "/api/v1/scans",
-    "method": "GET",
-    "role": "malformed_token",
-    "status": 401,
-    "expected_status": "401 (or network N/A)",
-    "finding": false,
-    "severity": "info",
-    "response_time_ms": 4.5,
-    "test_category": "authn_bypass",
-    "note": "correctly rejected (401)",
-    "timestamp": "2026-08-06T05:58:52.610623+00:00"
-  },
-  {
-    "endpoint": "/api/v1/scans",
-    "method": "GET",
-    "role": "expired_token",
-    "status": 401,
-    "expected_status": "401 (or network N/A)",
-    "finding": false,
-    "severity": "info",
-    "response_time_ms": 5.1,
-    "test_category": "authn_bypass",
-    "note": "correctly rejected (401)",
-    "timestamp": "2026-08-06T05:58:52.615808+00:00"
-  },
-  {
-    "endpoint": "/api/v1/scans/370d1345-4ecf-4c4e-bc03-081c2a958690",
-    "method": "GET",
-    "role": "no_token",
-    "status": 401,
-    "expected_status": "401 (or network N/A)",
-    "finding": false,
-    "severity": "info",
-    "response_time_ms": 20.4,
-    "test_category": "authn_bypass",
-    "note": "correctly rejected (401)",
-    "timestamp": "2026-08-06T05:58:52.636292+00:00"
-  },
-  {
-    "endpoint": "/api/v1/scans/370d1345-4ecf-4c4e-bc03-081c2a958690",
-    "method": "GET",
-    "role": "malformed_token",
-    "status": 401,
-    "expected_status": "401 (or network N/A)",
-    "finding": false,
-    "severity": "info",
-    "response_time_ms": 25.0,
-    "test_category": "authn_bypass",
-    "note": "correctly rejected (401)",
-    "timestamp": "2026-08-06T05:58:52.661405+00:00"
-  },
-  {
-    "endpoint": "/api/v1/scans/370d1345-4ecf-4c4e-bc03-081c2a958690",
-    "method": "GET",
-    "role": "expired_token",
-    "status": 401,
-    "expected_status": "401 (or network N/A)",
-    "finding": false,
-    "severity": "info",
-    "response_time_ms": 19.5,
-    "test_category": "authn_bypass",
-    "note": "correctly rejected (401)",
-    "timestamp": "2026-08-06T05:58:52.681007+00:00"
-  },
-  {
-    "endpoint": "/api/v1/scans/370d1345-4ecf-4c4e-bc03-081c2a958690/status",
-    "method": "GET",
-    "role": "no_token",
-    "status": 401,
-    "expected_status": "401 (or network N/A)",
-    "finding": false,
-    "severity": "info",
-    "response_time_ms": 4.6,
-    "test_category": "authn_bypass",
-    "note": "correctly rejected (401)",
-    "timestamp": "2026-08-06T05:58:52.685767+00:00"
-  },
-  {
-    "endpoint": "/api/v1/scans/370d1345-4ecf-4c4e-bc03-081c2a958690/status",
-    "method": "GET",
-    "role": "malformed_token",
-    "status": 401,
-    "expected_status": "401 (or network N/A)",
-    "finding": false,
-    "severity": "info",
-    "response_time_ms": 29.8,
-    "test_category": "authn_bypass",
-    "note": "correctly rejected (401)",
-    "timestamp": "2026-08-06T05:58:52.715773+00:00"
-  },
-  {
-    "endpoint": "/api/v1/scans/370d1345-4ecf-4c4e-bc03-081c2a958690/status",
-    "method": "GET",
-    "role": "expired_token",
-    "status": 401,
-    "expected_status": "401 (or network N/A)",
-    "finding": false,
-    "severity": "info",
-    "response_time_ms": 18.8,
-    "test_category": "authn_bypass",
-    "note": "correctly rejected (401)",
-    "timestamp": "2026-08-06T05:58:52.734737+00:00"
-  },
-  {
-    "endpoint": "/api/v1/scans/370d1345-4ecf-4c4e-bc03-081c2a958690/cancel",
-    "method": "POST",
-    "role": "no_token",
-    "status": 401,
-    "expected_status": "401 (or network N/A)",
-    "finding": false,
-    "severity": "info",
-    "response_time_ms": 4.6,
-    "test_category": "authn_bypass",
-    "note": "correctly rejected (401)",
-    "timestamp": "2026-08-06T05:58:52.739474+00:00"
-  },
-  {
-    "endpoint": "/api/v1/scans/370d1345-4ecf-4c4e-bc03-081c2a958690/cancel",
+    "endpoint": "/api/v1/scans/e7633676-e305-4383-8aea-9e2105150bc6/cancel",
     "method": "POST",
     "role": "malformed_token",
     "status": 401,
     "expected_status": "401 (or network N/A)",
     "finding": false,
     "severity": "info",
-    "response_time_ms": 17.9,
+    "response_time_ms": 4.3,
     "test_category": "authn_bypass",
     "note": "correctly rejected (401)",
-    "timestamp": "2026-08-06T05:58:52.757490+00:00"
+    "timestamp": "2026-08-06T11:08:39.588186+00:00"
   },
   {
-    "endpoint": "/api/v1/scans/370d1345-4ecf-4c4e-bc03-081c2a958690/cancel",
+    "endpoint": "/api/v1/scans/e7633676-e305-4383-8aea-9e2105150bc6/cancel",
     "method": "POST",
     "role": "expired_token",
     "status": 401,
     "expected_status": "401 (or network N/A)",
     "finding": false,
     "severity": "info",
-    "response_time_ms": 27.7,
+    "response_time_ms": 4.1,
     "test_category": "authn_bypass",
     "note": "correctly rejected (401)",
-    "timestamp": "2026-08-06T05:58:52.785364+00:00"
+    "timestamp": "2026-08-06T11:08:39.592385+00:00"
   },
   {
-    "endpoint": "/api/v1/scans/370d1345-4ecf-4c4e-bc03-081c2a958690",
+    "endpoint": "/api/v1/scans/e7633676-e305-4383-8aea-9e2105150bc6",
     "method": "DELETE",
     "role": "no_token",
     "status": 401,
     "expected_status": "401 (or network N/A)",
     "finding": false,
     "severity": "info",
-    "response_time_ms": 6.0,
+    "response_time_ms": 3.7,
     "test_category": "authn_bypass",
     "note": "correctly rejected (401)",
-    "timestamp": "2026-08-06T05:58:52.791492+00:00"
+    "timestamp": "2026-08-06T11:08:39.596137+00:00"
   },
   {
-    "endpoint": "/api/v1/scans/370d1345-4ecf-4c4e-bc03-081c2a958690",
+    "endpoint": "/api/v1/scans/e7633676-e305-4383-8aea-9e2105150bc6",
     "method": "DELETE",
     "role": "malformed_token",
     "status": 401,
     "expected_status": "401 (or network N/A)",
     "finding": false,
     "severity": "info",
-    "response_time_ms": 6.2,
+    "response_time_ms": 3.9,
     "test_category": "authn_bypass",
     "note": "correctly rejected (401)",
-    "timestamp": "2026-08-06T05:58:52.797988+00:00"
+    "timestamp": "2026-08-06T11:08:39.600137+00:00"
   },
   {
-    "endpoint": "/api/v1/scans/370d1345-4ecf-4c4e-bc03-081c2a958690",
+    "endpoint": "/api/v1/scans/e7633676-e305-4383-8aea-9e2105150bc6",
     "method": "DELETE",
     "role": "expired_token",
     "status": 401,
     "expected_status": "401 (or network N/A)",
     "finding": false,
     "severity": "info",
-    "response_time_ms": 5.5,
+    "response_time_ms": 16.9,
     "test_category": "authn_bypass",
     "note": "correctly rejected (401)",
-    "timestamp": "2026-08-06T05:58:52.803620+00:00"
+    "timestamp": "2026-08-06T11:08:39.617196+00:00"
   },
   {
-    "endpoint": "/api/v1/scans/370d1345-4ecf-4c4e-bc03-081c2a958690/process",
+    "endpoint": "/api/v1/scans/e7633676-e305-4383-8aea-9e2105150bc6/process",
     "method": "POST",
     "role": "no_token",
+    "status": 401,
+    "expected_status": "401 (or network N/A)",
+    "finding": false,
+    "severity": "info",
+    "response_time_ms": 3.9,
+    "test_category": "authn_bypass",
+    "note": "correctly rejected (401)",
+    "timestamp": "2026-08-06T11:08:39.621208+00:00"
+  },
+  {
+    "endpoint": "/api/v1/scans/e7633676-e305-4383-8aea-9e2105150bc6/process",
+    "method": "POST",
+    "role": "malformed_token",
+    "status": 401,
+    "expected_status": "401 (or network N/A)",
+    "finding": false,
+    "severity": "info",
+    "response_time_ms": 4.2,
+    "test_category": "authn_bypass",
+    "note": "correctly rejected (401)",
+    "timestamp": "2026-08-06T11:08:39.625530+00:00"
+  },
+  {
+    "endpoint": "/api/v1/scans/e7633676-e305-4383-8aea-9e2105150bc6/process",
+    "method": "POST",
+    "role": "expired_token",
+    "status": 401,
+    "expected_status": "401 (or network N/A)",
+    "finding": false,
+    "severity": "info",
+    "response_time_ms": 3.7,
+    "test_category": "authn_bypass",
+    "note": "correctly rejected (401)",
+    "timestamp": "2026-08-06T11:08:39.629329+00:00"
+  },
+  {
+    "endpoint": "/api/v1/scans/e7633676-e305-4383-8aea-9e2105150bc6/result",
+    "method": "GET",
+    "role": "no_token",
+    "status": 401,
+    "expected_status": "401 (or network N/A)",
+    "finding": false,
+    "severity": "info",
+    "response_time_ms": 3.4,
+    "test_category": "authn_bypass",
+    "note": "correctly rejected (401)",
+    "timestamp": "2026-08-06T11:08:39.632822+00:00"
+  },
+  {
+    "endpoint": "/api/v1/scans/e7633676-e305-4383-8aea-9e2105150bc6/result",
+    "method": "GET",
+    "role": "malformed_token",
+    "status": 401,
+    "expected_status": "401 (or network N/A)",
+    "finding": false,
+    "severity": "info",
+    "response_time_ms": 4.4,
+    "test_category": "authn_bypass",
+    "note": "correctly rejected (401)",
+    "timestamp": "2026-08-06T11:08:39.637328+00:00"
+  },
+  {
+    "endpoint": "/api/v1/scans/e7633676-e305-4383-8aea-9e2105150bc6/result",
+    "method": "GET",
+    "role": "expired_token",
     "status": 401,
     "expected_status": "401 (or network N/A)",
     "finding": false,
@@ -400,36 +465,10 @@
     "response_time_ms": 5.0,
     "test_category": "authn_bypass",
     "note": "correctly rejected (401)",
-    "timestamp": "2026-08-06T05:58:52.808757+00:00"
+    "timestamp": "2026-08-06T11:08:39.642443+00:00"
   },
   {
-    "endpoint": "/api/v1/scans/370d1345-4ecf-4c4e-bc03-081c2a958690/process",
-    "method": "POST",
-    "role": "malformed_token",
-    "status": 401,
-    "expected_status": "401 (or network N/A)",
-    "finding": false,
-    "severity": "info",
-    "response_time_ms": 5.3,
-    "test_category": "authn_bypass",
-    "note": "correctly rejected (401)",
-    "timestamp": "2026-08-06T05:58:52.814201+00:00"
-  },
-  {
-    "endpoint": "/api/v1/scans/370d1345-4ecf-4c4e-bc03-081c2a958690/process",
-    "method": "POST",
-    "role": "expired_token",
-    "status": 401,
-    "expected_status": "401 (or network N/A)",
-    "finding": false,
-    "severity": "info",
-    "response_time_ms": 22.2,
-    "test_category": "authn_bypass",
-    "note": "correctly rejected (401)",
-    "timestamp": "2026-08-06T05:58:52.836571+00:00"
-  },
-  {
-    "endpoint": "/api/v1/scans/370d1345-4ecf-4c4e-bc03-081c2a958690/result",
+    "endpoint": "/api/v1/scans/e7633676-e305-4383-8aea-9e2105150bc6/technical",
     "method": "GET",
     "role": "no_token",
     "status": 401,
@@ -439,51 +478,77 @@
     "response_time_ms": 4.9,
     "test_category": "authn_bypass",
     "note": "correctly rejected (401)",
-    "timestamp": "2026-08-06T05:58:52.841582+00:00"
+    "timestamp": "2026-08-06T11:08:39.647464+00:00"
   },
   {
-    "endpoint": "/api/v1/scans/370d1345-4ecf-4c4e-bc03-081c2a958690/result",
+    "endpoint": "/api/v1/scans/e7633676-e305-4383-8aea-9e2105150bc6/technical",
     "method": "GET",
     "role": "malformed_token",
     "status": 401,
     "expected_status": "401 (or network N/A)",
     "finding": false,
     "severity": "info",
-    "response_time_ms": 4.7,
+    "response_time_ms": 4.1,
     "test_category": "authn_bypass",
     "note": "correctly rejected (401)",
-    "timestamp": "2026-08-06T05:58:52.846477+00:00"
+    "timestamp": "2026-08-06T11:08:39.651695+00:00"
   },
   {
-    "endpoint": "/api/v1/scans/370d1345-4ecf-4c4e-bc03-081c2a958690/result",
+    "endpoint": "/api/v1/scans/e7633676-e305-4383-8aea-9e2105150bc6/technical",
     "method": "GET",
     "role": "expired_token",
     "status": 401,
     "expected_status": "401 (or network N/A)",
     "finding": false,
     "severity": "info",
-    "response_time_ms": 5.2,
+    "response_time_ms": 14.0,
     "test_category": "authn_bypass",
     "note": "correctly rejected (401)",
-    "timestamp": "2026-08-06T05:58:52.851772+00:00"
+    "timestamp": "2026-08-06T11:08:39.665786+00:00"
   },
   {
-    "endpoint": "/api/v1/scans/370d1345-4ecf-4c4e-bc03-081c2a958690/technical",
+    "endpoint": "/api/v1/scans/e7633676-e305-4383-8aea-9e2105150bc6/explanation",
     "method": "GET",
     "role": "no_token",
     "status": 401,
     "expected_status": "401 (or network N/A)",
     "finding": false,
     "severity": "info",
-    "response_time_ms": 4.6,
+    "response_time_ms": 4.0,
     "test_category": "authn_bypass",
     "note": "correctly rejected (401)",
-    "timestamp": "2026-08-06T05:58:52.856590+00:00"
+    "timestamp": "2026-08-06T11:08:39.669920+00:00"
   },
   {
-    "endpoint": "/api/v1/scans/370d1345-4ecf-4c4e-bc03-081c2a958690/technical",
+    "endpoint": "/api/v1/scans/e7633676-e305-4383-8aea-9e2105150bc6/explanation",
     "method": "GET",
     "role": "malformed_token",
+    "status": 401,
+    "expected_status": "401 (or network N/A)",
+    "finding": false,
+    "severity": "info",
+    "response_time_ms": 4.4,
+    "test_category": "authn_bypass",
+    "note": "correctly rejected (401)",
+    "timestamp": "2026-08-06T11:08:39.674515+00:00"
+  },
+  {
+    "endpoint": "/api/v1/scans/e7633676-e305-4383-8aea-9e2105150bc6/explanation",
+    "method": "GET",
+    "role": "expired_token",
+    "status": 401,
+    "expected_status": "401 (or network N/A)",
+    "finding": false,
+    "severity": "info",
+    "response_time_ms": 22.0,
+    "test_category": "authn_bypass",
+    "note": "correctly rejected (401)",
+    "timestamp": "2026-08-06T11:08:39.696651+00:00"
+  },
+  {
+    "endpoint": "/api/v1/models",
+    "method": "GET",
+    "role": "no_token",
     "status": 401,
     "expected_status": "401 (or network N/A)",
     "finding": false,
@@ -491,49 +556,62 @@
     "response_time_ms": 3.9,
     "test_category": "authn_bypass",
     "note": "correctly rejected (401)",
-    "timestamp": "2026-08-06T05:58:52.860646+00:00"
+    "timestamp": "2026-08-06T11:08:39.700646+00:00"
   },
   {
-    "endpoint": "/api/v1/scans/370d1345-4ecf-4c4e-bc03-081c2a958690/technical",
-    "method": "GET",
-    "role": "expired_token",
-    "status": 401,
-    "expected_status": "401 (or network N/A)",
-    "finding": false,
-    "severity": "info",
-    "response_time_ms": 18.4,
-    "test_category": "authn_bypass",
-    "note": "correctly rejected (401)",
-    "timestamp": "2026-08-06T05:58:52.879219+00:00"
-  },
-  {
-    "endpoint": "/api/v1/scans/370d1345-4ecf-4c4e-bc03-081c2a958690/explanation",
-    "method": "GET",
-    "role": "no_token",
-    "status": 401,
-    "expected_status": "401 (or network N/A)",
-    "finding": false,
-    "severity": "info",
-    "response_time_ms": 15.4,
-    "test_category": "authn_bypass",
-    "note": "correctly rejected (401)",
-    "timestamp": "2026-08-06T05:58:52.894769+00:00"
-  },
-  {
-    "endpoint": "/api/v1/scans/370d1345-4ecf-4c4e-bc03-081c2a958690/explanation",
+    "endpoint": "/api/v1/models",
     "method": "GET",
     "role": "malformed_token",
     "status": 401,
     "expected_status": "401 (or network N/A)",
     "finding": false,
     "severity": "info",
-    "response_time_ms": 4.8,
+    "response_time_ms": 4.6,
     "test_category": "authn_bypass",
     "note": "correctly rejected (401)",
-    "timestamp": "2026-08-06T05:58:52.899687+00:00"
+    "timestamp": "2026-08-06T11:08:39.705389+00:00"
   },
   {
-    "endpoint": "/api/v1/scans/370d1345-4ecf-4c4e-bc03-081c2a958690/explanation",
+    "endpoint": "/api/v1/models",
+    "method": "GET",
+    "role": "expired_token",
+    "status": 401,
+    "expected_status": "401 (or network N/A)",
+    "finding": false,
+    "severity": "info",
+    "response_time_ms": 5.1,
+    "test_category": "authn_bypass",
+    "note": "correctly rejected (401)",
+    "timestamp": "2026-08-06T11:08:39.710576+00:00"
+  },
+  {
+    "endpoint": "/api/v1/models/current",
+    "method": "GET",
+    "role": "no_token",
+    "status": 401,
+    "expected_status": "401 (or network N/A)",
+    "finding": false,
+    "severity": "info",
+    "response_time_ms": 4.4,
+    "test_category": "authn_bypass",
+    "note": "correctly rejected (401)",
+    "timestamp": "2026-08-06T11:08:39.715137+00:00"
+  },
+  {
+    "endpoint": "/api/v1/models/current",
+    "method": "GET",
+    "role": "malformed_token",
+    "status": 401,
+    "expected_status": "401 (or network N/A)",
+    "finding": false,
+    "severity": "info",
+    "response_time_ms": 4.0,
+    "test_category": "authn_bypass",
+    "note": "correctly rejected (401)",
+    "timestamp": "2026-08-06T11:08:39.719227+00:00"
+  },
+  {
+    "endpoint": "/api/v1/models/current",
     "method": "GET",
     "role": "expired_token",
     "status": 401,
@@ -543,76 +621,37 @@
     "response_time_ms": 4.1,
     "test_category": "authn_bypass",
     "note": "correctly rejected (401)",
-    "timestamp": "2026-08-06T05:58:52.903932+00:00"
+    "timestamp": "2026-08-06T11:08:39.723423+00:00"
   },
   {
-    "endpoint": "/api/v1/models",
-    "method": "GET",
+    "endpoint": "/api/v1/scans/e7633676-e305-4383-8aea-9e2105150bc6/share",
+    "method": "POST",
     "role": "no_token",
     "status": 401,
     "expected_status": "401 (or network N/A)",
     "finding": false,
     "severity": "info",
-    "response_time_ms": 15.1,
+    "response_time_ms": 15.6,
     "test_category": "authn_bypass",
     "note": "correctly rejected (401)",
-    "timestamp": "2026-08-06T05:58:52.919202+00:00"
+    "timestamp": "2026-08-06T11:08:39.739110+00:00"
   },
   {
-    "endpoint": "/api/v1/models",
-    "method": "GET",
+    "endpoint": "/api/v1/scans/e7633676-e305-4383-8aea-9e2105150bc6/share",
+    "method": "POST",
     "role": "malformed_token",
     "status": 401,
     "expected_status": "401 (or network N/A)",
     "finding": false,
     "severity": "info",
-    "response_time_ms": 5.0,
+    "response_time_ms": 11.1,
     "test_category": "authn_bypass",
     "note": "correctly rejected (401)",
-    "timestamp": "2026-08-06T05:58:52.924331+00:00"
+    "timestamp": "2026-08-06T11:08:39.750334+00:00"
   },
   {
-    "endpoint": "/api/v1/models",
-    "method": "GET",
-    "role": "expired_token",
-    "status": 401,
-    "expected_status": "401 (or network N/A)",
-    "finding": false,
-    "severity": "info",
-    "response_time_ms": 15.9,
-    "test_category": "authn_bypass",
-    "note": "correctly rejected (401)",
-    "timestamp": "2026-08-06T05:58:52.940355+00:00"
-  },
-  {
-    "endpoint": "/api/v1/models/current",
-    "method": "GET",
-    "role": "no_token",
-    "status": 401,
-    "expected_status": "401 (or network N/A)",
-    "finding": false,
-    "severity": "info",
-    "response_time_ms": 28.3,
-    "test_category": "authn_bypass",
-    "note": "correctly rejected (401)",
-    "timestamp": "2026-08-06T05:58:52.968765+00:00"
-  },
-  {
-    "endpoint": "/api/v1/models/current",
-    "method": "GET",
-    "role": "malformed_token",
-    "status": 401,
-    "expected_status": "401 (or network N/A)",
-    "finding": false,
-    "severity": "info",
-    "response_time_ms": 16.4,
-    "test_category": "authn_bypass",
-    "note": "correctly rejected (401)",
-    "timestamp": "2026-08-06T05:58:52.985296+00:00"
-  },
-  {
-    "endpoint": "/api/v1/models/current",
-    "method": "GET",
+    "endpoint": "/api/v1/scans/e7633676-e305-4383-8aea-9e2105150bc6/share",
+    "method": "POST",
     "role": "expired_token",
     "status": 401,
     "expected_status": "401 (or network N/A)",
@@ -621,85 +660,46 @@
     "response_time_ms": 14.6,
     "test_category": "authn_bypass",
     "note": "correctly rejected (401)",
-    "timestamp": "2026-08-06T05:58:53.000057+00:00"
+    "timestamp": "2026-08-06T11:08:39.765039+00:00"
   },
   {
-    "endpoint": "/api/v1/scans/370d1345-4ecf-4c4e-bc03-081c2a958690/share",
-    "method": "POST",
-    "role": "no_token",
-    "status": 401,
-    "expected_status": "401 (or network N/A)",
-    "finding": false,
-    "severity": "info",
-    "response_time_ms": 5.0,
-    "test_category": "authn_bypass",
-    "note": "correctly rejected (401)",
-    "timestamp": "2026-08-06T05:58:53.005168+00:00"
-  },
-  {
-    "endpoint": "/api/v1/scans/370d1345-4ecf-4c4e-bc03-081c2a958690/share",
-    "method": "POST",
-    "role": "malformed_token",
-    "status": 401,
-    "expected_status": "401 (or network N/A)",
-    "finding": false,
-    "severity": "info",
-    "response_time_ms": 15.0,
-    "test_category": "authn_bypass",
-    "note": "correctly rejected (401)",
-    "timestamp": "2026-08-06T05:58:53.020264+00:00"
-  },
-  {
-    "endpoint": "/api/v1/scans/370d1345-4ecf-4c4e-bc03-081c2a958690/share",
-    "method": "POST",
-    "role": "expired_token",
-    "status": 401,
-    "expected_status": "401 (or network N/A)",
-    "finding": false,
-    "severity": "info",
-    "response_time_ms": 16.4,
-    "test_category": "authn_bypass",
-    "note": "correctly rejected (401)",
-    "timestamp": "2026-08-06T05:58:53.036769+00:00"
-  },
-  {
-    "endpoint": "/api/v1/scans/370d1345-4ecf-4c4e-bc03-081c2a958690/share",
+    "endpoint": "/api/v1/scans/e7633676-e305-4383-8aea-9e2105150bc6/share",
     "method": "DELETE",
     "role": "no_token",
     "status": 401,
     "expected_status": "401 (or network N/A)",
     "finding": false,
     "severity": "info",
-    "response_time_ms": 24.8,
+    "response_time_ms": 12.6,
     "test_category": "authn_bypass",
     "note": "correctly rejected (401)",
-    "timestamp": "2026-08-06T05:58:53.061742+00:00"
+    "timestamp": "2026-08-06T11:08:39.777836+00:00"
   },
   {
-    "endpoint": "/api/v1/scans/370d1345-4ecf-4c4e-bc03-081c2a958690/share",
+    "endpoint": "/api/v1/scans/e7633676-e305-4383-8aea-9e2105150bc6/share",
     "method": "DELETE",
     "role": "malformed_token",
     "status": 401,
     "expected_status": "401 (or network N/A)",
     "finding": false,
     "severity": "info",
-    "response_time_ms": 5.0,
+    "response_time_ms": 4.9,
     "test_category": "authn_bypass",
     "note": "correctly rejected (401)",
-    "timestamp": "2026-08-06T05:58:53.066926+00:00"
+    "timestamp": "2026-08-06T11:08:39.782848+00:00"
   },
   {
-    "endpoint": "/api/v1/scans/370d1345-4ecf-4c4e-bc03-081c2a958690/share",
+    "endpoint": "/api/v1/scans/e7633676-e305-4383-8aea-9e2105150bc6/share",
     "method": "DELETE",
     "role": "expired_token",
     "status": 401,
     "expected_status": "401 (or network N/A)",
     "finding": false,
     "severity": "info",
-    "response_time_ms": 18.9,
+    "response_time_ms": 4.1,
     "test_category": "authn_bypass",
     "note": "correctly rejected (401)",
-    "timestamp": "2026-08-06T05:58:53.086011+00:00"
+    "timestamp": "2026-08-06T11:08:39.787022+00:00"
   },
   {
     "endpoint": "/api/v1/notifications",
@@ -709,10 +709,10 @@
     "expected_status": "401 (or network N/A)",
     "finding": false,
     "severity": "info",
-    "response_time_ms": 5.0,
+    "response_time_ms": 3.9,
     "test_category": "authn_bypass",
     "note": "correctly rejected (401)",
-    "timestamp": "2026-08-06T05:58:53.091123+00:00"
+    "timestamp": "2026-08-06T11:08:39.791012+00:00"
   },
   {
     "endpoint": "/api/v1/notifications",
@@ -722,10 +722,10 @@
     "expected_status": "401 (or network N/A)",
     "finding": false,
     "severity": "info",
-    "response_time_ms": 4.7,
+    "response_time_ms": 3.9,
     "test_category": "authn_bypass",
     "note": "correctly rejected (401)",
-    "timestamp": "2026-08-06T05:58:53.096019+00:00"
+    "timestamp": "2026-08-06T11:08:39.794965+00:00"
   },
   {
     "endpoint": "/api/v1/notifications",
@@ -735,10 +735,10 @@
     "expected_status": "401 (or network N/A)",
     "finding": false,
     "severity": "info",
-    "response_time_ms": 25.3,
+    "response_time_ms": 3.8,
     "test_category": "authn_bypass",
     "note": "correctly rejected (401)",
-    "timestamp": "2026-08-06T05:58:53.121418+00:00"
+    "timestamp": "2026-08-06T11:08:39.798903+00:00"
   },
   {
     "endpoint": "/api/v1/notifications/unread-count",
@@ -748,10 +748,10 @@
     "expected_status": "401 (or network N/A)",
     "finding": false,
     "severity": "info",
-    "response_time_ms": 4.6,
+    "response_time_ms": 3.5,
     "test_category": "authn_bypass",
     "note": "correctly rejected (401)",
-    "timestamp": "2026-08-06T05:58:53.126160+00:00"
+    "timestamp": "2026-08-06T11:08:39.802488+00:00"
   },
   {
     "endpoint": "/api/v1/notifications/unread-count",
@@ -761,10 +761,10 @@
     "expected_status": "401 (or network N/A)",
     "finding": false,
     "severity": "info",
-    "response_time_ms": 18.9,
+    "response_time_ms": 4.1,
     "test_category": "authn_bypass",
     "note": "correctly rejected (401)",
-    "timestamp": "2026-08-06T05:58:53.145185+00:00"
+    "timestamp": "2026-08-06T11:08:39.806689+00:00"
   },
   {
     "endpoint": "/api/v1/notifications/unread-count",
@@ -774,10 +774,10 @@
     "expected_status": "401 (or network N/A)",
     "finding": false,
     "severity": "info",
-    "response_time_ms": 5.0,
+    "response_time_ms": 10.1,
     "test_category": "authn_bypass",
     "note": "correctly rejected (401)",
-    "timestamp": "2026-08-06T05:58:53.150390+00:00"
+    "timestamp": "2026-08-06T11:08:39.816938+00:00"
   },
   {
     "endpoint": "/api/v1/notifications/00000000-0000-0000-0000-000000000000/read",
@@ -787,10 +787,10 @@
     "expected_status": "401 (or network N/A)",
     "finding": false,
     "severity": "info",
-    "response_time_ms": 4.6,
+    "response_time_ms": 3.6,
     "test_category": "authn_bypass",
     "note": "correctly rejected (401)",
-    "timestamp": "2026-08-06T05:58:53.155114+00:00"
+    "timestamp": "2026-08-06T11:08:39.820668+00:00"
   },
   {
     "endpoint": "/api/v1/notifications/00000000-0000-0000-0000-000000000000/read",
@@ -800,10 +800,10 @@
     "expected_status": "401 (or network N/A)",
     "finding": false,
     "severity": "info",
-    "response_time_ms": 5.1,
+    "response_time_ms": 4.2,
     "test_category": "authn_bypass",
     "note": "correctly rejected (401)",
-    "timestamp": "2026-08-06T05:58:53.160348+00:00"
+    "timestamp": "2026-08-06T11:08:39.824991+00:00"
   },
   {
     "endpoint": "/api/v1/notifications/00000000-0000-0000-0000-000000000000/read",
@@ -813,15 +813,28 @@
     "expected_status": "401 (or network N/A)",
     "finding": false,
     "severity": "info",
-    "response_time_ms": 4.7,
+    "response_time_ms": 17.7,
     "test_category": "authn_bypass",
     "note": "correctly rejected (401)",
-    "timestamp": "2026-08-06T05:58:53.165252+00:00"
+    "timestamp": "2026-08-06T11:08:39.842826+00:00"
   },
   {
     "endpoint": "/api/v1/notifications/mark-all-read",
     "method": "POST",
     "role": "no_token",
+    "status": 401,
+    "expected_status": "401 (or network N/A)",
+    "finding": false,
+    "severity": "info",
+    "response_time_ms": 4.8,
+    "test_category": "authn_bypass",
+    "note": "correctly rejected (401)",
+    "timestamp": "2026-08-06T11:08:39.847741+00:00"
+  },
+  {
+    "endpoint": "/api/v1/notifications/mark-all-read",
+    "method": "POST",
+    "role": "malformed_token",
     "status": 401,
     "expected_status": "401 (or network N/A)",
     "finding": false,
@@ -829,20 +842,7 @@
     "response_time_ms": 4.0,
     "test_category": "authn_bypass",
     "note": "correctly rejected (401)",
-    "timestamp": "2026-08-06T05:58:53.169342+00:00"
-  },
-  {
-    "endpoint": "/api/v1/notifications/mark-all-read",
-    "method": "POST",
-    "role": "malformed_token",
-    "status": 401,
-    "expected_status": "401 (or network N/A)",
-    "finding": false,
-    "severity": "info",
-    "response_time_ms": 4.8,
-    "test_category": "authn_bypass",
-    "note": "correctly rejected (401)",
-    "timestamp": "2026-08-06T05:58:53.174301+00:00"
+    "timestamp": "2026-08-06T11:08:39.851866+00:00"
   },
   {
     "endpoint": "/api/v1/notifications/mark-all-read",
@@ -852,10 +852,10 @@
     "expected_status": "401 (or network N/A)",
     "finding": false,
     "severity": "info",
-    "response_time_ms": 26.4,
+    "response_time_ms": 4.1,
     "test_category": "authn_bypass",
     "note": "correctly rejected (401)",
-    "timestamp": "2026-08-06T05:58:53.200861+00:00"
+    "timestamp": "2026-08-06T11:08:39.856115+00:00"
   },
   {
     "endpoint": "/api/v1/notifications/00000000-0000-0000-0000-000000000000",
@@ -865,10 +865,10 @@
     "expected_status": "401 (or network N/A)",
     "finding": false,
     "severity": "info",
-    "response_time_ms": 24.6,
+    "response_time_ms": 15.4,
     "test_category": "authn_bypass",
     "note": "correctly rejected (401)",
-    "timestamp": "2026-08-06T05:58:53.225612+00:00"
+    "timestamp": "2026-08-06T11:08:39.871720+00:00"
   },
   {
     "endpoint": "/api/v1/notifications/00000000-0000-0000-0000-000000000000",
@@ -878,10 +878,10 @@
     "expected_status": "401 (or network N/A)",
     "finding": false,
     "severity": "info",
-    "response_time_ms": 24.3,
+    "response_time_ms": 4.4,
     "test_category": "authn_bypass",
     "note": "correctly rejected (401)",
-    "timestamp": "2026-08-06T05:58:53.250063+00:00"
+    "timestamp": "2026-08-06T11:08:39.876245+00:00"
   },
   {
     "endpoint": "/api/v1/notifications/00000000-0000-0000-0000-000000000000",
@@ -891,10 +891,10 @@
     "expected_status": "401 (or network N/A)",
     "finding": false,
     "severity": "info",
-    "response_time_ms": 24.5,
+    "response_time_ms": 13.6,
     "test_category": "authn_bypass",
     "note": "correctly rejected (401)",
-    "timestamp": "2026-08-06T05:58:53.274793+00:00"
+    "timestamp": "2026-08-06T11:08:39.890103+00:00"
   },
   {
     "endpoint": "/api/v1/feedback",
@@ -904,10 +904,10 @@
     "expected_status": "401 (or network N/A)",
     "finding": false,
     "severity": "info",
-    "response_time_ms": 20.9,
+    "response_time_ms": 4.6,
     "test_category": "authn_bypass",
     "note": "correctly rejected (401)",
-    "timestamp": "2026-08-06T05:58:53.295949+00:00"
+    "timestamp": "2026-08-06T11:08:39.894844+00:00"
   },
   {
     "endpoint": "/api/v1/feedback",
@@ -917,67 +917,15 @@
     "expected_status": "401 (or network N/A)",
     "finding": false,
     "severity": "info",
-    "response_time_ms": 19.8,
+    "response_time_ms": 3.8,
     "test_category": "authn_bypass",
     "note": "correctly rejected (401)",
-    "timestamp": "2026-08-06T05:58:53.315933+00:00"
+    "timestamp": "2026-08-06T11:08:39.898745+00:00"
   },
   {
     "endpoint": "/api/v1/feedback",
     "method": "GET",
     "role": "expired_token",
-    "status": 401,
-    "expected_status": "401 (or network N/A)",
-    "finding": false,
-    "severity": "info",
-    "response_time_ms": 24.3,
-    "test_category": "authn_bypass",
-    "note": "correctly rejected (401)",
-    "timestamp": "2026-08-06T05:58:53.340504+00:00"
-  },
-  {
-    "endpoint": "/api/v1/dashboard",
-    "method": "GET",
-    "role": "no_token",
-    "status": 401,
-    "expected_status": "401 (or network N/A)",
-    "finding": false,
-    "severity": "info",
-    "response_time_ms": 28.4,
-    "test_category": "authn_bypass",
-    "note": "correctly rejected (401)",
-    "timestamp": "2026-08-06T05:58:53.369032+00:00"
-  },
-  {
-    "endpoint": "/api/v1/dashboard",
-    "method": "GET",
-    "role": "malformed_token",
-    "status": 401,
-    "expected_status": "401 (or network N/A)",
-    "finding": false,
-    "severity": "info",
-    "response_time_ms": 15.0,
-    "test_category": "authn_bypass",
-    "note": "correctly rejected (401)",
-    "timestamp": "2026-08-06T05:58:53.384191+00:00"
-  },
-  {
-    "endpoint": "/api/v1/dashboard",
-    "method": "GET",
-    "role": "expired_token",
-    "status": 401,
-    "expected_status": "401 (or network N/A)",
-    "finding": false,
-    "severity": "info",
-    "response_time_ms": 22.0,
-    "test_category": "authn_bypass",
-    "note": "correctly rejected (401)",
-    "timestamp": "2026-08-06T05:58:53.406281+00:00"
-  },
-  {
-    "endpoint": "/api/v1/dashboard/recent-scans",
-    "method": "GET",
-    "role": "no_token",
     "status": 401,
     "expected_status": "401 (or network N/A)",
     "finding": false,
@@ -985,7 +933,59 @@
     "response_time_ms": 5.1,
     "test_category": "authn_bypass",
     "note": "correctly rejected (401)",
-    "timestamp": "2026-08-06T05:58:53.411571+00:00"
+    "timestamp": "2026-08-06T11:08:39.903995+00:00"
+  },
+  {
+    "endpoint": "/api/v1/dashboard",
+    "method": "GET",
+    "role": "no_token",
+    "status": 401,
+    "expected_status": "401 (or network N/A)",
+    "finding": false,
+    "severity": "info",
+    "response_time_ms": 5.5,
+    "test_category": "authn_bypass",
+    "note": "correctly rejected (401)",
+    "timestamp": "2026-08-06T11:08:39.909631+00:00"
+  },
+  {
+    "endpoint": "/api/v1/dashboard",
+    "method": "GET",
+    "role": "malformed_token",
+    "status": 401,
+    "expected_status": "401 (or network N/A)",
+    "finding": false,
+    "severity": "info",
+    "response_time_ms": 4.8,
+    "test_category": "authn_bypass",
+    "note": "correctly rejected (401)",
+    "timestamp": "2026-08-06T11:08:39.914596+00:00"
+  },
+  {
+    "endpoint": "/api/v1/dashboard",
+    "method": "GET",
+    "role": "expired_token",
+    "status": 401,
+    "expected_status": "401 (or network N/A)",
+    "finding": false,
+    "severity": "info",
+    "response_time_ms": 4.0,
+    "test_category": "authn_bypass",
+    "note": "correctly rejected (401)",
+    "timestamp": "2026-08-06T11:08:39.918682+00:00"
+  },
+  {
+    "endpoint": "/api/v1/dashboard/recent-scans",
+    "method": "GET",
+    "role": "no_token",
+    "status": 401,
+    "expected_status": "401 (or network N/A)",
+    "finding": false,
+    "severity": "info",
+    "response_time_ms": 3.9,
+    "test_category": "authn_bypass",
+    "note": "correctly rejected (401)",
+    "timestamp": "2026-08-06T11:08:39.922736+00:00"
   },
   {
     "endpoint": "/api/v1/dashboard/recent-scans",
@@ -995,10 +995,10 @@
     "expected_status": "401 (or network N/A)",
     "finding": false,
     "severity": "info",
-    "response_time_ms": 19.8,
+    "response_time_ms": 4.2,
     "test_category": "authn_bypass",
     "note": "correctly rejected (401)",
-    "timestamp": "2026-08-06T05:58:53.431475+00:00"
+    "timestamp": "2026-08-06T11:08:39.927055+00:00"
   },
   {
     "endpoint": "/api/v1/dashboard/recent-scans",
@@ -1008,10 +1008,10 @@
     "expected_status": "401 (or network N/A)",
     "finding": false,
     "severity": "info",
-    "response_time_ms": 5.2,
+    "response_time_ms": 4.0,
     "test_category": "authn_bypass",
     "note": "correctly rejected (401)",
-    "timestamp": "2026-08-06T05:58:53.436805+00:00"
+    "timestamp": "2026-08-06T11:08:39.931159+00:00"
   },
   {
     "endpoint": "/predict",
@@ -1021,10 +1021,10 @@
     "expected_status": "401 (or network N/A)",
     "finding": false,
     "severity": "info",
-    "response_time_ms": 5.2,
+    "response_time_ms": 3.5,
     "test_category": "authn_bypass",
     "note": "correctly rejected (401)",
-    "timestamp": "2026-08-06T05:58:53.442138+00:00"
+    "timestamp": "2026-08-06T11:08:39.934820+00:00"
   },
   {
     "endpoint": "/predict",
@@ -1034,10 +1034,10 @@
     "expected_status": "401 (or network N/A)",
     "finding": false,
     "severity": "info",
-    "response_time_ms": 4.8,
+    "response_time_ms": 20.2,
     "test_category": "authn_bypass",
     "note": "correctly rejected (401)",
-    "timestamp": "2026-08-06T05:58:53.447087+00:00"
+    "timestamp": "2026-08-06T11:08:39.955206+00:00"
   },
   {
     "endpoint": "/predict",
@@ -1047,80 +1047,15 @@
     "expected_status": "401 (or network N/A)",
     "finding": false,
     "severity": "info",
-    "response_time_ms": 4.8,
+    "response_time_ms": 4.4,
     "test_category": "authn_bypass",
     "note": "correctly rejected (401)",
-    "timestamp": "2026-08-06T05:58:53.452026+00:00"
+    "timestamp": "2026-08-06T11:08:39.959680+00:00"
   },
   {
     "endpoint": "/api/v1/auth/oauth/google",
     "method": "GET",
     "role": "anon",
-    "status": 503,
-    "expected_status": "public",
-    "finding": false,
-    "severity": "info",
-    "response_time_ms": 26.4,
-    "test_category": "rbac_matrix",
-    "note": "as expected",
-    "timestamp": "2026-08-06T05:58:55.489451+00:00"
-  },
-  {
-    "endpoint": "/api/v1/auth/oauth/google",
-    "method": "GET",
-    "role": "user_a",
-    "status": 503,
-    "expected_status": "public",
-    "finding": false,
-    "severity": "info",
-    "response_time_ms": 20.1,
-    "test_category": "rbac_matrix",
-    "note": "as expected",
-    "timestamp": "2026-08-06T05:58:57.036441+00:00"
-  },
-  {
-    "endpoint": "/api/v1/auth/oauth/google",
-    "method": "GET",
-    "role": "user_b",
-    "status": 503,
-    "expected_status": "public",
-    "finding": false,
-    "severity": "info",
-    "response_time_ms": 17.1,
-    "test_category": "rbac_matrix",
-    "note": "as expected",
-    "timestamp": "2026-08-06T05:58:58.581142+00:00"
-  },
-  {
-    "endpoint": "/api/v1/auth/oauth/google",
-    "method": "GET",
-    "role": "admin",
-    "status": 503,
-    "expected_status": "public",
-    "finding": false,
-    "severity": "info",
-    "response_time_ms": 20.7,
-    "test_category": "rbac_matrix",
-    "note": "as expected",
-    "timestamp": "2026-08-06T05:59:00.142065+00:00"
-  },
-  {
-    "endpoint": "/api/v1/auth/oauth/google/callback",
-    "method": "GET",
-    "role": "anon",
-    "status": 503,
-    "expected_status": "public",
-    "finding": false,
-    "severity": "info",
-    "response_time_ms": 21.7,
-    "test_category": "rbac_matrix",
-    "note": "as expected",
-    "timestamp": "2026-08-06T05:59:01.691202+00:00"
-  },
-  {
-    "endpoint": "/api/v1/auth/oauth/google/callback",
-    "method": "GET",
-    "role": "user_a",
     "status": 503,
     "expected_status": "public",
     "finding": false,
@@ -1128,7 +1063,72 @@
     "response_time_ms": 5.2,
     "test_category": "rbac_matrix",
     "note": "as expected",
-    "timestamp": "2026-08-06T05:59:03.236017+00:00"
+    "timestamp": "2026-08-06T11:08:41.952989+00:00"
+  },
+  {
+    "endpoint": "/api/v1/auth/oauth/google",
+    "method": "GET",
+    "role": "user_a",
+    "status": 503,
+    "expected_status": "public",
+    "finding": false,
+    "severity": "info",
+    "response_time_ms": 19.9,
+    "test_category": "rbac_matrix",
+    "note": "as expected",
+    "timestamp": "2026-08-06T11:08:43.493810+00:00"
+  },
+  {
+    "endpoint": "/api/v1/auth/oauth/google",
+    "method": "GET",
+    "role": "user_b",
+    "status": 503,
+    "expected_status": "public",
+    "finding": false,
+    "severity": "info",
+    "response_time_ms": 14.8,
+    "test_category": "rbac_matrix",
+    "note": "as expected",
+    "timestamp": "2026-08-06T11:08:45.046077+00:00"
+  },
+  {
+    "endpoint": "/api/v1/auth/oauth/google",
+    "method": "GET",
+    "role": "admin",
+    "status": 503,
+    "expected_status": "public",
+    "finding": false,
+    "severity": "info",
+    "response_time_ms": 4.4,
+    "test_category": "rbac_matrix",
+    "note": "as expected",
+    "timestamp": "2026-08-06T11:08:46.579478+00:00"
+  },
+  {
+    "endpoint": "/api/v1/auth/oauth/google/callback",
+    "method": "GET",
+    "role": "anon",
+    "status": 503,
+    "expected_status": "public",
+    "finding": false,
+    "severity": "info",
+    "response_time_ms": 12.3,
+    "test_category": "rbac_matrix",
+    "note": "as expected",
+    "timestamp": "2026-08-06T11:08:48.114787+00:00"
+  },
+  {
+    "endpoint": "/api/v1/auth/oauth/google/callback",
+    "method": "GET",
+    "role": "user_a",
+    "status": 503,
+    "expected_status": "public",
+    "finding": false,
+    "severity": "info",
+    "response_time_ms": 4.3,
+    "test_category": "rbac_matrix",
+    "note": "as expected",
+    "timestamp": "2026-08-06T11:08:49.652145+00:00"
   },
   {
     "endpoint": "/api/v1/auth/oauth/google/callback",
@@ -1138,10 +1138,10 @@
     "expected_status": "public",
     "finding": false,
     "severity": "info",
-    "response_time_ms": 9.7,
+    "response_time_ms": 12.9,
     "test_category": "rbac_matrix",
     "note": "as expected",
-    "timestamp": "2026-08-06T05:59:04.781102+00:00"
+    "timestamp": "2026-08-06T11:08:51.211143+00:00"
   },
   {
     "endpoint": "/api/v1/auth/oauth/google/callback",
@@ -1151,10 +1151,10 @@
     "expected_status": "public",
     "finding": false,
     "severity": "info",
-    "response_time_ms": 6.0,
+    "response_time_ms": 7.2,
     "test_category": "rbac_matrix",
     "note": "as expected",
-    "timestamp": "2026-08-06T05:59:06.317860+00:00"
+    "timestamp": "2026-08-06T11:08:52.740679+00:00"
   },
   {
     "endpoint": "/api/v1/auth/me",
@@ -1164,13 +1164,585 @@
     "expected_status": "auth",
     "finding": false,
     "severity": "info",
-    "response_time_ms": 4.6,
+    "response_time_ms": 4.5,
     "test_category": "rbac_matrix",
     "note": "as expected",
-    "timestamp": "2026-08-06T05:59:06.322633+00:00"
+    "timestamp": "2026-08-06T11:08:52.745272+00:00"
   },
   {
     "endpoint": "/api/v1/auth/me",
+    "method": "GET",
+    "role": "user_a",
+    "status": 200,
+    "expected_status": "auth",
+    "finding": false,
+    "severity": "info",
+    "response_time_ms": 12.5,
+    "test_category": "rbac_matrix",
+    "note": "as expected",
+    "timestamp": "2026-08-06T11:08:52.757968+00:00"
+  },
+  {
+    "endpoint": "/api/v1/auth/me",
+    "method": "GET",
+    "role": "user_b",
+    "status": 200,
+    "expected_status": "auth",
+    "finding": false,
+    "severity": "info",
+    "response_time_ms": 18.3,
+    "test_category": "rbac_matrix",
+    "note": "as expected",
+    "timestamp": "2026-08-06T11:08:52.776458+00:00"
+  },
+  {
+    "endpoint": "/api/v1/auth/me",
+    "method": "GET",
+    "role": "admin",
+    "status": 200,
+    "expected_status": "auth",
+    "finding": false,
+    "severity": "info",
+    "response_time_ms": 17.3,
+    "test_category": "rbac_matrix",
+    "note": "as expected",
+    "timestamp": "2026-08-06T11:08:52.793891+00:00"
+  },
+  {
+    "endpoint": "/api/v1/user/profile",
+    "method": "GET",
+    "role": "anon",
+    "status": 401,
+    "expected_status": "auth",
+    "finding": false,
+    "severity": "info",
+    "response_time_ms": 3.6,
+    "test_category": "rbac_matrix",
+    "note": "as expected",
+    "timestamp": "2026-08-06T11:08:52.797596+00:00"
+  },
+  {
+    "endpoint": "/api/v1/user/profile",
+    "method": "GET",
+    "role": "user_a",
+    "status": 200,
+    "expected_status": "auth",
+    "finding": false,
+    "severity": "info",
+    "response_time_ms": 15.5,
+    "test_category": "rbac_matrix",
+    "note": "as expected",
+    "timestamp": "2026-08-06T11:08:52.813188+00:00"
+  },
+  {
+    "endpoint": "/api/v1/user/profile",
+    "method": "GET",
+    "role": "user_b",
+    "status": 200,
+    "expected_status": "auth",
+    "finding": false,
+    "severity": "info",
+    "response_time_ms": 5.6,
+    "test_category": "rbac_matrix",
+    "note": "as expected",
+    "timestamp": "2026-08-06T11:08:52.818985+00:00"
+  },
+  {
+    "endpoint": "/api/v1/user/profile",
+    "method": "GET",
+    "role": "admin",
+    "status": 200,
+    "expected_status": "auth",
+    "finding": false,
+    "severity": "info",
+    "response_time_ms": 6.2,
+    "test_category": "rbac_matrix",
+    "note": "as expected",
+    "timestamp": "2026-08-06T11:08:52.825372+00:00"
+  },
+  {
+    "endpoint": "/api/v1/scans",
+    "method": "GET",
+    "role": "anon",
+    "status": 401,
+    "expected_status": "auth",
+    "finding": false,
+    "severity": "info",
+    "response_time_ms": 3.6,
+    "test_category": "rbac_matrix",
+    "note": "as expected",
+    "timestamp": "2026-08-06T11:08:52.829086+00:00"
+  },
+  {
+    "endpoint": "/api/v1/scans",
+    "method": "GET",
+    "role": "user_a",
+    "status": 200,
+    "expected_status": "auth",
+    "finding": false,
+    "severity": "info",
+    "response_time_ms": 25.5,
+    "test_category": "rbac_matrix",
+    "note": "as expected",
+    "timestamp": "2026-08-06T11:08:52.854732+00:00"
+  },
+  {
+    "endpoint": "/api/v1/scans",
+    "method": "GET",
+    "role": "user_b",
+    "status": 200,
+    "expected_status": "auth",
+    "finding": false,
+    "severity": "info",
+    "response_time_ms": 19.5,
+    "test_category": "rbac_matrix",
+    "note": "as expected",
+    "timestamp": "2026-08-06T11:08:52.874380+00:00"
+  },
+  {
+    "endpoint": "/api/v1/scans",
+    "method": "GET",
+    "role": "admin",
+    "status": 200,
+    "expected_status": "auth",
+    "finding": false,
+    "severity": "info",
+    "response_time_ms": 7.0,
+    "test_category": "rbac_matrix",
+    "note": "as expected",
+    "timestamp": "2026-08-06T11:08:52.881472+00:00"
+  },
+  {
+    "endpoint": "/api/v1/scans/e7633676-e305-4383-8aea-9e2105150bc6",
+    "method": "GET",
+    "role": "anon",
+    "status": 401,
+    "expected_status": "auth_owner",
+    "finding": false,
+    "severity": "info",
+    "response_time_ms": 13.6,
+    "test_category": "rbac_matrix",
+    "note": "as expected",
+    "timestamp": "2026-08-06T11:08:52.895344+00:00"
+  },
+  {
+    "endpoint": "/api/v1/scans/e7633676-e305-4383-8aea-9e2105150bc6",
+    "method": "GET",
+    "role": "user_a",
+    "status": 200,
+    "expected_status": "auth_owner",
+    "finding": false,
+    "severity": "info",
+    "response_time_ms": 26.6,
+    "test_category": "rbac_matrix",
+    "note": "as expected",
+    "timestamp": "2026-08-06T11:08:52.922074+00:00"
+  },
+  {
+    "endpoint": "/api/v1/scans/e7633676-e305-4383-8aea-9e2105150bc6",
+    "method": "GET",
+    "role": "user_b",
+    "status": 404,
+    "expected_status": "auth_owner",
+    "finding": false,
+    "severity": "info",
+    "response_time_ms": 6.3,
+    "test_category": "rbac_matrix",
+    "note": "as expected",
+    "timestamp": "2026-08-06T11:08:52.928577+00:00"
+  },
+  {
+    "endpoint": "/api/v1/scans/e7633676-e305-4383-8aea-9e2105150bc6",
+    "method": "GET",
+    "role": "admin",
+    "status": 404,
+    "expected_status": "auth_owner",
+    "finding": false,
+    "severity": "info",
+    "response_time_ms": 6.0,
+    "test_category": "rbac_matrix",
+    "note": "as expected",
+    "timestamp": "2026-08-06T11:08:52.934712+00:00"
+  },
+  {
+    "endpoint": "/api/v1/scans/e7633676-e305-4383-8aea-9e2105150bc6/status",
+    "method": "GET",
+    "role": "anon",
+    "status": 401,
+    "expected_status": "auth_owner",
+    "finding": false,
+    "severity": "info",
+    "response_time_ms": 4.0,
+    "test_category": "rbac_matrix",
+    "note": "as expected",
+    "timestamp": "2026-08-06T11:08:52.938859+00:00"
+  },
+  {
+    "endpoint": "/api/v1/scans/e7633676-e305-4383-8aea-9e2105150bc6/status",
+    "method": "GET",
+    "role": "user_a",
+    "status": 200,
+    "expected_status": "auth_owner",
+    "finding": false,
+    "severity": "info",
+    "response_time_ms": 6.5,
+    "test_category": "rbac_matrix",
+    "note": "as expected",
+    "timestamp": "2026-08-06T11:08:52.945509+00:00"
+  },
+  {
+    "endpoint": "/api/v1/scans/e7633676-e305-4383-8aea-9e2105150bc6/status",
+    "method": "GET",
+    "role": "user_b",
+    "status": 404,
+    "expected_status": "auth_owner",
+    "finding": false,
+    "severity": "info",
+    "response_time_ms": 6.2,
+    "test_category": "rbac_matrix",
+    "note": "as expected",
+    "timestamp": "2026-08-06T11:08:52.951857+00:00"
+  },
+  {
+    "endpoint": "/api/v1/scans/e7633676-e305-4383-8aea-9e2105150bc6/status",
+    "method": "GET",
+    "role": "admin",
+    "status": 404,
+    "expected_status": "auth_owner",
+    "finding": false,
+    "severity": "info",
+    "response_time_ms": 6.4,
+    "test_category": "rbac_matrix",
+    "note": "as expected",
+    "timestamp": "2026-08-06T11:08:52.958404+00:00"
+  },
+  {
+    "endpoint": "/api/v1/scans/e7633676-e305-4383-8aea-9e2105150bc6/result",
+    "method": "GET",
+    "role": "anon",
+    "status": 401,
+    "expected_status": "auth_owner",
+    "finding": false,
+    "severity": "info",
+    "response_time_ms": 3.9,
+    "test_category": "rbac_matrix",
+    "note": "as expected",
+    "timestamp": "2026-08-06T11:08:52.962467+00:00"
+  },
+  {
+    "endpoint": "/api/v1/scans/e7633676-e305-4383-8aea-9e2105150bc6/result",
+    "method": "GET",
+    "role": "user_a",
+    "status": 404,
+    "expected_status": "auth_owner",
+    "finding": false,
+    "severity": "info",
+    "response_time_ms": 26.9,
+    "test_category": "rbac_matrix",
+    "note": "owner got non-200 (404) \u2014 may be a legitimate business-state error, see notes",
+    "timestamp": "2026-08-06T11:08:52.989453+00:00"
+  },
+  {
+    "endpoint": "/api/v1/scans/e7633676-e305-4383-8aea-9e2105150bc6/result",
+    "method": "GET",
+    "role": "user_b",
+    "status": 404,
+    "expected_status": "auth_owner",
+    "finding": false,
+    "severity": "info",
+    "response_time_ms": 6.6,
+    "test_category": "rbac_matrix",
+    "note": "as expected",
+    "timestamp": "2026-08-06T11:08:52.996264+00:00"
+  },
+  {
+    "endpoint": "/api/v1/scans/e7633676-e305-4383-8aea-9e2105150bc6/result",
+    "method": "GET",
+    "role": "admin",
+    "status": 404,
+    "expected_status": "auth_owner",
+    "finding": false,
+    "severity": "info",
+    "response_time_ms": 16.8,
+    "test_category": "rbac_matrix",
+    "note": "as expected",
+    "timestamp": "2026-08-06T11:08:53.013302+00:00"
+  },
+  {
+    "endpoint": "/api/v1/scans/e7633676-e305-4383-8aea-9e2105150bc6/technical",
+    "method": "GET",
+    "role": "anon",
+    "status": 401,
+    "expected_status": "auth_owner",
+    "finding": false,
+    "severity": "info",
+    "response_time_ms": 4.7,
+    "test_category": "rbac_matrix",
+    "note": "as expected",
+    "timestamp": "2026-08-06T11:08:53.018108+00:00"
+  },
+  {
+    "endpoint": "/api/v1/scans/e7633676-e305-4383-8aea-9e2105150bc6/technical",
+    "method": "GET",
+    "role": "user_a",
+    "status": 404,
+    "expected_status": "auth_owner",
+    "finding": false,
+    "severity": "info",
+    "response_time_ms": 20.1,
+    "test_category": "rbac_matrix",
+    "note": "owner got non-200 (404) \u2014 may be a legitimate business-state error, see notes",
+    "timestamp": "2026-08-06T11:08:53.038442+00:00"
+  },
+  {
+    "endpoint": "/api/v1/scans/e7633676-e305-4383-8aea-9e2105150bc6/technical",
+    "method": "GET",
+    "role": "user_b",
+    "status": 404,
+    "expected_status": "auth_owner",
+    "finding": false,
+    "severity": "info",
+    "response_time_ms": 16.9,
+    "test_category": "rbac_matrix",
+    "note": "as expected",
+    "timestamp": "2026-08-06T11:08:53.055501+00:00"
+  },
+  {
+    "endpoint": "/api/v1/scans/e7633676-e305-4383-8aea-9e2105150bc6/technical",
+    "method": "GET",
+    "role": "admin",
+    "status": 404,
+    "expected_status": "auth_owner",
+    "finding": false,
+    "severity": "info",
+    "response_time_ms": 6.3,
+    "test_category": "rbac_matrix",
+    "note": "as expected",
+    "timestamp": "2026-08-06T11:08:53.061993+00:00"
+  },
+  {
+    "endpoint": "/api/v1/scans/e7633676-e305-4383-8aea-9e2105150bc6/explanation",
+    "method": "GET",
+    "role": "anon",
+    "status": 401,
+    "expected_status": "auth_owner",
+    "finding": false,
+    "severity": "info",
+    "response_time_ms": 13.5,
+    "test_category": "rbac_matrix",
+    "note": "as expected",
+    "timestamp": "2026-08-06T11:08:53.075608+00:00"
+  },
+  {
+    "endpoint": "/api/v1/scans/e7633676-e305-4383-8aea-9e2105150bc6/explanation",
+    "method": "GET",
+    "role": "user_a",
+    "status": 404,
+    "expected_status": "auth_owner",
+    "finding": false,
+    "severity": "info",
+    "response_time_ms": 16.6,
+    "test_category": "rbac_matrix",
+    "note": "owner got non-200 (404) \u2014 may be a legitimate business-state error, see notes",
+    "timestamp": "2026-08-06T11:08:53.092371+00:00"
+  },
+  {
+    "endpoint": "/api/v1/scans/e7633676-e305-4383-8aea-9e2105150bc6/explanation",
+    "method": "GET",
+    "role": "user_b",
+    "status": 404,
+    "expected_status": "auth_owner",
+    "finding": false,
+    "severity": "info",
+    "response_time_ms": 5.9,
+    "test_category": "rbac_matrix",
+    "note": "as expected",
+    "timestamp": "2026-08-06T11:08:53.098387+00:00"
+  },
+  {
+    "endpoint": "/api/v1/scans/e7633676-e305-4383-8aea-9e2105150bc6/explanation",
+    "method": "GET",
+    "role": "admin",
+    "status": 404,
+    "expected_status": "auth_owner",
+    "finding": false,
+    "severity": "info",
+    "response_time_ms": 28.6,
+    "test_category": "rbac_matrix",
+    "note": "as expected",
+    "timestamp": "2026-08-06T11:08:53.127089+00:00"
+  },
+  {
+    "endpoint": "/api/v1/models",
+    "method": "GET",
+    "role": "anon",
+    "status": 401,
+    "expected_status": "auth",
+    "finding": false,
+    "severity": "info",
+    "response_time_ms": 17.2,
+    "test_category": "rbac_matrix",
+    "note": "as expected",
+    "timestamp": "2026-08-06T11:08:53.144443+00:00"
+  },
+  {
+    "endpoint": "/api/v1/models",
+    "method": "GET",
+    "role": "user_a",
+    "status": 200,
+    "expected_status": "auth",
+    "finding": false,
+    "severity": "info",
+    "response_time_ms": 8.1,
+    "test_category": "rbac_matrix",
+    "note": "as expected",
+    "timestamp": "2026-08-06T11:08:53.152676+00:00"
+  },
+  {
+    "endpoint": "/api/v1/models",
+    "method": "GET",
+    "role": "user_b",
+    "status": 200,
+    "expected_status": "auth",
+    "finding": false,
+    "severity": "info",
+    "response_time_ms": 24.1,
+    "test_category": "rbac_matrix",
+    "note": "as expected",
+    "timestamp": "2026-08-06T11:08:53.176894+00:00"
+  },
+  {
+    "endpoint": "/api/v1/models",
+    "method": "GET",
+    "role": "admin",
+    "status": 200,
+    "expected_status": "auth",
+    "finding": false,
+    "severity": "info",
+    "response_time_ms": 6.2,
+    "test_category": "rbac_matrix",
+    "note": "as expected",
+    "timestamp": "2026-08-06T11:08:53.183225+00:00"
+  },
+  {
+    "endpoint": "/api/v1/models/current",
+    "method": "GET",
+    "role": "anon",
+    "status": 401,
+    "expected_status": "auth",
+    "finding": false,
+    "severity": "info",
+    "response_time_ms": 4.0,
+    "test_category": "rbac_matrix",
+    "note": "as expected",
+    "timestamp": "2026-08-06T11:08:53.187429+00:00"
+  },
+  {
+    "endpoint": "/api/v1/models/current",
+    "method": "GET",
+    "role": "user_a",
+    "status": 200,
+    "expected_status": "auth",
+    "finding": false,
+    "severity": "info",
+    "response_time_ms": 6.1,
+    "test_category": "rbac_matrix",
+    "note": "as expected",
+    "timestamp": "2026-08-06T11:08:53.193617+00:00"
+  },
+  {
+    "endpoint": "/api/v1/models/current",
+    "method": "GET",
+    "role": "user_b",
+    "status": 200,
+    "expected_status": "auth",
+    "finding": false,
+    "severity": "info",
+    "response_time_ms": 6.2,
+    "test_category": "rbac_matrix",
+    "note": "as expected",
+    "timestamp": "2026-08-06T11:08:53.199995+00:00"
+  },
+  {
+    "endpoint": "/api/v1/models/current",
+    "method": "GET",
+    "role": "admin",
+    "status": 200,
+    "expected_status": "auth",
+    "finding": false,
+    "severity": "info",
+    "response_time_ms": 6.7,
+    "test_category": "rbac_matrix",
+    "note": "as expected",
+    "timestamp": "2026-08-06T11:08:53.206860+00:00"
+  },
+  {
+    "endpoint": "/api/v1/scans/shared/nonexistent-token",
+    "method": "GET",
+    "role": "anon",
+    "status": 404,
+    "expected_status": "public",
+    "finding": false,
+    "severity": "info",
+    "response_time_ms": 18.7,
+    "test_category": "rbac_matrix",
+    "note": "as expected",
+    "timestamp": "2026-08-06T11:08:53.225833+00:00"
+  },
+  {
+    "endpoint": "/api/v1/scans/shared/nonexistent-token",
+    "method": "GET",
+    "role": "user_a",
+    "status": 404,
+    "expected_status": "public",
+    "finding": false,
+    "severity": "info",
+    "response_time_ms": 6.2,
+    "test_category": "rbac_matrix",
+    "note": "as expected",
+    "timestamp": "2026-08-06T11:08:53.232171+00:00"
+  },
+  {
+    "endpoint": "/api/v1/scans/shared/nonexistent-token",
+    "method": "GET",
+    "role": "user_b",
+    "status": 404,
+    "expected_status": "public",
+    "finding": false,
+    "severity": "info",
+    "response_time_ms": 16.9,
+    "test_category": "rbac_matrix",
+    "note": "as expected",
+    "timestamp": "2026-08-06T11:08:53.249183+00:00"
+  },
+  {
+    "endpoint": "/api/v1/scans/shared/nonexistent-token",
+    "method": "GET",
+    "role": "admin",
+    "status": 404,
+    "expected_status": "public",
+    "finding": false,
+    "severity": "info",
+    "response_time_ms": 5.3,
+    "test_category": "rbac_matrix",
+    "note": "as expected",
+    "timestamp": "2026-08-06T11:08:53.254644+00:00"
+  },
+  {
+    "endpoint": "/api/v1/notifications",
+    "method": "GET",
+    "role": "anon",
+    "status": 401,
+    "expected_status": "auth",
+    "finding": false,
+    "severity": "info",
+    "response_time_ms": 4.1,
+    "test_category": "rbac_matrix",
+    "note": "as expected",
+    "timestamp": "2026-08-06T11:08:53.258852+00:00"
+  },
+  {
+    "endpoint": "/api/v1/notifications",
     "method": "GET",
     "role": "user_a",
     "status": 200,
@@ -1180,605 +1752,33 @@
     "response_time_ms": 8.9,
     "test_category": "rbac_matrix",
     "note": "as expected",
-    "timestamp": "2026-08-06T05:59:06.331806+00:00"
+    "timestamp": "2026-08-06T11:08:53.267893+00:00"
   },
   {
-    "endpoint": "/api/v1/auth/me",
+    "endpoint": "/api/v1/notifications",
     "method": "GET",
     "role": "user_b",
     "status": 200,
     "expected_status": "auth",
-    "finding": false,
-    "severity": "info",
-    "response_time_ms": 20.1,
-    "test_category": "rbac_matrix",
-    "note": "as expected",
-    "timestamp": "2026-08-06T05:59:06.352130+00:00"
-  },
-  {
-    "endpoint": "/api/v1/auth/me",
-    "method": "GET",
-    "role": "admin",
-    "status": 200,
-    "expected_status": "auth",
-    "finding": false,
-    "severity": "info",
-    "response_time_ms": 6.5,
-    "test_category": "rbac_matrix",
-    "note": "as expected",
-    "timestamp": "2026-08-06T05:59:06.358820+00:00"
-  },
-  {
-    "endpoint": "/api/v1/user/profile",
-    "method": "GET",
-    "role": "anon",
-    "status": 401,
-    "expected_status": "auth",
-    "finding": false,
-    "severity": "info",
-    "response_time_ms": 4.4,
-    "test_category": "rbac_matrix",
-    "note": "as expected",
-    "timestamp": "2026-08-06T05:59:06.363402+00:00"
-  },
-  {
-    "endpoint": "/api/v1/user/profile",
-    "method": "GET",
-    "role": "user_a",
-    "status": 200,
-    "expected_status": "auth",
-    "finding": false,
-    "severity": "info",
-    "response_time_ms": 10.5,
-    "test_category": "rbac_matrix",
-    "note": "as expected",
-    "timestamp": "2026-08-06T05:59:06.373990+00:00"
-  },
-  {
-    "endpoint": "/api/v1/user/profile",
-    "method": "GET",
-    "role": "user_b",
-    "status": 200,
-    "expected_status": "auth",
-    "finding": false,
-    "severity": "info",
-    "response_time_ms": 33.2,
-    "test_category": "rbac_matrix",
-    "note": "as expected",
-    "timestamp": "2026-08-06T05:59:06.407382+00:00"
-  },
-  {
-    "endpoint": "/api/v1/user/profile",
-    "method": "GET",
-    "role": "admin",
-    "status": 200,
-    "expected_status": "auth",
-    "finding": false,
-    "severity": "info",
-    "response_time_ms": 20.6,
-    "test_category": "rbac_matrix",
-    "note": "as expected",
-    "timestamp": "2026-08-06T05:59:06.428156+00:00"
-  },
-  {
-    "endpoint": "/api/v1/scans",
-    "method": "GET",
-    "role": "anon",
-    "status": 401,
-    "expected_status": "auth",
-    "finding": false,
-    "severity": "info",
-    "response_time_ms": 28.7,
-    "test_category": "rbac_matrix",
-    "note": "as expected",
-    "timestamp": "2026-08-06T05:59:06.456987+00:00"
-  },
-  {
-    "endpoint": "/api/v1/scans",
-    "method": "GET",
-    "role": "user_a",
-    "status": 200,
-    "expected_status": "auth",
-    "finding": false,
-    "severity": "info",
-    "response_time_ms": 12.4,
-    "test_category": "rbac_matrix",
-    "note": "as expected",
-    "timestamp": "2026-08-06T05:59:06.469504+00:00"
-  },
-  {
-    "endpoint": "/api/v1/scans",
-    "method": "GET",
-    "role": "user_b",
-    "status": 200,
-    "expected_status": "auth",
-    "finding": false,
-    "severity": "info",
-    "response_time_ms": 23.4,
-    "test_category": "rbac_matrix",
-    "note": "as expected",
-    "timestamp": "2026-08-06T05:59:06.493108+00:00"
-  },
-  {
-    "endpoint": "/api/v1/scans",
-    "method": "GET",
-    "role": "admin",
-    "status": 200,
-    "expected_status": "auth",
-    "finding": false,
-    "severity": "info",
-    "response_time_ms": 9.2,
-    "test_category": "rbac_matrix",
-    "note": "as expected",
-    "timestamp": "2026-08-06T05:59:06.502419+00:00"
-  },
-  {
-    "endpoint": "/api/v1/scans/370d1345-4ecf-4c4e-bc03-081c2a958690",
-    "method": "GET",
-    "role": "anon",
-    "status": 401,
-    "expected_status": "auth_owner",
-    "finding": false,
-    "severity": "info",
-    "response_time_ms": 4.6,
-    "test_category": "rbac_matrix",
-    "note": "as expected",
-    "timestamp": "2026-08-06T05:59:06.507176+00:00"
-  },
-  {
-    "endpoint": "/api/v1/scans/370d1345-4ecf-4c4e-bc03-081c2a958690",
-    "method": "GET",
-    "role": "user_a",
-    "status": 200,
-    "expected_status": "auth_owner",
-    "finding": false,
-    "severity": "info",
-    "response_time_ms": 28.7,
-    "test_category": "rbac_matrix",
-    "note": "as expected",
-    "timestamp": "2026-08-06T05:59:06.536050+00:00"
-  },
-  {
-    "endpoint": "/api/v1/scans/370d1345-4ecf-4c4e-bc03-081c2a958690",
-    "method": "GET",
-    "role": "user_b",
-    "status": 404,
-    "expected_status": "auth_owner",
-    "finding": false,
-    "severity": "info",
-    "response_time_ms": 7.0,
-    "test_category": "rbac_matrix",
-    "note": "as expected",
-    "timestamp": "2026-08-06T05:59:06.543225+00:00"
-  },
-  {
-    "endpoint": "/api/v1/scans/370d1345-4ecf-4c4e-bc03-081c2a958690",
-    "method": "GET",
-    "role": "admin",
-    "status": 404,
-    "expected_status": "auth_owner",
-    "finding": false,
-    "severity": "info",
-    "response_time_ms": 23.3,
-    "test_category": "rbac_matrix",
-    "note": "as expected",
-    "timestamp": "2026-08-06T05:59:06.566638+00:00"
-  },
-  {
-    "endpoint": "/api/v1/scans/370d1345-4ecf-4c4e-bc03-081c2a958690/status",
-    "method": "GET",
-    "role": "anon",
-    "status": 401,
-    "expected_status": "auth_owner",
-    "finding": false,
-    "severity": "info",
-    "response_time_ms": 5.7,
-    "test_category": "rbac_matrix",
-    "note": "as expected",
-    "timestamp": "2026-08-06T05:59:06.572503+00:00"
-  },
-  {
-    "endpoint": "/api/v1/scans/370d1345-4ecf-4c4e-bc03-081c2a958690/status",
-    "method": "GET",
-    "role": "user_a",
-    "status": 200,
-    "expected_status": "auth_owner",
-    "finding": false,
-    "severity": "info",
-    "response_time_ms": 25.7,
-    "test_category": "rbac_matrix",
-    "note": "as expected",
-    "timestamp": "2026-08-06T05:59:06.598357+00:00"
-  },
-  {
-    "endpoint": "/api/v1/scans/370d1345-4ecf-4c4e-bc03-081c2a958690/status",
-    "method": "GET",
-    "role": "user_b",
-    "status": 404,
-    "expected_status": "auth_owner",
-    "finding": false,
-    "severity": "info",
-    "response_time_ms": 30.5,
-    "test_category": "rbac_matrix",
-    "note": "as expected",
-    "timestamp": "2026-08-06T05:59:06.629105+00:00"
-  },
-  {
-    "endpoint": "/api/v1/scans/370d1345-4ecf-4c4e-bc03-081c2a958690/status",
-    "method": "GET",
-    "role": "admin",
-    "status": 404,
-    "expected_status": "auth_owner",
-    "finding": false,
-    "severity": "info",
-    "response_time_ms": 6.8,
-    "test_category": "rbac_matrix",
-    "note": "as expected",
-    "timestamp": "2026-08-06T05:59:06.635982+00:00"
-  },
-  {
-    "endpoint": "/api/v1/scans/370d1345-4ecf-4c4e-bc03-081c2a958690/result",
-    "method": "GET",
-    "role": "anon",
-    "status": 401,
-    "expected_status": "auth_owner",
-    "finding": false,
-    "severity": "info",
-    "response_time_ms": 22.0,
-    "test_category": "rbac_matrix",
-    "note": "as expected",
-    "timestamp": "2026-08-06T05:59:06.658080+00:00"
-  },
-  {
-    "endpoint": "/api/v1/scans/370d1345-4ecf-4c4e-bc03-081c2a958690/result",
-    "method": "GET",
-    "role": "user_a",
-    "status": 404,
-    "expected_status": "auth_owner",
-    "finding": false,
-    "severity": "info",
-    "response_time_ms": 7.7,
-    "test_category": "rbac_matrix",
-    "note": "owner got non-200 (404) \u2014 may be a legitimate business-state error, see notes",
-    "timestamp": "2026-08-06T05:59:06.665849+00:00"
-  },
-  {
-    "endpoint": "/api/v1/scans/370d1345-4ecf-4c4e-bc03-081c2a958690/result",
-    "method": "GET",
-    "role": "user_b",
-    "status": 404,
-    "expected_status": "auth_owner",
-    "finding": false,
-    "severity": "info",
-    "response_time_ms": 25.6,
-    "test_category": "rbac_matrix",
-    "note": "as expected",
-    "timestamp": "2026-08-06T05:59:06.691648+00:00"
-  },
-  {
-    "endpoint": "/api/v1/scans/370d1345-4ecf-4c4e-bc03-081c2a958690/result",
-    "method": "GET",
-    "role": "admin",
-    "status": 404,
-    "expected_status": "auth_owner",
-    "finding": false,
-    "severity": "info",
-    "response_time_ms": 6.6,
-    "test_category": "rbac_matrix",
-    "note": "as expected",
-    "timestamp": "2026-08-06T05:59:06.698386+00:00"
-  },
-  {
-    "endpoint": "/api/v1/scans/370d1345-4ecf-4c4e-bc03-081c2a958690/technical",
-    "method": "GET",
-    "role": "anon",
-    "status": 401,
-    "expected_status": "auth_owner",
-    "finding": false,
-    "severity": "info",
-    "response_time_ms": 4.8,
-    "test_category": "rbac_matrix",
-    "note": "as expected",
-    "timestamp": "2026-08-06T05:59:06.703321+00:00"
-  },
-  {
-    "endpoint": "/api/v1/scans/370d1345-4ecf-4c4e-bc03-081c2a958690/technical",
-    "method": "GET",
-    "role": "user_a",
-    "status": 404,
-    "expected_status": "auth_owner",
-    "finding": false,
-    "severity": "info",
-    "response_time_ms": 19.6,
-    "test_category": "rbac_matrix",
-    "note": "owner got non-200 (404) \u2014 may be a legitimate business-state error, see notes",
-    "timestamp": "2026-08-06T05:59:06.723099+00:00"
-  },
-  {
-    "endpoint": "/api/v1/scans/370d1345-4ecf-4c4e-bc03-081c2a958690/technical",
-    "method": "GET",
-    "role": "user_b",
-    "status": 404,
-    "expected_status": "auth_owner",
-    "finding": false,
-    "severity": "info",
-    "response_time_ms": 29.3,
-    "test_category": "rbac_matrix",
-    "note": "as expected",
-    "timestamp": "2026-08-06T05:59:06.752531+00:00"
-  },
-  {
-    "endpoint": "/api/v1/scans/370d1345-4ecf-4c4e-bc03-081c2a958690/technical",
-    "method": "GET",
-    "role": "admin",
-    "status": 404,
-    "expected_status": "auth_owner",
-    "finding": false,
-    "severity": "info",
-    "response_time_ms": 32.1,
-    "test_category": "rbac_matrix",
-    "note": "as expected",
-    "timestamp": "2026-08-06T05:59:06.784755+00:00"
-  },
-  {
-    "endpoint": "/api/v1/scans/370d1345-4ecf-4c4e-bc03-081c2a958690/explanation",
-    "method": "GET",
-    "role": "anon",
-    "status": 401,
-    "expected_status": "auth_owner",
-    "finding": false,
-    "severity": "info",
-    "response_time_ms": 5.2,
-    "test_category": "rbac_matrix",
-    "note": "as expected",
-    "timestamp": "2026-08-06T05:59:06.790107+00:00"
-  },
-  {
-    "endpoint": "/api/v1/scans/370d1345-4ecf-4c4e-bc03-081c2a958690/explanation",
-    "method": "GET",
-    "role": "user_a",
-    "status": 404,
-    "expected_status": "auth_owner",
-    "finding": false,
-    "severity": "info",
-    "response_time_ms": 8.6,
-    "test_category": "rbac_matrix",
-    "note": "owner got non-200 (404) \u2014 may be a legitimate business-state error, see notes",
-    "timestamp": "2026-08-06T05:59:06.798875+00:00"
-  },
-  {
-    "endpoint": "/api/v1/scans/370d1345-4ecf-4c4e-bc03-081c2a958690/explanation",
-    "method": "GET",
-    "role": "user_b",
-    "status": 404,
-    "expected_status": "auth_owner",
-    "finding": false,
-    "severity": "info",
-    "response_time_ms": 30.6,
-    "test_category": "rbac_matrix",
-    "note": "as expected",
-    "timestamp": "2026-08-06T05:59:06.829585+00:00"
-  },
-  {
-    "endpoint": "/api/v1/scans/370d1345-4ecf-4c4e-bc03-081c2a958690/explanation",
-    "method": "GET",
-    "role": "admin",
-    "status": 404,
-    "expected_status": "auth_owner",
-    "finding": false,
-    "severity": "info",
-    "response_time_ms": 15.5,
-    "test_category": "rbac_matrix",
-    "note": "as expected",
-    "timestamp": "2026-08-06T05:59:06.845249+00:00"
-  },
-  {
-    "endpoint": "/api/v1/models",
-    "method": "GET",
-    "role": "anon",
-    "status": 401,
-    "expected_status": "auth",
-    "finding": false,
-    "severity": "info",
-    "response_time_ms": 4.7,
-    "test_category": "rbac_matrix",
-    "note": "as expected",
-    "timestamp": "2026-08-06T05:59:06.850064+00:00"
-  },
-  {
-    "endpoint": "/api/v1/models",
-    "method": "GET",
-    "role": "user_a",
-    "status": 200,
-    "expected_status": "auth",
-    "finding": false,
-    "severity": "info",
-    "response_time_ms": 32.8,
-    "test_category": "rbac_matrix",
-    "note": "as expected",
-    "timestamp": "2026-08-06T05:59:06.883012+00:00"
-  },
-  {
-    "endpoint": "/api/v1/models",
-    "method": "GET",
-    "role": "user_b",
-    "status": 200,
-    "expected_status": "auth",
-    "finding": false,
-    "severity": "info",
-    "response_time_ms": 26.3,
-    "test_category": "rbac_matrix",
-    "note": "as expected",
-    "timestamp": "2026-08-06T05:59:06.909421+00:00"
-  },
-  {
-    "endpoint": "/api/v1/models",
-    "method": "GET",
-    "role": "admin",
-    "status": 200,
-    "expected_status": "auth",
-    "finding": false,
-    "severity": "info",
-    "response_time_ms": 29.4,
-    "test_category": "rbac_matrix",
-    "note": "as expected",
-    "timestamp": "2026-08-06T05:59:06.939078+00:00"
-  },
-  {
-    "endpoint": "/api/v1/models/current",
-    "method": "GET",
-    "role": "anon",
-    "status": 401,
-    "expected_status": "auth",
-    "finding": false,
-    "severity": "info",
-    "response_time_ms": 5.2,
-    "test_category": "rbac_matrix",
-    "note": "as expected",
-    "timestamp": "2026-08-06T05:59:06.944477+00:00"
-  },
-  {
-    "endpoint": "/api/v1/models/current",
-    "method": "GET",
-    "role": "user_a",
-    "status": 200,
-    "expected_status": "auth",
-    "finding": false,
-    "severity": "info",
-    "response_time_ms": 9.9,
-    "test_category": "rbac_matrix",
-    "note": "as expected",
-    "timestamp": "2026-08-06T05:59:06.954536+00:00"
-  },
-  {
-    "endpoint": "/api/v1/models/current",
-    "method": "GET",
-    "role": "user_b",
-    "status": 200,
-    "expected_status": "auth",
-    "finding": false,
-    "severity": "info",
-    "response_time_ms": 30.3,
-    "test_category": "rbac_matrix",
-    "note": "as expected",
-    "timestamp": "2026-08-06T05:59:06.984977+00:00"
-  },
-  {
-    "endpoint": "/api/v1/models/current",
-    "method": "GET",
-    "role": "admin",
-    "status": 200,
-    "expected_status": "auth",
-    "finding": false,
-    "severity": "info",
-    "response_time_ms": 6.1,
-    "test_category": "rbac_matrix",
-    "note": "as expected",
-    "timestamp": "2026-08-06T05:59:06.991186+00:00"
-  },
-  {
-    "endpoint": "/api/v1/scans/shared/nonexistent-token",
-    "method": "GET",
-    "role": "anon",
-    "status": 404,
-    "expected_status": "public",
     "finding": false,
     "severity": "info",
     "response_time_ms": 7.4,
     "test_category": "rbac_matrix",
     "note": "as expected",
-    "timestamp": "2026-08-06T05:59:06.998736+00:00"
+    "timestamp": "2026-08-06T11:08:53.275430+00:00"
   },
   {
-    "endpoint": "/api/v1/scans/shared/nonexistent-token",
+    "endpoint": "/api/v1/notifications",
     "method": "GET",
-    "role": "user_a",
-    "status": 404,
-    "expected_status": "public",
-    "finding": false,
-    "severity": "info",
-    "response_time_ms": 15.6,
-    "test_category": "rbac_matrix",
-    "note": "as expected",
-    "timestamp": "2026-08-06T05:59:07.014481+00:00"
-  },
-  {
-    "endpoint": "/api/v1/scans/shared/nonexistent-token",
-    "method": "GET",
-    "role": "user_b",
-    "status": 404,
-    "expected_status": "public",
+    "role": "admin",
+    "status": 200,
+    "expected_status": "auth",
     "finding": false,
     "severity": "info",
     "response_time_ms": 6.5,
     "test_category": "rbac_matrix",
     "note": "as expected",
-    "timestamp": "2026-08-06T05:59:07.021137+00:00"
-  },
-  {
-    "endpoint": "/api/v1/scans/shared/nonexistent-token",
-    "method": "GET",
-    "role": "admin",
-    "status": 404,
-    "expected_status": "public",
-    "finding": false,
-    "severity": "info",
-    "response_time_ms": 23.8,
-    "test_category": "rbac_matrix",
-    "note": "as expected",
-    "timestamp": "2026-08-06T05:59:07.045085+00:00"
-  },
-  {
-    "endpoint": "/api/v1/notifications",
-    "method": "GET",
-    "role": "anon",
-    "status": 401,
-    "expected_status": "auth",
-    "finding": false,
-    "severity": "info",
-    "response_time_ms": 28.6,
-    "test_category": "rbac_matrix",
-    "note": "as expected",
-    "timestamp": "2026-08-06T05:59:07.073784+00:00"
-  },
-  {
-    "endpoint": "/api/v1/notifications",
-    "method": "GET",
-    "role": "user_a",
-    "status": 200,
-    "expected_status": "auth",
-    "finding": false,
-    "severity": "info",
-    "response_time_ms": 37.4,
-    "test_category": "rbac_matrix",
-    "note": "as expected",
-    "timestamp": "2026-08-06T05:59:07.111275+00:00"
-  },
-  {
-    "endpoint": "/api/v1/notifications",
-    "method": "GET",
-    "role": "user_b",
-    "status": 200,
-    "expected_status": "auth",
-    "finding": false,
-    "severity": "info",
-    "response_time_ms": 28.3,
-    "test_category": "rbac_matrix",
-    "note": "as expected",
-    "timestamp": "2026-08-06T05:59:07.139760+00:00"
-  },
-  {
-    "endpoint": "/api/v1/notifications",
-    "method": "GET",
-    "role": "admin",
-    "status": 200,
-    "expected_status": "auth",
-    "finding": false,
-    "severity": "info",
-    "response_time_ms": 27.8,
-    "test_category": "rbac_matrix",
-    "note": "as expected",
-    "timestamp": "2026-08-06T05:59:07.167825+00:00"
+    "timestamp": "2026-08-06T11:08:53.282008+00:00"
   },
   {
     "endpoint": "/api/v1/notifications/unread-count",
@@ -1788,10 +1788,10 @@
     "expected_status": "auth",
     "finding": false,
     "severity": "info",
-    "response_time_ms": 4.4,
+    "response_time_ms": 3.8,
     "test_category": "rbac_matrix",
     "note": "as expected",
-    "timestamp": "2026-08-06T05:59:07.172364+00:00"
+    "timestamp": "2026-08-06T11:08:53.285977+00:00"
   },
   {
     "endpoint": "/api/v1/notifications/unread-count",
@@ -1801,158 +1801,15 @@
     "expected_status": "auth",
     "finding": false,
     "severity": "info",
-    "response_time_ms": 28.9,
+    "response_time_ms": 19.0,
     "test_category": "rbac_matrix",
     "note": "as expected",
-    "timestamp": "2026-08-06T05:59:07.201344+00:00"
+    "timestamp": "2026-08-06T11:08:53.305100+00:00"
   },
   {
     "endpoint": "/api/v1/notifications/unread-count",
     "method": "GET",
     "role": "user_b",
-    "status": 200,
-    "expected_status": "auth",
-    "finding": false,
-    "severity": "info",
-    "response_time_ms": 7.9,
-    "test_category": "rbac_matrix",
-    "note": "as expected",
-    "timestamp": "2026-08-06T05:59:07.209427+00:00"
-  },
-  {
-    "endpoint": "/api/v1/notifications/unread-count",
-    "method": "GET",
-    "role": "admin",
-    "status": 200,
-    "expected_status": "auth",
-    "finding": false,
-    "severity": "info",
-    "response_time_ms": 8.2,
-    "test_category": "rbac_matrix",
-    "note": "as expected",
-    "timestamp": "2026-08-06T05:59:07.217858+00:00"
-  },
-  {
-    "endpoint": "/api/v1/feedback",
-    "method": "GET",
-    "role": "anon",
-    "status": 401,
-    "expected_status": "admin",
-    "finding": false,
-    "severity": "info",
-    "response_time_ms": 5.2,
-    "test_category": "rbac_matrix",
-    "note": "as expected",
-    "timestamp": "2026-08-06T05:59:07.223249+00:00"
-  },
-  {
-    "endpoint": "/api/v1/feedback",
-    "method": "GET",
-    "role": "user_a",
-    "status": 403,
-    "expected_status": "admin",
-    "finding": false,
-    "severity": "info",
-    "response_time_ms": 7.3,
-    "test_category": "rbac_matrix",
-    "note": "as expected",
-    "timestamp": "2026-08-06T05:59:07.230743+00:00"
-  },
-  {
-    "endpoint": "/api/v1/feedback",
-    "method": "GET",
-    "role": "user_b",
-    "status": 403,
-    "expected_status": "admin",
-    "finding": false,
-    "severity": "info",
-    "response_time_ms": 28.8,
-    "test_category": "rbac_matrix",
-    "note": "as expected",
-    "timestamp": "2026-08-06T05:59:07.259779+00:00"
-  },
-  {
-    "endpoint": "/api/v1/feedback",
-    "method": "GET",
-    "role": "admin",
-    "status": 200,
-    "expected_status": "admin",
-    "finding": false,
-    "severity": "info",
-    "response_time_ms": 12.1,
-    "test_category": "rbac_matrix",
-    "note": "as expected",
-    "timestamp": "2026-08-06T05:59:07.272024+00:00"
-  },
-  {
-    "endpoint": "/api/v1/dashboard",
-    "method": "GET",
-    "role": "anon",
-    "status": 401,
-    "expected_status": "auth",
-    "finding": false,
-    "severity": "info",
-    "response_time_ms": 4.7,
-    "test_category": "rbac_matrix",
-    "note": "as expected",
-    "timestamp": "2026-08-06T05:59:07.276861+00:00"
-  },
-  {
-    "endpoint": "/api/v1/dashboard",
-    "method": "GET",
-    "role": "user_a",
-    "status": 200,
-    "expected_status": "auth",
-    "finding": false,
-    "severity": "info",
-    "response_time_ms": 42.6,
-    "test_category": "rbac_matrix",
-    "note": "as expected",
-    "timestamp": "2026-08-06T05:59:07.319805+00:00"
-  },
-  {
-    "endpoint": "/api/v1/dashboard",
-    "method": "GET",
-    "role": "user_b",
-    "status": 200,
-    "expected_status": "auth",
-    "finding": false,
-    "severity": "info",
-    "response_time_ms": 26.0,
-    "test_category": "rbac_matrix",
-    "note": "as expected",
-    "timestamp": "2026-08-06T05:59:07.346071+00:00"
-  },
-  {
-    "endpoint": "/api/v1/dashboard",
-    "method": "GET",
-    "role": "admin",
-    "status": 200,
-    "expected_status": "auth",
-    "finding": false,
-    "severity": "info",
-    "response_time_ms": 13.9,
-    "test_category": "rbac_matrix",
-    "note": "as expected",
-    "timestamp": "2026-08-06T05:59:07.360139+00:00"
-  },
-  {
-    "endpoint": "/api/v1/dashboard/recent-scans",
-    "method": "GET",
-    "role": "anon",
-    "status": 401,
-    "expected_status": "auth",
-    "finding": false,
-    "severity": "info",
-    "response_time_ms": 23.4,
-    "test_category": "rbac_matrix",
-    "note": "as expected",
-    "timestamp": "2026-08-06T05:59:07.383736+00:00"
-  },
-  {
-    "endpoint": "/api/v1/dashboard/recent-scans",
-    "method": "GET",
-    "role": "user_a",
     "status": 200,
     "expected_status": "auth",
     "finding": false,
@@ -1960,7 +1817,150 @@
     "response_time_ms": 18.8,
     "test_category": "rbac_matrix",
     "note": "as expected",
-    "timestamp": "2026-08-06T05:59:07.402623+00:00"
+    "timestamp": "2026-08-06T11:08:53.324091+00:00"
+  },
+  {
+    "endpoint": "/api/v1/notifications/unread-count",
+    "method": "GET",
+    "role": "admin",
+    "status": 200,
+    "expected_status": "auth",
+    "finding": false,
+    "severity": "info",
+    "response_time_ms": 22.0,
+    "test_category": "rbac_matrix",
+    "note": "as expected",
+    "timestamp": "2026-08-06T11:08:53.346239+00:00"
+  },
+  {
+    "endpoint": "/api/v1/feedback",
+    "method": "GET",
+    "role": "anon",
+    "status": 401,
+    "expected_status": "admin",
+    "finding": false,
+    "severity": "info",
+    "response_time_ms": 28.4,
+    "test_category": "rbac_matrix",
+    "note": "as expected",
+    "timestamp": "2026-08-06T11:08:53.374836+00:00"
+  },
+  {
+    "endpoint": "/api/v1/feedback",
+    "method": "GET",
+    "role": "user_a",
+    "status": 403,
+    "expected_status": "admin",
+    "finding": false,
+    "severity": "info",
+    "response_time_ms": 13.0,
+    "test_category": "rbac_matrix",
+    "note": "as expected",
+    "timestamp": "2026-08-06T11:08:53.387996+00:00"
+  },
+  {
+    "endpoint": "/api/v1/feedback",
+    "method": "GET",
+    "role": "user_b",
+    "status": 403,
+    "expected_status": "admin",
+    "finding": false,
+    "severity": "info",
+    "response_time_ms": 12.6,
+    "test_category": "rbac_matrix",
+    "note": "as expected",
+    "timestamp": "2026-08-06T11:08:53.400757+00:00"
+  },
+  {
+    "endpoint": "/api/v1/feedback",
+    "method": "GET",
+    "role": "admin",
+    "status": 200,
+    "expected_status": "admin",
+    "finding": false,
+    "severity": "info",
+    "response_time_ms": 25.0,
+    "test_category": "rbac_matrix",
+    "note": "as expected",
+    "timestamp": "2026-08-06T11:08:53.426058+00:00"
+  },
+  {
+    "endpoint": "/api/v1/dashboard",
+    "method": "GET",
+    "role": "anon",
+    "status": 401,
+    "expected_status": "auth",
+    "finding": false,
+    "severity": "info",
+    "response_time_ms": 13.8,
+    "test_category": "rbac_matrix",
+    "note": "as expected",
+    "timestamp": "2026-08-06T11:08:53.440035+00:00"
+  },
+  {
+    "endpoint": "/api/v1/dashboard",
+    "method": "GET",
+    "role": "user_a",
+    "status": 200,
+    "expected_status": "auth",
+    "finding": false,
+    "severity": "info",
+    "response_time_ms": 20.5,
+    "test_category": "rbac_matrix",
+    "note": "as expected",
+    "timestamp": "2026-08-06T11:08:53.460768+00:00"
+  },
+  {
+    "endpoint": "/api/v1/dashboard",
+    "method": "GET",
+    "role": "user_b",
+    "status": 200,
+    "expected_status": "auth",
+    "finding": false,
+    "severity": "info",
+    "response_time_ms": 12.3,
+    "test_category": "rbac_matrix",
+    "note": "as expected",
+    "timestamp": "2026-08-06T11:08:53.473217+00:00"
+  },
+  {
+    "endpoint": "/api/v1/dashboard",
+    "method": "GET",
+    "role": "admin",
+    "status": 200,
+    "expected_status": "auth",
+    "finding": false,
+    "severity": "info",
+    "response_time_ms": 11.2,
+    "test_category": "rbac_matrix",
+    "note": "as expected",
+    "timestamp": "2026-08-06T11:08:53.484616+00:00"
+  },
+  {
+    "endpoint": "/api/v1/dashboard/recent-scans",
+    "method": "GET",
+    "role": "anon",
+    "status": 401,
+    "expected_status": "auth",
+    "finding": false,
+    "severity": "info",
+    "response_time_ms": 4.2,
+    "test_category": "rbac_matrix",
+    "note": "as expected",
+    "timestamp": "2026-08-06T11:08:53.488926+00:00"
+  },
+  {
+    "endpoint": "/api/v1/dashboard/recent-scans",
+    "method": "GET",
+    "role": "user_a",
+    "status": 200,
+    "expected_status": "auth",
+    "finding": false,
+    "severity": "info",
+    "response_time_ms": 6.5,
+    "test_category": "rbac_matrix",
+    "note": "as expected",
+    "timestamp": "2026-08-06T11:08:53.495533+00:00"
   },
   {
     "endpoint": "/api/v1/dashboard/recent-scans",
@@ -1970,10 +1970,10 @@
     "expected_status": "auth",
     "finding": false,
     "severity": "info",
-    "response_time_ms": 32.1,
+    "response_time_ms": 6.7,
     "test_category": "rbac_matrix",
     "note": "as expected",
-    "timestamp": "2026-08-06T05:59:07.434873+00:00"
+    "timestamp": "2026-08-06T11:08:53.502314+00:00"
   },
   {
     "endpoint": "/api/v1/dashboard/recent-scans",
@@ -1983,88 +1983,88 @@
     "expected_status": "auth",
     "finding": false,
     "severity": "info",
-    "response_time_ms": 33.1,
+    "response_time_ms": 6.9,
     "test_category": "rbac_matrix",
     "note": "as expected",
-    "timestamp": "2026-08-06T05:59:07.468214+00:00"
+    "timestamp": "2026-08-06T11:08:53.509319+00:00"
   },
   {
-    "endpoint": "/api/v1/scans/370d1345-4ecf-4c4e-bc03-081c2a958690/cancel",
+    "endpoint": "/api/v1/scans/e7633676-e305-4383-8aea-9e2105150bc6/cancel",
     "method": "POST",
     "role": "user_b_against_user_a_resource",
     "status": 404,
     "expected_status": "403 or 404",
     "finding": false,
     "severity": "info",
-    "response_time_ms": 32.5,
+    "response_time_ms": 13.0,
     "test_category": "idor",
     "note": "correctly blocked (404)",
-    "timestamp": "2026-08-06T05:59:07.978930+00:00"
+    "timestamp": "2026-08-06T11:08:53.961220+00:00"
   },
   {
-    "endpoint": "/api/v1/scans/370d1345-4ecf-4c4e-bc03-081c2a958690/process",
+    "endpoint": "/api/v1/scans/e7633676-e305-4383-8aea-9e2105150bc6/process",
     "method": "POST",
     "role": "user_b_against_user_a_resource",
     "status": 404,
     "expected_status": "403 or 404",
     "finding": false,
     "severity": "info",
-    "response_time_ms": 7.0,
+    "response_time_ms": 15.2,
     "test_category": "idor",
     "note": "correctly blocked (404)",
-    "timestamp": "2026-08-06T05:59:07.986067+00:00"
+    "timestamp": "2026-08-06T11:08:53.976575+00:00"
   },
   {
-    "endpoint": "/api/v1/scans/370d1345-4ecf-4c4e-bc03-081c2a958690/share",
+    "endpoint": "/api/v1/scans/e7633676-e305-4383-8aea-9e2105150bc6/share",
     "method": "POST",
     "role": "user_b_against_user_a_resource",
     "status": 404,
     "expected_status": "403 or 404",
     "finding": false,
     "severity": "info",
-    "response_time_ms": 22.8,
+    "response_time_ms": 18.6,
     "test_category": "idor",
     "note": "correctly blocked (404)",
-    "timestamp": "2026-08-06T05:59:08.009226+00:00"
+    "timestamp": "2026-08-06T11:08:53.995272+00:00"
   },
   {
-    "endpoint": "/api/v1/scans/370d1345-4ecf-4c4e-bc03-081c2a958690/share",
+    "endpoint": "/api/v1/scans/e7633676-e305-4383-8aea-9e2105150bc6/share",
     "method": "DELETE",
     "role": "user_b_against_user_a_resource",
     "status": 404,
     "expected_status": "403 or 404",
     "finding": false,
     "severity": "info",
-    "response_time_ms": 16.2,
+    "response_time_ms": 17.8,
     "test_category": "idor",
     "note": "correctly blocked (404)",
-    "timestamp": "2026-08-06T05:59:08.025648+00:00"
+    "timestamp": "2026-08-06T11:08:54.013202+00:00"
   },
   {
-    "endpoint": "/api/v1/scans/370d1345-4ecf-4c4e-bc03-081c2a958690",
+    "endpoint": "/api/v1/scans/e7633676-e305-4383-8aea-9e2105150bc6",
     "method": "DELETE",
     "role": "user_b_against_user_a_resource",
     "status": 404,
     "expected_status": "403 or 404",
     "finding": false,
     "severity": "info",
-    "response_time_ms": 8.2,
+    "response_time_ms": 8.4,
     "test_category": "idor",
     "note": "correctly blocked (404)",
-    "timestamp": "2026-08-06T05:59:08.034020+00:00"
+    "timestamp": "2026-08-06T11:08:54.021738+00:00"
   },
   {
-    "endpoint": "/api/v1/scans/370d1345-4ecf-4c4e-bc03-081c2a958690",
+    "endpoint": "/api/v1/scans/e7633676-e305-4383-8aea-9e2105150bc6",
     "method": "GET",
     "role": "user_a_post_verify",
     "status": 200,
     "expected_status": 200,
     "finding": false,
     "severity": "info",
-    "response_time_ms": 7.4,
+    "response_time_ms": 6.0,
     "test_category": "idor",
     "note": "fixture scan intact after blocked non-owner DELETE attempt",
-    "timestamp": "2026-08-06T05:59:08.041597+00:00"
+    "timestamp": "2026-08-06T11:08:54.027936+00:00"
   },
   {
     "endpoint": "/api/v1/notifications/{id}",
@@ -2077,7 +2077,7 @@
     "response_time_ms": null,
     "test_category": "idor",
     "note": "COVERAGE GAP: no code path in the app creates a Notification row, so ownership on notification endpoints could only be tested against a nonexistent id (see 04_rbac_matrix.py, which confirms 401/404 there). Not exploitable now, but if a future feature starts creating notifications, re-run IDOR testing against a real one.",
-    "timestamp": "2026-08-06T05:59:08.041607+00:00"
+    "timestamp": "2026-08-06T11:08:54.027945+00:00"
   },
   {
     "endpoint": "/api/v1/auth/me",
@@ -2087,10 +2087,10 @@
     "expected_status": "401",
     "finding": false,
     "severity": "info",
-    "response_time_ms": 26.8,
+    "response_time_ms": 18.7,
     "test_category": "token_tampering",
     "note": "correctly rejected (401)",
-    "timestamp": "2026-08-06T05:59:08.572508+00:00"
+    "timestamp": "2026-08-06T11:08:54.515378+00:00"
   },
   {
     "endpoint": "/api/v1/feedback",
@@ -2100,10 +2100,10 @@
     "expected_status": "401",
     "finding": false,
     "severity": "info",
-    "response_time_ms": 16.9,
+    "response_time_ms": 17.1,
     "test_category": "token_tampering",
     "note": "correctly rejected (401)",
-    "timestamp": "2026-08-06T05:59:08.589551+00:00"
+    "timestamp": "2026-08-06T11:08:54.532671+00:00"
   },
   {
     "endpoint": "/api/v1/auth/me",
@@ -2113,10 +2113,10 @@
     "expected_status": "401",
     "finding": false,
     "severity": "info",
-    "response_time_ms": 6.3,
+    "response_time_ms": 17.8,
     "test_category": "token_tampering",
     "note": "correctly rejected (401)",
-    "timestamp": "2026-08-06T05:59:08.596065+00:00"
+    "timestamp": "2026-08-06T11:08:54.550583+00:00"
   },
   {
     "endpoint": "/api/v1/feedback",
@@ -2126,10 +2126,10 @@
     "expected_status": "401",
     "finding": false,
     "severity": "info",
-    "response_time_ms": 6.0,
+    "response_time_ms": 23.5,
     "test_category": "token_tampering",
     "note": "correctly rejected (401)",
-    "timestamp": "2026-08-06T05:59:08.602177+00:00"
+    "timestamp": "2026-08-06T11:08:54.574229+00:00"
   },
   {
     "endpoint": "/api/v1/auth/me",
@@ -2139,10 +2139,10 @@
     "expected_status": "401",
     "finding": false,
     "severity": "info",
-    "response_time_ms": 5.2,
+    "response_time_ms": 19.9,
     "test_category": "token_tampering",
     "note": "correctly rejected (401)",
-    "timestamp": "2026-08-06T05:59:08.607491+00:00"
+    "timestamp": "2026-08-06T11:08:54.594348+00:00"
   },
   {
     "endpoint": "/api/v1/feedback",
@@ -2152,10 +2152,10 @@
     "expected_status": "401",
     "finding": false,
     "severity": "info",
-    "response_time_ms": 26.8,
+    "response_time_ms": 17.3,
     "test_category": "token_tampering",
     "note": "correctly rejected (401)",
-    "timestamp": "2026-08-06T05:59:08.634445+00:00"
+    "timestamp": "2026-08-06T11:08:54.611785+00:00"
   },
   {
     "endpoint": "/api/v1/auth/me",
@@ -2165,10 +2165,10 @@
     "expected_status": "401",
     "finding": false,
     "severity": "info",
-    "response_time_ms": 15.1,
+    "response_time_ms": 11.4,
     "test_category": "token_tampering",
     "note": "correctly rejected (401)",
-    "timestamp": "2026-08-06T05:59:08.649670+00:00"
+    "timestamp": "2026-08-06T11:08:54.623280+00:00"
   },
   {
     "endpoint": "/api/v1/feedback",
@@ -2178,10 +2178,10 @@
     "expected_status": "401",
     "finding": false,
     "severity": "info",
-    "response_time_ms": 14.5,
+    "response_time_ms": 18.7,
     "test_category": "token_tampering",
     "note": "correctly rejected (401)",
-    "timestamp": "2026-08-06T05:59:08.664357+00:00"
+    "timestamp": "2026-08-06T11:08:54.642099+00:00"
   },
   {
     "endpoint": "/api/v1/auth/me",
@@ -2191,10 +2191,10 @@
     "expected_status": "401",
     "finding": false,
     "severity": "info",
-    "response_time_ms": 15.4,
+    "response_time_ms": 17.8,
     "test_category": "token_tampering",
     "note": "correctly rejected (401)",
-    "timestamp": "2026-08-06T05:59:08.679949+00:00"
+    "timestamp": "2026-08-06T11:08:54.659991+00:00"
   },
   {
     "endpoint": "/api/v1/feedback",
@@ -2204,10 +2204,10 @@
     "expected_status": "401",
     "finding": false,
     "severity": "info",
-    "response_time_ms": 15.7,
+    "response_time_ms": 24.0,
     "test_category": "token_tampering",
     "note": "correctly rejected (401)",
-    "timestamp": "2026-08-06T05:59:08.695815+00:00"
+    "timestamp": "2026-08-06T11:08:54.684204+00:00"
   },
   {
     "endpoint": "/api/v1/auth/login",
@@ -2217,10 +2217,10 @@
     "expected_status": "401/422 (never 500 or DB error text)",
     "finding": false,
     "severity": "info",
-    "response_time_ms": 13.2,
+    "response_time_ms": 12.3,
     "test_category": "injection_probe",
     "note": "payload=\"' OR '1'='1\" handled safely",
-    "timestamp": "2026-08-06T05:59:09.217732+00:00"
+    "timestamp": "2026-08-06T11:08:55.153754+00:00"
   },
   {
     "endpoint": "/api/v1/auth/login",
@@ -2230,10 +2230,10 @@
     "expected_status": "401/422 (never 500 or DB error text)",
     "finding": false,
     "severity": "info",
-    "response_time_ms": 29.0,
+    "response_time_ms": 6.5,
     "test_category": "injection_probe",
     "note": "payload=\"' OR 1=1--\" handled safely",
-    "timestamp": "2026-08-06T05:59:09.247020+00:00"
+    "timestamp": "2026-08-06T11:08:55.160357+00:00"
   },
   {
     "endpoint": "/api/v1/auth/login",
@@ -2243,10 +2243,10 @@
     "expected_status": "401/422 (never 500 or DB error text)",
     "finding": false,
     "severity": "info",
-    "response_time_ms": 6.0,
+    "response_time_ms": 4.5,
     "test_category": "injection_probe",
     "note": "payload=\"'; DROP TABLE users;--\" handled safely",
-    "timestamp": "2026-08-06T05:59:09.253226+00:00"
+    "timestamp": "2026-08-06T11:08:55.164988+00:00"
   },
   {
     "endpoint": "/api/v1/auth/login",
@@ -2256,10 +2256,10 @@
     "expected_status": "401/422 (never 500 or DB error text)",
     "finding": false,
     "severity": "info",
-    "response_time_ms": 24.1,
+    "response_time_ms": 16.1,
     "test_category": "injection_probe",
     "note": "payload=\"' UNION SELECT NULL--\" handled safely",
-    "timestamp": "2026-08-06T05:59:09.277566+00:00"
+    "timestamp": "2026-08-06T11:08:55.181212+00:00"
   },
   {
     "endpoint": "/api/v1/auth/login",
@@ -2269,10 +2269,10 @@
     "expected_status": "401/422 (never 500 or DB error text)",
     "finding": false,
     "severity": "info",
-    "response_time_ms": 14.1,
+    "response_time_ms": 11.7,
     "test_category": "injection_probe",
     "note": "payload=\"admin'--\" handled safely",
-    "timestamp": "2026-08-06T05:59:09.291813+00:00"
+    "timestamp": "2026-08-06T11:08:55.193038+00:00"
   },
   {
     "endpoint": "/api/v1/auth/register",
@@ -2282,10 +2282,10 @@
     "expected_status": "201/422 (never 500 or DB error text)",
     "finding": false,
     "severity": "info",
-    "response_time_ms": 266.2,
+    "response_time_ms": 245.0,
     "test_category": "injection_probe",
     "note": "handled safely",
-    "timestamp": "2026-08-06T05:59:09.558213+00:00"
+    "timestamp": "2026-08-06T11:08:55.438203+00:00"
   },
   {
     "endpoint": "/api/v1/auth/register",
@@ -2295,10 +2295,10 @@
     "expected_status": "201/422 (never 500 or DB error text)",
     "finding": false,
     "severity": "info",
-    "response_time_ms": 278.4,
+    "response_time_ms": 290.4,
     "test_category": "injection_probe",
     "note": "handled safely",
-    "timestamp": "2026-08-06T05:59:09.836798+00:00"
+    "timestamp": "2026-08-06T11:08:55.728790+00:00"
   },
   {
     "endpoint": "/api/v1/auth/register",
@@ -2308,10 +2308,10 @@
     "expected_status": "201/422 (never 500 or DB error text)",
     "finding": false,
     "severity": "info",
-    "response_time_ms": 280.2,
+    "response_time_ms": 250.7,
     "test_category": "injection_probe",
     "note": "handled safely",
-    "timestamp": "2026-08-06T05:59:10.117196+00:00"
+    "timestamp": "2026-08-06T11:08:55.979628+00:00"
   },
   {
     "endpoint": "/api/v1/auth/register",
@@ -2321,10 +2321,10 @@
     "expected_status": "201/422 (never 500 or DB error text)",
     "finding": false,
     "severity": "info",
-    "response_time_ms": 270.6,
+    "response_time_ms": 240.8,
     "test_category": "injection_probe",
     "note": "handled safely",
-    "timestamp": "2026-08-06T05:59:10.388014+00:00"
+    "timestamp": "2026-08-06T11:08:56.220633+00:00"
   },
   {
     "endpoint": "/api/v1/auth/register",
@@ -2334,10 +2334,10 @@
     "expected_status": "201/422 (never 500 or DB error text)",
     "finding": false,
     "severity": "info",
-    "response_time_ms": 281.4,
+    "response_time_ms": 227.5,
     "test_category": "injection_probe",
     "note": "handled safely",
-    "timestamp": "2026-08-06T05:59:10.669625+00:00"
+    "timestamp": "2026-08-06T11:08:56.448346+00:00"
   },
   {
     "endpoint": "/api/v1/scans/{scan_id}",
@@ -2347,10 +2347,10 @@
     "expected_status": "422 (UUID type validation)",
     "finding": false,
     "severity": "info",
-    "response_time_ms": 19.1,
+    "response_time_ms": 12.7,
     "test_category": "injection_probe",
     "note": "handled safely",
-    "timestamp": "2026-08-06T05:59:10.688922+00:00"
+    "timestamp": "2026-08-06T11:08:56.461169+00:00"
   },
   {
     "endpoint": "/api/v1/scans/{scan_id}",
@@ -2360,10 +2360,10 @@
     "expected_status": "422 (UUID type validation)",
     "finding": false,
     "severity": "info",
-    "response_time_ms": 30.3,
+    "response_time_ms": 28.3,
     "test_category": "injection_probe",
     "note": "handled safely",
-    "timestamp": "2026-08-06T05:59:10.719343+00:00"
+    "timestamp": "2026-08-06T11:08:56.489594+00:00"
   },
   {
     "endpoint": "/api/v1/scans/{scan_id}",
@@ -2373,10 +2373,10 @@
     "expected_status": "422 (UUID type validation)",
     "finding": false,
     "severity": "info",
-    "response_time_ms": 15.2,
+    "response_time_ms": 5.5,
     "test_category": "injection_probe",
     "note": "handled safely",
-    "timestamp": "2026-08-06T05:59:10.734701+00:00"
+    "timestamp": "2026-08-06T11:08:56.495230+00:00"
   },
   {
     "endpoint": "/api/v1/scans/{scan_id}",
@@ -2386,10 +2386,10 @@
     "expected_status": "422 (UUID type validation)",
     "finding": false,
     "severity": "info",
-    "response_time_ms": 15.3,
+    "response_time_ms": 13.7,
     "test_category": "injection_probe",
     "note": "handled safely",
-    "timestamp": "2026-08-06T05:59:10.750179+00:00"
+    "timestamp": "2026-08-06T11:08:56.509069+00:00"
   },
   {
     "endpoint": "/api/v1/scans/{scan_id}",
@@ -2399,10 +2399,10 @@
     "expected_status": "422 (UUID type validation)",
     "finding": false,
     "severity": "info",
-    "response_time_ms": 6.1,
+    "response_time_ms": 18.2,
     "test_category": "injection_probe",
     "note": "handled safely",
-    "timestamp": "2026-08-06T05:59:10.756506+00:00"
+    "timestamp": "2026-08-06T11:08:56.527389+00:00"
   },
   {
     "endpoint": "/api/v1/scans?status=",
@@ -2412,10 +2412,10 @@
     "expected_status": "422 (enum validation)",
     "finding": false,
     "severity": "info",
-    "response_time_ms": 6.7,
+    "response_time_ms": 5.3,
     "test_category": "injection_probe",
     "note": "handled safely",
-    "timestamp": "2026-08-06T05:59:10.763383+00:00"
+    "timestamp": "2026-08-06T11:08:56.532806+00:00"
   },
   {
     "endpoint": "/api/v1/scans?status=",
@@ -2425,10 +2425,10 @@
     "expected_status": "422 (enum validation)",
     "finding": false,
     "severity": "info",
-    "response_time_ms": 18.1,
+    "response_time_ms": 18.8,
     "test_category": "injection_probe",
     "note": "handled safely",
-    "timestamp": "2026-08-06T05:59:10.781684+00:00"
+    "timestamp": "2026-08-06T11:08:56.551725+00:00"
   },
   {
     "endpoint": "/api/v1/scans?status=",
@@ -2438,10 +2438,10 @@
     "expected_status": "422 (enum validation)",
     "finding": false,
     "severity": "info",
-    "response_time_ms": 35.0,
+    "response_time_ms": 5.8,
     "test_category": "injection_probe",
     "note": "handled safely",
-    "timestamp": "2026-08-06T05:59:10.816910+00:00"
+    "timestamp": "2026-08-06T11:08:56.557674+00:00"
   },
   {
     "endpoint": "/api/v1/scans?status=",
@@ -2451,10 +2451,10 @@
     "expected_status": "422 (enum validation)",
     "finding": false,
     "severity": "info",
-    "response_time_ms": 13.4,
+    "response_time_ms": 5.9,
     "test_category": "injection_probe",
     "note": "handled safely",
-    "timestamp": "2026-08-06T05:59:10.830633+00:00"
+    "timestamp": "2026-08-06T11:08:56.563730+00:00"
   },
   {
     "endpoint": "/api/v1/scans?status=",
@@ -2464,23 +2464,10 @@
     "expected_status": "422 (enum validation)",
     "finding": false,
     "severity": "info",
-    "response_time_ms": 9.0,
+    "response_time_ms": 7.3,
     "test_category": "injection_probe",
     "note": "handled safely",
-    "timestamp": "2026-08-06T05:59:10.839952+00:00"
-  },
-  {
-    "endpoint": "/api/v1/auth/login",
-    "method": "POST",
-    "role": "anon",
-    "status": 429,
-    "expected_status": "~6ms (baseline), no multi-second delay",
-    "finding": false,
-    "severity": "info",
-    "response_time_ms": 4.8,
-    "test_category": "injection_probe",
-    "note": "time-based payload=\"' OR SLEEP(5)--\" delta=-1ms vs baseline 6ms -- no delay, safe",
-    "timestamp": "2026-08-06T05:59:10.862566+00:00"
+    "timestamp": "2026-08-06T11:08:56.571162+00:00"
   },
   {
     "endpoint": "/api/v1/auth/login",
@@ -2492,8 +2479,21 @@
     "severity": "info",
     "response_time_ms": 4.9,
     "test_category": "injection_probe",
-    "note": "time-based payload=\"'; SELECT pg_sleep(5);--\" delta=-1ms vs baseline 6ms -- no delay, safe",
-    "timestamp": "2026-08-06T05:59:10.867662+00:00"
+    "note": "time-based payload=\"' OR SLEEP(5)--\" delta=-1ms vs baseline 6ms -- no delay, safe",
+    "timestamp": "2026-08-06T11:08:56.592537+00:00"
+  },
+  {
+    "endpoint": "/api/v1/auth/login",
+    "method": "POST",
+    "role": "anon",
+    "status": 429,
+    "expected_status": "~6ms (baseline), no multi-second delay",
+    "finding": false,
+    "severity": "info",
+    "response_time_ms": 11.1,
+    "test_category": "injection_probe",
+    "note": "time-based payload=\"'; SELECT pg_sleep(5);--\" delta=6ms vs baseline 6ms -- no delay, safe",
+    "timestamp": "2026-08-06T11:08:56.603782+00:00"
   },
   {
     "endpoint": "/api/v1/auth/login",
@@ -2503,10 +2503,10 @@
     "expected_status": "422 (type validation)",
     "finding": false,
     "severity": "info",
-    "response_time_ms": 5.2,
+    "response_time_ms": 19.7,
     "test_category": "injection_probe",
     "note": "NoSQLi-style operator payload {'$ne': None} -> 429",
-    "timestamp": "2026-08-06T05:59:10.872971+00:00"
+    "timestamp": "2026-08-06T11:08:56.623636+00:00"
   },
   {
     "endpoint": "/api/v1/auth/login",
@@ -2516,10 +2516,10 @@
     "expected_status": "422 (type validation)",
     "finding": false,
     "severity": "info",
-    "response_time_ms": 5.1,
+    "response_time_ms": 12.2,
     "test_category": "injection_probe",
     "note": "NoSQLi-style operator payload {'$gt': ''} -> 429",
-    "timestamp": "2026-08-06T05:59:10.878218+00:00"
+    "timestamp": "2026-08-06T11:08:56.636002+00:00"
   },
   {
     "endpoint": "/api/v1/auth/login",
@@ -2532,7 +2532,7 @@
     "response_time_ms": null,
     "test_category": "rate_limiting",
     "note": "statuses=[429, 429, 429, 429, 429, 429, 429, 429, 429, 429, 429, 429, 429, 429, 429]; 429 seen, limiter active",
-    "timestamp": "2026-08-06T05:59:11.578361+00:00"
+    "timestamp": "2026-08-06T11:08:57.199311+00:00"
   },
   {
     "endpoint": "/api/v1/auth/register",
@@ -2545,7 +2545,7 @@
     "response_time_ms": null,
     "test_category": "rate_limiting",
     "note": "statuses=[429, 429, 429, 429, 429, 429, 429]; 429 seen, limiter active",
-    "timestamp": "2026-08-06T05:59:11.691993+00:00"
+    "timestamp": "2026-08-06T11:08:57.271018+00:00"
   },
   {
     "endpoint": "/predict",
@@ -2558,7 +2558,7 @@
     "response_time_ms": null,
     "test_category": "rate_limiting",
     "note": "correctly rejected unauthenticated calls (401 x30)",
-    "timestamp": "2026-08-06T05:59:12.073333+00:00"
+    "timestamp": "2026-08-06T11:08:57.551146+00:00"
   },
   {
     "endpoint": "/predict",
@@ -2571,7 +2571,7 @@
     "response_time_ms": null,
     "test_category": "rate_limiting",
     "note": "statuses=[200, 200, 200, 200, 200, 200, 200, 200, 200, 200, 200, 200, 200, 200, 200, 200, 200, 200, 200, 200, 200, 200, 200, 200, 200, 200, 200, 200, 200, 200, 429, 429, 429]; 429 seen, per-user limiter active",
-    "timestamp": "2026-08-06T05:59:12.950154+00:00"
+    "timestamp": "2026-08-06T11:08:58.421101+00:00"
   },
   {
     "endpoint": "automated_test/results/08_hardcoded_creds.json",
@@ -2583,8 +2583,8 @@
     "severity": "info",
     "response_time_ms": null,
     "test_category": "hardcoded_creds",
-    "note": "false positive (doc placeholder), pattern=generic_password_assignment, line 6: \"excerpt\": \"\\\"excerpt\\\": \\\"\\\\\\\"note\\\\\\\": \\\\\\\"false positive (third-party dependency fixture), pattern=generic_password_assignment, line 859: *   PWD: '/Users/ma",
-    "timestamp": "2026-08-06T05:59:18.256230+00:00"
+    "note": "false positive (doc placeholder), pattern=generic_password_assignment, line 6: \"excerpt\": \"\\\"excerpt\\\": \\\"\\\\\\\"excerpt\\\\\\\": \\\\\\\"\\\\\\\\\\\\\\\"note\\\\\\\\\\\\\\\": \\\\\\\\\\\\\\\"false positive (third-party dependency fixture), pattern=generic_password_assignme",
+    "timestamp": "2026-08-06T11:09:15.869145+00:00"
   },
   {
     "endpoint": "automated_test/results/08_hardcoded_creds.json",
@@ -2596,8 +2596,8 @@
     "severity": "info",
     "response_time_ms": null,
     "test_category": "hardcoded_creds",
-    "note": "false positive (doc placeholder), pattern=generic_password_assignment, line 12: \"excerpt\": \"\\\"excerpt\\\": \\\"\\\\\\\"note\\\\\\\": \\\\\\\"false positive (third-party dependency fixture), pattern=generic_password_assignment, line 831: password: 's00pers3",
-    "timestamp": "2026-08-06T05:59:18.256230+00:00"
+    "note": "false positive (doc placeholder), pattern=generic_password_assignment, line 12: \"excerpt\": \"\\\"excerpt\\\": \\\"\\\\\\\"excerpt\\\\\\\": \\\\\\\"\\\\\\\\\\\\\\\"note\\\\\\\\\\\\\\\": \\\\\\\\\\\\\\\"false positive (third-party dependency fixture), pattern=generic_password_assignme",
+    "timestamp": "2026-08-06T11:09:15.869145+00:00"
   },
   {
     "endpoint": "automated_test/results/08_hardcoded_creds.json",
@@ -2609,8 +2609,8 @@
     "severity": "info",
     "response_time_ms": null,
     "test_category": "hardcoded_creds",
-    "note": "false positive (doc placeholder), pattern=generic_password_assignment, line 18: \"excerpt\": \"\\\"excerpt\\\": \\\"\\\\\\\"note\\\\\\\": \\\\\\\"false positive (third-party dependency fixture), pattern=generic_password_assignment, line 1015: password: 'rapunz3",
-    "timestamp": "2026-08-06T05:59:18.256230+00:00"
+    "note": "false positive (doc placeholder), pattern=generic_password_assignment, line 18: \"excerpt\": \"\\\"excerpt\\\": \\\"\\\\\\\"excerpt\\\\\\\": \\\\\\\"\\\\\\\\\\\\\\\"note\\\\\\\\\\\\\\\": \\\\\\\\\\\\\\\"false positive (third-party dependency fixture), pattern=generic_password_assignme",
+    "timestamp": "2026-08-06T11:09:15.869145+00:00"
   },
   {
     "endpoint": "automated_test/results/08_hardcoded_creds.json",
@@ -2622,8 +2622,8 @@
     "severity": "info",
     "response_time_ms": null,
     "test_category": "hardcoded_creds",
-    "note": "false positive (doc placeholder), pattern=db_url_with_password, line 24: \"excerpt\": \"\\\"excerpt\\\": \\\"\\\\\\\"note\\\\\\\": \\\\\\\"false positive (third-party dependency fixture), pattern=db_url_with_password, line 58: const keyv = new Keyv('mong",
-    "timestamp": "2026-08-06T05:59:18.256230+00:00"
+    "note": "false positive (doc placeholder), pattern=db_url_with_password, line 66: \"excerpt\": \"\\\"excerpt\\\": \\\"\\\\\\\"excerpt\\\\\\\": \\\\\\\"\\\\\\\\\\\\\\\"excerpt\\\\\\\\\\\\\\\": \\\\\\\\\\\\\\\"\\\\\\\\\\\\\\\\u2014 Connection string: postgresql+asyncpg://user:pass@host:5432/db?ss",
+    "timestamp": "2026-08-06T11:09:15.869145+00:00"
   },
   {
     "endpoint": "automated_test/results/08_hardcoded_creds.json",
@@ -2635,8 +2635,8 @@
     "severity": "info",
     "response_time_ms": null,
     "test_category": "hardcoded_creds",
-    "note": "false positive (doc placeholder), pattern=db_url_with_password, line 30: \"excerpt\": \"\\\"excerpt\\\": \\\"\\\\\\\"note\\\\\\\": \\\\\\\"false positive (third-party dependency fixture), pattern=db_url_with_password, line 60: const keyv = new Keyv('post",
-    "timestamp": "2026-08-06T05:59:18.256230+00:00"
+    "note": "false positive (doc placeholder), pattern=generic_password_assignment, line 72: \"excerpt\": \"\\\"excerpt\\\": \\\"\\\\\\\"excerpt\\\\\\\": \\\\\\\"\\\\\\\\\\\\\\\"excerpt\\\\\\\\\\\\\\\": \\\\\\\\\\\\\\\"*   PWD: '/Users/maciej',\\\\\\\\\\\\\\\"\\\\\\\"\\\"\"",
+    "timestamp": "2026-08-06T11:09:15.869145+00:00"
   },
   {
     "endpoint": "automated_test/results/08_hardcoded_creds.json",
@@ -2648,8 +2648,8 @@
     "severity": "info",
     "response_time_ms": null,
     "test_category": "hardcoded_creds",
-    "note": "false positive (doc placeholder), pattern=db_url_with_password, line 36: \"excerpt\": \"\\\"excerpt\\\": \\\"\\\\\\\"note\\\\\\\": \\\\\\\"false positive (third-party dependency fixture), pattern=db_url_with_password, line 61: const keyv = new Keyv('mysq",
-    "timestamp": "2026-08-06T05:59:18.256230+00:00"
+    "note": "false positive (doc placeholder), pattern=generic_password_assignment, line 78: \"excerpt\": \"\\\"excerpt\\\": \\\"\\\\\\\"excerpt\\\\\\\": \\\\\\\"\\\\\\\\\\\\\\\"excerpt\\\\\\\\\\\\\\\": \\\\\\\\\\\\\\\"password: 's00pers3cret'\\\\\\\\\\\\\\\"\\\\\\\"\\\"\"",
+    "timestamp": "2026-08-06T11:09:15.869145+00:00"
   },
   {
     "endpoint": "automated_test/results/08_hardcoded_creds.json",
@@ -2661,8 +2661,8 @@
     "severity": "info",
     "response_time_ms": null,
     "test_category": "hardcoded_creds",
-    "note": "false positive (doc placeholder), pattern=db_url_with_password, line 42: \"excerpt\": \"\\\"excerpt\\\": \\\"\\\\\\\"note\\\\\\\": \\\\\\\"false positive (third-party dependency fixture), pattern=db_url_with_password, line 170: | `mongodb://${string}:${s",
-    "timestamp": "2026-08-06T05:59:18.256230+00:00"
+    "note": "false positive (doc placeholder), pattern=generic_password_assignment, line 84: \"excerpt\": \"\\\"excerpt\\\": \\\"\\\\\\\"excerpt\\\\\\\": \\\\\\\"\\\\\\\\\\\\\\\"excerpt\\\\\\\\\\\\\\\": \\\\\\\\\\\\\\\"password: 'rapunz3l'\\\\\\\\\\\\\\\"\\\\\\\"\\\"\"",
+    "timestamp": "2026-08-06T11:09:15.869145+00:00"
   },
   {
     "endpoint": "automated_test/results/08_hardcoded_creds.json",
@@ -2674,8 +2674,8 @@
     "severity": "info",
     "response_time_ms": null,
     "test_category": "hardcoded_creds",
-    "note": "false positive (doc placeholder), pattern=db_url_with_password, line 48: \"excerpt\": \"\\\"excerpt\\\": \\\"\\\\\\\"note\\\\\\\": \\\\\\\"false positive (third-party dependency fixture), pattern=db_url_with_password, line 171: | `mongodb://${string}:${s",
-    "timestamp": "2026-08-06T05:59:18.256230+00:00"
+    "note": "false positive (doc placeholder), pattern=db_url_with_password, line 90: \"excerpt\": \"\\\"excerpt\\\": \\\"\\\\\\\"excerpt\\\\\\\": \\\\\\\"\\\\\\\\\\\\\\\"excerpt\\\\\\\\\\\\\\\": \\\\\\\\\\\\\\\"const keyv = new Keyv('mongodb://user:pass@localhost:27017/dbname');\\\\\\\\\\\\\\\"\\\\\\",
+    "timestamp": "2026-08-06T11:09:15.869145+00:00"
   },
   {
     "endpoint": "automated_test/results/08_hardcoded_creds.json",
@@ -2687,8 +2687,8 @@
     "severity": "info",
     "response_time_ms": null,
     "test_category": "hardcoded_creds",
-    "note": "false positive (doc placeholder), pattern=db_url_with_password, line 54: \"excerpt\": \"\\\"excerpt\\\": \\\"\\\\\\\"note\\\\\\\": \\\\\\\"false positive (third-party dependency fixture), pattern=db_url_with_password, line 172: | `mongodb://${string}:${s",
-    "timestamp": "2026-08-06T05:59:18.256230+00:00"
+    "note": "false positive (doc placeholder), pattern=db_url_with_password, line 96: \"excerpt\": \"\\\"excerpt\\\": \\\"\\\\\\\"excerpt\\\\\\\": \\\\\\\"\\\\\\\\\\\\\\\"excerpt\\\\\\\\\\\\\\\": \\\\\\\\\\\\\\\"const keyv = new Keyv('postgresql://user:pass@localhost:5432/dbname');\\\\\\\\\\\\\\\"\\",
+    "timestamp": "2026-08-06T11:09:15.869145+00:00"
   },
   {
     "endpoint": "automated_test/results/08_hardcoded_creds.json",
@@ -2700,8 +2700,8 @@
     "severity": "info",
     "response_time_ms": null,
     "test_category": "hardcoded_creds",
-    "note": "false positive (doc placeholder), pattern=db_url_with_password, line 84: \"excerpt\": \"\\\"excerpt\\\": \\\"\\\\\\\"note\\\\\\\": \\\\\\\"false positive (third-party dependency fixture), pattern=db_url_with_password, line 649: \\\\\\\\\\\\\\\"mongodb://username",
-    "timestamp": "2026-08-06T05:59:18.256230+00:00"
+    "note": "false positive (doc placeholder), pattern=db_url_with_password, line 102: \"excerpt\": \"\\\"excerpt\\\": \\\"\\\\\\\"excerpt\\\\\\\": \\\\\\\"\\\\\\\\\\\\\\\"excerpt\\\\\\\\\\\\\\\": \\\\\\\\\\\\\\\"const keyv = new Keyv('mysql://user:pass@localhost:3306/dbname');\\\\\\\\\\\\\\\"\\\\\\\"\\\"",
+    "timestamp": "2026-08-06T11:09:15.869145+00:00"
   },
   {
     "endpoint": "automated_test/results/08_hardcoded_creds.json",
@@ -2713,8 +2713,8 @@
     "severity": "info",
     "response_time_ms": null,
     "test_category": "hardcoded_creds",
-    "note": "false positive (doc placeholder), pattern=db_url_with_password, line 102: \"excerpt\": \"\\\"excerpt\\\": \\\"\\\\\\\"excerpt\\\\\\\": \\\\\\\"\\\\\\\\u2014 Connection string: postgresql+asyncpg://user:pass@host:5432/db?ssl=require\\\\\\\"\\\"\"",
-    "timestamp": "2026-08-06T05:59:18.256230+00:00"
+    "note": "false positive (doc placeholder), pattern=db_url_with_password, line 108: \"excerpt\": \"\\\"excerpt\\\": \\\"\\\\\\\"excerpt\\\\\\\": \\\\\\\"\\\\\\\\\\\\\\\"excerpt\\\\\\\\\\\\\\\": \\\\\\\\\\\\\\\"| `mongodb://${string}:${string}@${string}:${number}`\\\\\\\\\\\\\\\"\\\\\\\"\\\"\"",
+    "timestamp": "2026-08-06T11:09:15.869145+00:00"
   },
   {
     "endpoint": "automated_test/results/08_hardcoded_creds.json",
@@ -2726,8 +2726,8 @@
     "severity": "info",
     "response_time_ms": null,
     "test_category": "hardcoded_creds",
-    "note": "false positive (doc placeholder), pattern=generic_password_assignment, line 108: \"excerpt\": \"\\\"excerpt\\\": \\\"\\\\\\\"excerpt\\\\\\\": \\\\\\\"*   PWD: '/Users/maciej',\\\\\\\"\\\"\"",
-    "timestamp": "2026-08-06T05:59:18.256230+00:00"
+    "note": "false positive (doc placeholder), pattern=db_url_with_password, line 114: \"excerpt\": \"\\\"excerpt\\\": \\\"\\\\\\\"excerpt\\\\\\\": \\\\\\\"\\\\\\\\\\\\\\\"excerpt\\\\\\\\\\\\\\\": \\\\\\\\\\\\\\\"| `mongodb://${string}:${string}@${string}:${number}/${string}`\\\\\\\\\\\\\\\"\\\\\\\"\\\"\"",
+    "timestamp": "2026-08-06T11:09:15.869145+00:00"
   },
   {
     "endpoint": "automated_test/results/08_hardcoded_creds.json",
@@ -2739,8 +2739,8 @@
     "severity": "info",
     "response_time_ms": null,
     "test_category": "hardcoded_creds",
-    "note": "false positive (doc placeholder), pattern=generic_password_assignment, line 114: \"excerpt\": \"\\\"excerpt\\\": \\\"\\\\\\\"excerpt\\\\\\\": \\\\\\\"password: 's00pers3cret'\\\\\\\"\\\"\"",
-    "timestamp": "2026-08-06T05:59:18.256230+00:00"
+    "note": "false positive (doc placeholder), pattern=db_url_with_password, line 120: \"excerpt\": \"\\\"excerpt\\\": \\\"\\\\\\\"excerpt\\\\\\\": \\\\\\\"\\\\\\\\\\\\\\\"excerpt\\\\\\\\\\\\\\\": \\\\\\\\\\\\\\\"| `mongodb://${string}:${string}@${string}:${number}/${string}?${string}`\\\\\\\\\\\\",
+    "timestamp": "2026-08-06T11:09:15.869145+00:00"
   },
   {
     "endpoint": "automated_test/results/08_hardcoded_creds.json",
@@ -2752,8 +2752,8 @@
     "severity": "info",
     "response_time_ms": null,
     "test_category": "hardcoded_creds",
-    "note": "false positive (doc placeholder), pattern=generic_password_assignment, line 120: \"excerpt\": \"\\\"excerpt\\\": \\\"\\\\\\\"excerpt\\\\\\\": \\\\\\\"password: 'rapunz3l'\\\\\\\"\\\"\"",
-    "timestamp": "2026-08-06T05:59:18.256230+00:00"
+    "note": "false positive (doc placeholder), pattern=db_url_with_password, line 126: \"excerpt\": \"\\\"excerpt\\\": \\\"\\\\\\\"excerpt\\\\\\\": \\\\\\\"\\\\\\\\\\\\\\\"excerpt\\\\\\\\\\\\\\\": \\\\\\\\\\\\\\\"connectionString.parse(\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\"mongodb://username:password@host:1234\\\\\\",
+    "timestamp": "2026-08-06T11:09:15.869145+00:00"
   },
   {
     "endpoint": "automated_test/results/08_hardcoded_creds.json",
@@ -2765,8 +2765,8 @@
     "severity": "info",
     "response_time_ms": null,
     "test_category": "hardcoded_creds",
-    "note": "false positive (doc placeholder), pattern=db_url_with_password, line 126: \"excerpt\": \"\\\"excerpt\\\": \\\"\\\\\\\"excerpt\\\\\\\": \\\\\\\"const keyv = new Keyv('mongodb://user:pass@localhost:27017/dbname');\\\\\\\"\\\"\"",
-    "timestamp": "2026-08-06T05:59:18.256230+00:00"
+    "note": "false positive (doc placeholder), pattern=db_url_with_password, line 132: \"excerpt\": \"\\\"excerpt\\\": \\\"\\\\\\\"excerpt\\\\\\\": \\\\\\\"\\\\\\\\\\\\\\\"excerpt\\\\\\\\\\\\\\\": \\\\\\\\\\\\\\\"connectionString.parse(\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\"mongodb://username:password@host:1234/\\\\",
+    "timestamp": "2026-08-06T11:09:15.869145+00:00"
   },
   {
     "endpoint": "automated_test/results/08_hardcoded_creds.json",
@@ -2778,8 +2778,8 @@
     "severity": "info",
     "response_time_ms": null,
     "test_category": "hardcoded_creds",
-    "note": "false positive (doc placeholder), pattern=db_url_with_password, line 132: \"excerpt\": \"\\\"excerpt\\\": \\\"\\\\\\\"excerpt\\\\\\\": \\\\\\\"const keyv = new Keyv('postgresql://user:pass@localhost:5432/dbname');\\\\\\\"\\\"\"",
-    "timestamp": "2026-08-06T05:59:18.256230+00:00"
+    "note": "false positive (doc placeholder), pattern=db_url_with_password, line 138: \"excerpt\": \"\\\"excerpt\\\": \\\"\\\\\\\"excerpt\\\\\\\": \\\\\\\"\\\\\\\\\\\\\\\"excerpt\\\\\\\\\\\\\\\": \\\\\\\\\\\\\\\"connectionString.parse(\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\"mongodb://username:password@host:1234/de",
+    "timestamp": "2026-08-06T11:09:15.869145+00:00"
   },
   {
     "endpoint": "automated_test/results/08_hardcoded_creds.json",
@@ -2791,8 +2791,8 @@
     "severity": "info",
     "response_time_ms": null,
     "test_category": "hardcoded_creds",
-    "note": "false positive (doc placeholder), pattern=db_url_with_password, line 138: \"excerpt\": \"\\\"excerpt\\\": \\\"\\\\\\\"excerpt\\\\\\\": \\\\\\\"const keyv = new Keyv('mysql://user:pass@localhost:3306/dbname');\\\\\\\"\\\"\"",
-    "timestamp": "2026-08-06T05:59:18.256230+00:00"
+    "note": "false positive (doc placeholder), pattern=db_url_with_password, line 144: \"excerpt\": \"\\\"excerpt\\\": \\\"\\\\\\\"excerpt\\\\\\\": \\\\\\\"\\\\\\\\\\\\\\\"excerpt\\\\\\\\\\\\\\\": \\\\\\\\\\\\\\\"connectionString.parse(\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\"mongodb://username:password@host:1234/de",
+    "timestamp": "2026-08-06T11:09:15.869145+00:00"
   },
   {
     "endpoint": "automated_test/results/08_hardcoded_creds.json",
@@ -2804,8 +2804,8 @@
     "severity": "info",
     "response_time_ms": null,
     "test_category": "hardcoded_creds",
-    "note": "false positive (doc placeholder), pattern=db_url_with_password, line 144: \"excerpt\": \"\\\"excerpt\\\": \\\"\\\\\\\"excerpt\\\\\\\": \\\\\\\"| `mongodb://${string}:${string}@${string}:${number}`\\\\\\\"\\\"\"",
-    "timestamp": "2026-08-06T05:59:18.256230+00:00"
+    "note": "false positive (doc placeholder), pattern=db_url_with_password, line 150: \"excerpt\": \"\\\"excerpt\\\": \\\"\\\\\\\"excerpt\\\\\\\": \\\\\\\"\\\\\\\\\\\\\\\"excerpt\\\\\\\\\\\\\\\": \\\\\\\\\\\\\\\"\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\"mongodb://username:password@host:1234/defaultauthdb?authSource=",
+    "timestamp": "2026-08-06T11:09:15.869145+00:00"
   },
   {
     "endpoint": "automated_test/results/08_hardcoded_creds.json",
@@ -2817,8 +2817,8 @@
     "severity": "info",
     "response_time_ms": null,
     "test_category": "hardcoded_creds",
-    "note": "false positive (doc placeholder), pattern=db_url_with_password, line 150: \"excerpt\": \"\\\"excerpt\\\": \\\"\\\\\\\"excerpt\\\\\\\": \\\\\\\"| `mongodb://${string}:${string}@${string}:${number}/${string}`\\\\\\\"\\\"\"",
-    "timestamp": "2026-08-06T05:59:18.256230+00:00"
+    "note": "false positive (doc placeholder), pattern=db_url_with_password, line 156: \"excerpt\": \"\\\"excerpt\\\": \\\"\\\\\\\"excerpt\\\\\\\": \\\\\\\"\\\\\\\\\\\\\\\"excerpt\\\\\\\\\\\\\\\": \\\\\\\\\\\\\\\"connectionString.parse(\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\"mongodb://username:password@host:1234/?a",
+    "timestamp": "2026-08-06T11:09:15.869145+00:00"
   },
   {
     "endpoint": "automated_test/results/08_hardcoded_creds.json",
@@ -2830,8 +2830,8 @@
     "severity": "info",
     "response_time_ms": null,
     "test_category": "hardcoded_creds",
-    "note": "false positive (doc placeholder), pattern=db_url_with_password, line 156: \"excerpt\": \"\\\"excerpt\\\": \\\"\\\\\\\"excerpt\\\\\\\": \\\\\\\"| `mongodb://${string}:${string}@${string}:${number}/${string}?${string}`\\\\\\\"\\\"\"",
-    "timestamp": "2026-08-06T05:59:18.256230+00:00"
+    "note": "false positive (doc placeholder), pattern=db_url_with_password, line 162: \"excerpt\": \"\\\"excerpt\\\": \\\"\\\\\\\"excerpt\\\\\\\": \\\\\\\"\\\\\\\\\\\\\\\"excerpt\\\\\\\\\\\\\\\": \\\\\\\\\\\\\\\"connectionString.parse(\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\"mongodb://username:password@host:1234/?a",
+    "timestamp": "2026-08-06T11:09:15.869145+00:00"
   },
   {
     "endpoint": "automated_test/results/08_hardcoded_creds.json",
@@ -2843,8 +2843,8 @@
     "severity": "info",
     "response_time_ms": null,
     "test_category": "hardcoded_creds",
-    "note": "false positive (doc placeholder), pattern=db_url_with_password, line 162: \"excerpt\": \"\\\"excerpt\\\": \\\"\\\\\\\"excerpt\\\\\\\": \\\\\\\"connectionString.parse(\\\\\\\\\\\\\\\"mongodb://username:password@host:1234\\\\\\\\\\\\\\\");\\\\\\\"\\\"\"",
-    "timestamp": "2026-08-06T05:59:18.256230+00:00"
+    "note": "false positive (doc placeholder), pattern=jwt_secret_assignment, line 168: \"excerpt\": \"\\\"excerpt\\\": \\\"\\\\\\\"excerpt\\\\\\\": \\\\\\\"JWT_SECRET=b6f1e6c1a6e94e3f8a6c1b9d2f4e7a1c9d3b5f8e0a2c4d6f8b1e3a5c7d9f0b2e4\\\\\\\"\\\"\"",
+    "timestamp": "2026-08-06T11:09:15.869145+00:00"
   },
   {
     "endpoint": "automated_test/results/08_hardcoded_creds.json",
@@ -2856,8 +2856,8 @@
     "severity": "info",
     "response_time_ms": null,
     "test_category": "hardcoded_creds",
-    "note": "false positive (doc placeholder), pattern=db_url_with_password, line 168: \"excerpt\": \"\\\"excerpt\\\": \\\"\\\\\\\"excerpt\\\\\\\": \\\\\\\"connectionString.parse(\\\\\\\\\\\\\\\"mongodb://username:password@host:1234/\\\\\\\\\\\\\\\");\\\\\\\"\\\"\"",
-    "timestamp": "2026-08-06T05:59:18.256230+00:00"
+    "note": "false positive (doc placeholder), pattern=generic_password_assignment, line 174: \"excerpt\": \"\\\"excerpt\\\": \\\"\\\\\\\"excerpt\\\\\\\": \\\\\\\"password: 'password',\\\\\\\"\\\"\"",
+    "timestamp": "2026-08-06T11:09:15.869145+00:00"
   },
   {
     "endpoint": "automated_test/results/08_hardcoded_creds.json",
@@ -2869,8 +2869,8 @@
     "severity": "info",
     "response_time_ms": null,
     "test_category": "hardcoded_creds",
-    "note": "false positive (doc placeholder), pattern=db_url_with_password, line 174: \"excerpt\": \"\\\"excerpt\\\": \\\"\\\\\\\"excerpt\\\\\\\": \\\\\\\"connectionString.parse(\\\\\\\\\\\\\\\"mongodb://username:password@host:1234/defaultauthdb\\\\\\\\\\\\\\\");\\\\\\\"\\\"\"",
-    "timestamp": "2026-08-06T05:59:18.256230+00:00"
+    "note": "false positive (doc placeholder), pattern=generic_password_assignment, line 180: \"excerpt\": \"\\\"excerpt\\\": \\\"\\\\\\\"excerpt\\\\\\\": \\\\\\\"const PASSWORD = 'LoadTest!2345';\\\\\\\"\\\"\"",
+    "timestamp": "2026-08-06T11:09:15.869145+00:00"
   },
   {
     "endpoint": "automated_test/results/08_hardcoded_creds.json",
@@ -2882,8 +2882,8 @@
     "severity": "info",
     "response_time_ms": null,
     "test_category": "hardcoded_creds",
-    "note": "false positive (doc placeholder), pattern=db_url_with_password, line 180: \"excerpt\": \"\\\"excerpt\\\": \\\"\\\\\\\"excerpt\\\\\\\": \\\\\\\"connectionString.parse(\\\\\\\\\\\\\\\"mongodb://username:password@host:1234/defaultauthdb?authSource=admin\\\\\\\\\\\\\\\");\\\\\\",
-    "timestamp": "2026-08-06T05:59:18.256230+00:00"
+    "note": "false positive (doc placeholder), pattern=jwt_secret_assignment, line 186: \"excerpt\": \"\\\"excerpt\\\": \\\"JWT_SECRET=b6f1e6c1a6e94e3f8a6c1b9d2f4e7a1c9d3b5f8e0a2c4d6f8b1e3a5c7d9f0b2e4\\\"\"",
+    "timestamp": "2026-08-06T11:09:15.869145+00:00"
   },
   {
     "endpoint": "automated_test/results/08_hardcoded_creds.json",
@@ -2895,8 +2895,8 @@
     "severity": "info",
     "response_time_ms": null,
     "test_category": "hardcoded_creds",
-    "note": "false positive (doc placeholder), pattern=db_url_with_password, line 186: \"excerpt\": \"\\\"excerpt\\\": \\\"\\\\\\\"excerpt\\\\\\\": \\\\\\\"\\\\\\\\\\\\\\\"mongodb://username:password@host:1234/defaultauthdb?authSource=admin&connectTimeoutMS=300000\\\\\\\\\\\\\\\"\\\\\\\"",
-    "timestamp": "2026-08-06T05:59:18.256230+00:00"
+    "note": "false positive (doc placeholder), pattern=generic_password_assignment, line 192: \"excerpt\": \"\\\"excerpt\\\": \\\"password: 'password',\\\"\"",
+    "timestamp": "2026-08-06T11:09:15.869145+00:00"
   },
   {
     "endpoint": "automated_test/results/08_hardcoded_creds.json",
@@ -2908,8 +2908,8 @@
     "severity": "info",
     "response_time_ms": null,
     "test_category": "hardcoded_creds",
-    "note": "false positive (doc placeholder), pattern=db_url_with_password, line 192: \"excerpt\": \"\\\"excerpt\\\": \\\"\\\\\\\"excerpt\\\\\\\": \\\\\\\"connectionString.parse(\\\\\\\\\\\\\\\"mongodb://username:password@host:1234/?authSource=admin\\\\\\\\\\\\\\\");\\\\\\\"\\\"\"",
-    "timestamp": "2026-08-06T05:59:18.256230+00:00"
+    "note": "false positive (doc placeholder), pattern=generic_password_assignment, line 198: \"excerpt\": \"\\\"excerpt\\\": \\\"const PASSWORD = 'LoadTest!2345';\\\"\"",
+    "timestamp": "2026-08-06T11:09:15.869145+00:00"
   },
   {
     "endpoint": "automated_test/results/08_hardcoded_creds.json",
@@ -2921,8 +2921,8 @@
     "severity": "info",
     "response_time_ms": null,
     "test_category": "hardcoded_creds",
-    "note": "false positive (doc placeholder), pattern=db_url_with_password, line 198: \"excerpt\": \"\\\"excerpt\\\": \\\"\\\\\\\"excerpt\\\\\\\": \\\\\\\"connectionString.parse(\\\\\\\\\\\\\\\"mongodb://username:password@host:1234/?authSource=admin&connectTimeoutMS=300000\\\\",
-    "timestamp": "2026-08-06T05:59:18.256230+00:00"
+    "note": "false positive (doc placeholder), pattern=jwt_secret_assignment, line 204: \"excerpt\": \"JWT_SECRET=b6f1e6c1a6e94e3f8a6c1b9d2f4e7a1c9d3b5f8e0a2c4d6f8b1e3a5c7d9f0b2e4\"",
+    "timestamp": "2026-08-06T11:09:15.869145+00:00"
   },
   {
     "endpoint": "automated_test/results/08_hardcoded_creds.json",
@@ -2934,8 +2934,8 @@
     "severity": "info",
     "response_time_ms": null,
     "test_category": "hardcoded_creds",
-    "note": "false positive (doc placeholder), pattern=jwt_secret_assignment, line 204: \"excerpt\": \"\\\"excerpt\\\": \\\"JWT_SECRET=b6f1e6c1a6e94e3f8a6c1b9d2f4e7a1c9d3b5f8e0a2c4d6f8b1e3a5c7d9f0b2e4\\\"\"",
-    "timestamp": "2026-08-06T05:59:18.256230+00:00"
+    "note": "false positive (doc placeholder), pattern=generic_password_assignment, line 210: \"excerpt\": \"password: 'password',\"",
+    "timestamp": "2026-08-06T11:09:15.869145+00:00"
   },
   {
     "endpoint": "automated_test/results/08_hardcoded_creds.json",
@@ -2947,60 +2947,8 @@
     "severity": "info",
     "response_time_ms": null,
     "test_category": "hardcoded_creds",
-    "note": "false positive (doc placeholder), pattern=generic_password_assignment, line 210: \"excerpt\": \"\\\"excerpt\\\": \\\"password: 'password',\\\"\"",
-    "timestamp": "2026-08-06T05:59:18.256230+00:00"
-  },
-  {
-    "endpoint": "automated_test/results/08_hardcoded_creds.json",
-    "method": "STATIC_SCAN",
-    "role": "n/a",
-    "status": null,
-    "expected_status": "no committed secrets",
-    "finding": false,
-    "severity": "info",
-    "response_time_ms": null,
-    "test_category": "hardcoded_creds",
-    "note": "false positive (doc placeholder), pattern=generic_password_assignment, line 216: \"excerpt\": \"\\\"excerpt\\\": \\\"const PASSWORD = 'LoadTest!2345';\\\"\"",
-    "timestamp": "2026-08-06T05:59:18.256230+00:00"
-  },
-  {
-    "endpoint": "automated_test/results/08_hardcoded_creds.json",
-    "method": "STATIC_SCAN",
-    "role": "n/a",
-    "status": null,
-    "expected_status": "no committed secrets",
-    "finding": false,
-    "severity": "info",
-    "response_time_ms": null,
-    "test_category": "hardcoded_creds",
-    "note": "false positive (doc placeholder), pattern=jwt_secret_assignment, line 222: \"excerpt\": \"JWT_SECRET=b6f1e6c1a6e94e3f8a6c1b9d2f4e7a1c9d3b5f8e0a2c4d6f8b1e3a5c7d9f0b2e4\"",
-    "timestamp": "2026-08-06T05:59:18.256230+00:00"
-  },
-  {
-    "endpoint": "automated_test/results/08_hardcoded_creds.json",
-    "method": "STATIC_SCAN",
-    "role": "n/a",
-    "status": null,
-    "expected_status": "no committed secrets",
-    "finding": false,
-    "severity": "info",
-    "response_time_ms": null,
-    "test_category": "hardcoded_creds",
-    "note": "false positive (doc placeholder), pattern=generic_password_assignment, line 228: \"excerpt\": \"password: 'password',\"",
-    "timestamp": "2026-08-06T05:59:18.256230+00:00"
-  },
-  {
-    "endpoint": "automated_test/results/08_hardcoded_creds.json",
-    "method": "STATIC_SCAN",
-    "role": "n/a",
-    "status": null,
-    "expected_status": "no committed secrets",
-    "finding": false,
-    "severity": "info",
-    "response_time_ms": null,
-    "test_category": "hardcoded_creds",
-    "note": "false positive (doc placeholder), pattern=generic_password_assignment, line 234: \"excerpt\": \"const PASSWORD = 'LoadTest!2345';\"",
-    "timestamp": "2026-08-06T05:59:18.256230+00:00"
+    "note": "false positive (doc placeholder), pattern=generic_password_assignment, line 216: \"excerpt\": \"const PASSWORD = 'LoadTest!2345';\"",
+    "timestamp": "2026-08-06T11:09:15.869145+00:00"
   },
   {
     "endpoint": "voiceguard/api/.env.example",
@@ -3013,7 +2961,7 @@
     "response_time_ms": null,
     "test_category": "hardcoded_creds",
     "note": "false positive (doc placeholder), pattern=jwt_secret_assignment, line 27: JWT_SECRET=b6f1e6c1a6e94e3f8a6c1b9d2f4e7a1c9d3b5f8e0a2c4d6f8b1e3a5c7d9f0b2e4",
-    "timestamp": "2026-08-06T05:59:18.256230+00:00"
+    "timestamp": "2026-08-06T11:09:15.869145+00:00"
   },
   {
     "endpoint": "voiceguard/frontend/src/pages/Signup/index.tsx",
@@ -3026,7 +2974,7 @@
     "response_time_ms": null,
     "test_category": "hardcoded_creds",
     "note": "false positive (doc placeholder), pattern=generic_password_assignment, line 33: password: 'password',",
-    "timestamp": "2026-08-06T05:59:18.256230+00:00"
+    "timestamp": "2026-08-06T11:09:15.869145+00:00"
   },
   {
     "endpoint": "voiceguard/performance/k6/baseline_load_test.js",
@@ -3039,7 +2987,7 @@
     "response_time_ms": null,
     "test_category": "hardcoded_creds",
     "note": "false positive (doc placeholder), pattern=generic_password_assignment, line 13: const PASSWORD = 'LoadTest!2345';",
-    "timestamp": "2026-08-06T05:59:18.256230+00:00"
+    "timestamp": "2026-08-06T11:09:15.869145+00:00"
   },
   {
     "endpoint": "voiceguard/performance/seed_users.py",
@@ -3052,6 +3000,6 @@
     "response_time_ms": null,
     "test_category": "hardcoded_creds",
     "note": "false positive (doc placeholder), pattern=generic_password_assignment, line 18: PASSWORD = \"LoadTest!2345\"",
-    "timestamp": "2026-08-06T05:59:18.256230+00:00"
+    "timestamp": "2026-08-06T11:09:15.869145+00:00"
   }
 ]

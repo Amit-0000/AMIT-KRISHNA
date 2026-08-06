@@ -12,6 +12,10 @@ on:
     branches: [main]
   workflow_dispatch:
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 defaults:
   run:
     working-directory: voiceguard
@@ -21,10 +25,10 @@ jobs:
     name: Unit tests (pytest)
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Set up Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v7
         with:
           python-version: "3.12"
           cache: pip
@@ -36,7 +40,6 @@ jobs:
         run: |
           pip install --no-cache-dir -r api/requirements.txt
           pip install --no-cache-dir -r api/requirements-ml.txt
-          pip install --no-cache-dir pytest-json-report
 
       - name: Run pytest suite
         working-directory: voiceguard/api
@@ -49,7 +52,7 @@ jobs:
 
       - name: Upload unit test report
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: unit-test-report
           path: |
@@ -62,10 +65,10 @@ jobs:
     name: Vulnerability / DAST
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
+        uses: docker/setup-buildx-action@v4
 
       - name: Bring up postgres/redis/backend
         run: docker compose up -d --build postgres redis backend
@@ -81,7 +84,7 @@ jobs:
           echo "backend did not become healthy in time"; exit 1
 
       - name: Set up Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v7
         with:
           python-version: "3.12"
           cache: pip
@@ -101,7 +104,7 @@ jobs:
 
       - name: Upload DAST report
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: dast-report
           path: |
@@ -118,10 +121,20 @@ jobs:
     name: Load test (k6)
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
+        uses: docker/setup-buildx-action@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: voiceguard/performance/requirements.txt
+
+      - name: Install load-test tooling dependencies
+        run: pip install --no-cache-dir -r performance/requirements.txt
 
       - name: Bring up stack with loosened login rate limit
         run: docker compose -f docker-compose.yml -f performance/docker-compose.loadtest.yml up -d --build postgres redis backend
@@ -140,13 +153,18 @@ jobs:
           docker compose exec -T backend python seed_users.py 120
 
       - name: Run k6 baseline load test
+        # grafana/k6 runs as a non-root user by default, which can't write
+        # into a runner-owned bind mount — run as the runner's own uid/gid
+        # so /scripts is writable. summary_new.json comes from the script's
+        # handleSummary() (which takes precedence over --summary-export, so
+        # that flag is intentionally omitted here).
         run: |
           docker run --rm --network voiceguard_default \
+            --user "$(id -u):$(id -g)" \
             -v "${{ github.workspace }}/voiceguard/performance/k6:/scripts" \
             -e BASE_URL=http://backend:8000 \
             grafana/k6:latest run /scripts/baseline_load_test.js \
-            --out json=/scripts/raw_metrics_new.json \
-            --summary-export=/scripts/summary_new.json
+            --out json=/scripts/raw_metrics_new.json
 
       - name: Parse results
         run: |
@@ -159,7 +177,7 @@ jobs:
 
       - name: Upload load-test report
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: load-test-report
           path: |
@@ -178,10 +196,10 @@ jobs:
     name: Selenium (Web E2E)
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
+        uses: docker/setup-buildx-action@v4
 
       - name: Bring up full stack
         run: docker compose up -d --build postgres redis backend frontend
@@ -196,15 +214,21 @@ jobs:
           done
           echo "stack did not become healthy in time"; exit 1
 
-      - name: Provision the DAST fixture account used by Selenium's login test
-        working-directory: automated_test
-        run: |
-          pip install --no-cache-dir requests
-          python setup_env.py
-
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v7
         with:
           python-version: "3.12"
+          cache: pip
+          cache-dependency-path: |
+            automated_test/requirements.txt
+            voiceguard/e2e/requirements.txt
+
+      - name: Install DAST fixture-provisioning dependencies
+        working-directory: automated_test
+        run: pip install --no-cache-dir -r requirements.txt
+
+      - name: Provision the DAST fixture account used by Selenium's login test
+        working-directory: automated_test
+        run: python setup_env.py
 
       - name: Install Selenium suite dependencies
         run: pip install --no-cache-dir -r e2e/requirements.txt
@@ -218,7 +242,7 @@ jobs:
 
       - name: Upload Selenium report
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: selenium-report
           path: voiceguard/e2e/results/selenium_report.*
@@ -237,10 +261,10 @@ jobs:
     # Non-blocking until this job has a proven green baseline.
     continue-on-error: true
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
+        uses: docker/setup-buildx-action@v4
 
       - name: Bring up full stack
         run: docker compose up -d --build postgres redis backend frontend
@@ -255,15 +279,21 @@ jobs:
           done
           echo "stack did not become healthy in time"; exit 1
 
-      - name: Provision the DAST fixture account used by Appium's login test
-        working-directory: automated_test
-        run: |
-          pip install --no-cache-dir requests
-          python setup_env.py
-
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v7
         with:
           python-version: "3.12"
+          cache: pip
+          cache-dependency-path: |
+            automated_test/requirements.txt
+            voiceguard/e2e/requirements.txt
+
+      - name: Install DAST fixture-provisioning dependencies
+        working-directory: automated_test
+        run: pip install --no-cache-dir -r requirements.txt
+
+      - name: Provision the DAST fixture account used by Appium's login test
+        working-directory: automated_test
+        run: python setup_env.py
 
       - name: Install Appium suite dependencies
         run: |
@@ -288,18 +318,19 @@ jobs:
           target: google_apis
           arch: x86_64
           profile: pixel_5
-          script: |
-            cd "${{ github.workspace }}/voiceguard/e2e/appium"
-            python -m pytest -v \
-              --json-report --json-report-file="${{ github.workspace }}/voiceguard/e2e/results/appium_report.json" \
-              --junitxml="${{ github.workspace }}/voiceguard/e2e/results/appium_report.xml"
+          # android-emulator-runner's `script` input is split on newlines and
+          # each line is run as its own independent shell invocation (see
+          # its script-parser.ts), so a `cd` on one line and a `\`-continued
+          # command on the next don't share state — everything must be one
+          # self-contained line.
+          script: cd "${{ github.workspace }}/voiceguard/e2e/appium" && python -m pytest -v --json-report --json-report-file="${{ github.workspace }}/voiceguard/e2e/results/appium_report.json" --junitxml="${{ github.workspace }}/voiceguard/e2e/results/appium_report.xml"
         env:
           APPIUM_SERVER_URL: http://127.0.0.1:4723/wd/hub
           APPIUM_BASE_URL: http://10.0.2.2:5173
 
       - name: Upload Appium report
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: appium-report
           path: voiceguard/e2e/results/appium_report.*
@@ -319,17 +350,19 @@ jobs:
       run:
         working-directory: .
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v7
         with:
           python-version: "3.12"
+          cache: pip
+          cache-dependency-path: voiceguard/reports/requirements.txt
 
       - name: Install report-builder dependencies
-        run: pip install --no-cache-dir openpyxl
+        run: pip install --no-cache-dir -r voiceguard/reports/requirements.txt
 
       - name: Download all test artifacts
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           path: artifacts
 
@@ -353,7 +386,7 @@ jobs:
         run: python voiceguard/reports/build_master_test_report.py
 
       - name: Upload master report
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: VoiceGuard_App_Testing_Report
           path: voiceguard/reports/VoiceGuard_App_Testing_Report.xlsx
