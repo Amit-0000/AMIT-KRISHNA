@@ -1,81 +1,81 @@
 [
   {
-    "endpoint": "/api/v1/scans/16a287d1-18be-46d5-8297-a0e782e1a945/cancel",
+    "endpoint": "/api/v1/scans/370d1345-4ecf-4c4e-bc03-081c2a958690/cancel",
     "method": "POST",
     "role": "user_b_against_user_a_resource",
     "status": 404,
     "expected_status": "403 or 404",
     "finding": false,
     "severity": "info",
-    "response_time_ms": 19.9,
+    "response_time_ms": 32.5,
     "test_category": "idor",
     "note": "correctly blocked (404)",
-    "timestamp": "2026-08-05T20:02:17.557439+00:00"
+    "timestamp": "2026-08-06T05:59:07.978930+00:00"
   },
   {
-    "endpoint": "/api/v1/scans/16a287d1-18be-46d5-8297-a0e782e1a945/process",
+    "endpoint": "/api/v1/scans/370d1345-4ecf-4c4e-bc03-081c2a958690/process",
     "method": "POST",
     "role": "user_b_against_user_a_resource",
     "status": 404,
     "expected_status": "403 or 404",
     "finding": false,
     "severity": "info",
-    "response_time_ms": 6.6,
+    "response_time_ms": 7.0,
     "test_category": "idor",
     "note": "correctly blocked (404)",
-    "timestamp": "2026-08-05T20:02:17.564053+00:00"
+    "timestamp": "2026-08-06T05:59:07.986067+00:00"
   },
   {
-    "endpoint": "/api/v1/scans/16a287d1-18be-46d5-8297-a0e782e1a945/share",
+    "endpoint": "/api/v1/scans/370d1345-4ecf-4c4e-bc03-081c2a958690/share",
     "method": "POST",
     "role": "user_b_against_user_a_resource",
     "status": 404,
     "expected_status": "403 or 404",
     "finding": false,
     "severity": "info",
-    "response_time_ms": 6.1,
+    "response_time_ms": 22.8,
     "test_category": "idor",
     "note": "correctly blocked (404)",
-    "timestamp": "2026-08-05T20:02:17.570114+00:00"
+    "timestamp": "2026-08-06T05:59:08.009226+00:00"
   },
   {
-    "endpoint": "/api/v1/scans/16a287d1-18be-46d5-8297-a0e782e1a945/share",
+    "endpoint": "/api/v1/scans/370d1345-4ecf-4c4e-bc03-081c2a958690/share",
     "method": "DELETE",
     "role": "user_b_against_user_a_resource",
     "status": 404,
     "expected_status": "403 or 404",
     "finding": false,
     "severity": "info",
-    "response_time_ms": 8.1,
+    "response_time_ms": 16.2,
     "test_category": "idor",
     "note": "correctly blocked (404)",
-    "timestamp": "2026-08-05T20:02:17.578214+00:00"
+    "timestamp": "2026-08-06T05:59:08.025648+00:00"
   },
   {
-    "endpoint": "/api/v1/scans/16a287d1-18be-46d5-8297-a0e782e1a945",
+    "endpoint": "/api/v1/scans/370d1345-4ecf-4c4e-bc03-081c2a958690",
     "method": "DELETE",
     "role": "user_b_against_user_a_resource",
     "status": 404,
     "expected_status": "403 or 404",
     "finding": false,
     "severity": "info",
-    "response_time_ms": 25.8,
+    "response_time_ms": 8.2,
     "test_category": "idor",
     "note": "correctly blocked (404)",
-    "timestamp": "2026-08-05T20:02:17.603975+00:00"
+    "timestamp": "2026-08-06T05:59:08.034020+00:00"
   },
   {
-    "endpoint": "/api/v1/scans/16a287d1-18be-46d5-8297-a0e782e1a945",
+    "endpoint": "/api/v1/scans/370d1345-4ecf-4c4e-bc03-081c2a958690",
     "method": "GET",
     "role": "user_a_post_verify",
     "status": 200,
     "expected_status": 200,
     "finding": false,
     "severity": "info",
-    "response_time_ms": 32.1,
+    "response_time_ms": 7.4,
     "test_category": "idor",
     "note": "fixture scan intact after blocked non-owner DELETE attempt",
-    "timestamp": "2026-08-05T20:02:17.636047+00:00"
+    "timestamp": "2026-08-06T05:59:08.041597+00:00"
   },
   {
     "endpoint": "/api/v1/notifications/{id}",
@@ -88,6 +88,6 @@
     "response_time_ms": null,
     "test_category": "idor",
     "note": "COVERAGE GAP: no code path in the app creates a Notification row, so ownership on notification endpoints could only be tested against a nonexistent id (see 04_rbac_matrix.py, which confirms 401/404 there). Not exploitable now, but if a future feature starts creating notifications, re-run IDOR testing against a real one.",
-    "timestamp": "2026-08-05T20:02:17.636047+00:00"
+    "timestamp": "2026-08-06T05:59:08.041607+00:00"
   }
 ]
