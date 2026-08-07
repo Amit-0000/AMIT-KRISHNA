@@ -38,3 +38,10 @@ node_modules/
 
 # Database journals / scratch artifacts
 *.db-journal
+
+# CI-generated security scan output (voiceguard/security/) — real findings
+# regenerated on every security-assessment run, never committed.
+/security/
+htmlcov/
+coverage.xml
+.coverage

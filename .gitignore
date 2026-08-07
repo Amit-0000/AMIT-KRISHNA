@@ -16,3 +16,8 @@ Thumbs.db
 .vscode/
 .idea/
 *.swp
+
+# Office lock files (created while a report .xlsx is open)
+~$*.xlsx
+~$*.xls
+~$*.docx
