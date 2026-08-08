@@ -256,12 +256,41 @@ jobs:
   appium-mobile-web:
     name: Appium (Mobile Web, Android emulator)
     runs-on: ubuntu-latest
-    # Slow (emulator boot + Appium server) and the app has no native mobile
-    # client — this covers the responsive/mobile-viewport UI path only.
-    # Non-blocking until this job has a proven green baseline.
-    continue-on-error: true
+    # The app has no native mobile client — this covers the responsive/
+    # mobile-viewport UI path only, via mobile Chrome under UiAutomator2.
     steps:
       - uses: actions/checkout@v7
+
+      # A cold KVM emulator boot (no cached snapshot) took 10+ minutes on
+      # GitHub-hosted runners, racing the UiAutomator2 instrumentation
+      # bring-up against CPU/RAM contention from the Docker stack below and
+      # causing transient session-creation failures ("Can't find service:
+      # settings", instrumentation timeout). Caching the AVD snapshot and
+      # warming it up *before* the Docker stack starts (so the one-time cold
+      # boot isn't competing with postgres/redis/backend/frontend for CPU)
+      # gets subsequent boots down to ~30s. This is the pattern documented
+      # by reactivecircus/android-emulator-runner itself.
+      - name: AVD cache
+        uses: actions/cache@v4
+        id: avd-cache
+        with:
+          path: |
+            ~/.android/avd/*
+            ~/.android/adb*
+          key: avd-33-google_apis-x86_64-pixel_5-v1
+
+      - name: Create AVD and generate snapshot for caching
+        if: steps.avd-cache.outputs.cache-hit != 'true'
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 33
+          target: google_apis
+          arch: x86_64
+          profile: pixel_5
+          force-avd-creation: false
+          emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none -camera-front none
+          disable-animations: false
+          script: echo "Generated AVD snapshot for caching."
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v4
@@ -298,8 +327,8 @@ jobs:
       - name: Install Appium suite dependencies
         run: |
           pip install --no-cache-dir -r e2e/requirements.txt
-          npm install -g appium
-          appium driver install uiautomator2
+          npm install -g appium@3.6.0
+          appium driver install uiautomator2@8.2.2
 
       - name: Start Appium server
         run: |
@@ -318,12 +347,19 @@ jobs:
           target: google_apis
           arch: x86_64
           profile: pixel_5
+          force-avd-creation: false
+          emulator-options: -no-snapshot-save -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none -camera-front none
+          disable-animations: true
           # android-emulator-runner's `script` input is split on newlines and
           # each line is run as its own independent shell invocation (see
           # its script-parser.ts), so a `cd` on one line and a `\`-continued
           # command on the next don't share state — everything must be one
-          # self-contained line.
-          script: cd "${{ github.workspace }}/voiceguard/e2e/appium" && python -m pytest -v --json-report --json-report-file="${{ github.workspace }}/voiceguard/e2e/results/appium_report.json" --junitxml="${{ github.workspace }}/voiceguard/e2e/results/appium_report.xml"
+          # self-contained line. The `service check settings` loop guards
+          # against the system server's SettingsProvider still coming up
+          # after `sys.boot_completed=1`, which otherwise makes the very
+          # first Appium session's hidden-api-policy reset fail with
+          # "Can't find service: settings".
+          script: for i in $(seq 1 30); do adb shell service check settings 2>/dev/null | grep -q "found" && break; sleep 2; done; cd "${{ github.workspace }}/voiceguard/e2e/appium" && python -m pytest -v --json-report --json-report-file="${{ github.workspace }}/voiceguard/e2e/results/appium_report.json" --junitxml="${{ github.workspace }}/voiceguard/e2e/results/appium_report.xml"
         env:
           APPIUM_SERVER_URL: http://127.0.0.1:4723/wd/hub
           APPIUM_BASE_URL: http://10.0.2.2:5173

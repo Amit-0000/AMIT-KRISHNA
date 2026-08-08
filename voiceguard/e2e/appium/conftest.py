@@ -15,10 +15,12 @@ this suite is CI-only.
 from __future__ import annotations
 
 import os
+import time
 
 import pytest
 from appium import webdriver
 from appium.options.android import UiAutomator2Options
+from selenium.common.exceptions import WebDriverException
 
 APPIUM_SERVER_URL = os.environ.get("APPIUM_SERVER_URL", "http://127.0.0.1:4723")
 BASE_URL = os.environ.get("APPIUM_BASE_URL", "http://10.0.2.2:5173")  # 10.0.2.2 = host machine, from the emulator
@@ -51,7 +53,24 @@ def driver():
     # error names this exact capability as the workaround.
     options.set_capability("chromedriverAutodownload", True)
 
-    drv = webdriver.Remote(APPIUM_SERVER_URL, options=options)
+    # Session creation talks to the emulator's system server (e.g. to reset
+    # the hidden-api-policy setting) before the UiAutomator2 server APK is
+    # even installed. On CI that server can still be settling right after
+    # boot, which surfaces as a transient WebDriverException on the first
+    # attempt only — retry a couple of times before failing the test.
+    last_error: WebDriverException | None = None
+    drv = None
+    for attempt in range(3):
+        try:
+            drv = webdriver.Remote(APPIUM_SERVER_URL, options=options)
+            break
+        except WebDriverException as exc:
+            last_error = exc
+            time.sleep(10)
+    if drv is None:
+        assert last_error is not None
+        raise last_error
+
     drv.implicitly_wait(5)
     yield drv
     drv.quit()
