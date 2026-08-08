@@ -31,8 +31,15 @@ def base_url() -> str:
     return BASE_URL
 
 
-@pytest.fixture
+@pytest.fixture(scope="session")
 def driver():
+    # Session-scoped: installing + launching the UiAutomator2 server APK is
+    # the expensive part of session creation (observed 2-9 min under CI's
+    # 2-vCPU runner, shared with the app's own Docker stack), and neither
+    # test here mutates state the others depend on (navigation resets the
+    # page; /login has no auth-redirect guard, so re-visiting it while
+    # already logged in is safe) — so pay that cost once per run, not once
+    # per test.
     options = UiAutomator2Options()
     options.platform_name = "Android"
     options.automation_name = "UiAutomator2"
