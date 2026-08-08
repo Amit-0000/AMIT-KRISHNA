@@ -167,12 +167,20 @@ jobs:
             --out json=/scripts/raw_metrics_new.json
 
       - name: Parse results
+        # handleSummary() in baseline_load_test.js writes its output
+        # unconditionally on exit, even when k6 exits 99 for a crossed
+        # threshold — so this step (and the report build below) must run
+        # on always() too, otherwise a threshold failure silently leaves
+        # the previous run's committed report/artifact files in place and
+        # the uploaded "results" are stale, not from this run.
+        if: always()
         run: |
           cp performance/k6/raw_metrics_new.json performance/results/raw_metrics.json
           cp performance/k6/summary_new.json performance/results/summary.json
           python performance/parse_results.py
 
       - name: Build load-test Excel artifact
+        if: always()
         run: python performance/build_excel.py
 
       - name: Upload load-test report
@@ -290,6 +298,12 @@ jobs:
           force-avd-creation: false
           emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none -camera-front none
           disable-animations: false
+          # A cold KVM boot with no cache has been observed anywhere from
+          # ~10 to >14 minutes on GitHub-hosted runners (nested
+          # virtualization is inherently variable there) — the action's
+          # 600s default cut off a boot that was still in progress. This
+          # step only ever runs once per cache key, so give it real room.
+          emulator-boot-timeout: 1200
           script: echo "Generated AVD snapshot for caching."
 
       - name: Set up Docker Buildx
