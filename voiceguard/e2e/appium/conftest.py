@@ -8,7 +8,7 @@ mobile Chrome quirks) that desktop Selenium can't reach.
 
 Requires a running Appium server (`appium --base-path /wd/hub`) with an
 Android emulator/device attached — see .github/workflows/qa-suite.yml's
-`appium-mobile-web` job for the CI setup (reactivecircus/android-emulator-
+`appium-tests` job for the CI setup (reactivecircus/android-emulator-
 runner). Not runnable on a plain dev machine without the Android SDK, so
 this suite is CI-only.
 """

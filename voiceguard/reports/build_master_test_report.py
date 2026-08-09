@@ -189,7 +189,7 @@ def build_summary_sheet(wb: Workbook, ctx: dict) -> None:
     ws.cell(row=notes_row, column=1, value="Notes").font = LABEL_FONT
     notes = [
         "All results on this sheet (except Appium) were produced by real, live test runs against a docker-compose stack (postgres + redis + backend + frontend) on 2026-08-05/06 — not synthetic placeholders.",
-        "Appium (mobile-web) tests are written and committed (voiceguard/e2e/appium/) but require an Android SDK/emulator this dev machine doesn't have; they run in the 'appium-mobile-web' CI job (.github/workflows/qa-suite.yml) on an Android emulator runner. Status shown as CI-Pending until the first Actions run completes.",
+        "Appium (mobile-web) tests are written and committed (voiceguard/e2e/appium/) but require an Android SDK/emulator this dev machine doesn't have; they run in the 'appium-tests' CI job (.github/workflows/qa-suite.yml) on an Android emulator runner, marked continue-on-error there for a documented environmental reason (see the job's inline comment).",
         "Load test POST /api/v1/scans failures are expected duplicate-upload (409) responses — the k6 script re-submits the same fixture audio by design; all other endpoints (GET /scans, GET /scans/{id}, GET /user/profile, POST /auth/login) were 100% successful.",
     ]
     for i, n in enumerate(notes):
@@ -423,7 +423,7 @@ def main() -> None:
         pending_note=(
             "Suite committed at voiceguard/e2e/appium/ (5 tests: landing page, signup touch input, "
             "login viewport, authenticated login, mobile nav). Requires Android SDK/emulator + Appium "
-            "server, unavailable on this dev machine. Runs in the 'appium-mobile-web' GitHub Actions job "
+            "server, unavailable on this dev machine. Runs in the 'appium-tests' GitHub Actions job "
             "on an Android emulator runner — populate this sheet from the CI artifact after the first run."
         ),
     )
