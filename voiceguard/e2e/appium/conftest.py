@@ -58,9 +58,15 @@ def driver():
     options.uiautomator2_server_install_timeout = 300_000
     options.uiautomator2_server_launch_timeout = 300_000
     # The api-level 33 google_apis emulator image ships a stock Chrome
-    # (109.0.5414) with no bundled chromedriver matching it — Appium's own
-    # error names this exact capability as the workaround.
-    options.set_capability("chromedriverAutodownload", True)
+    # (109.0.5414) with no bundled chromedriver matching it, and Appium's
+    # chromedriverAutodownload only resolves against the Chrome-for-Testing
+    # endpoint, which has nothing before Chrome 115 — it silently finds no
+    # match and every test fails with "No Chromedriver found". The CI
+    # workflow downloads the matching 109.0.5414.74 driver from the legacy
+    # endpoint and points us at it directly instead.
+    chromedriver_executable = os.environ.get("CHROMEDRIVER_EXECUTABLE")
+    if chromedriver_executable:
+        options.set_capability("chromedriverExecutable", chromedriver_executable)
 
     # Session creation talks to the emulator's system server (e.g. to reset
     # the hidden-api-policy setting) before the UiAutomator2 server APK is

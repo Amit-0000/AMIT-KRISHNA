@@ -344,6 +344,20 @@ jobs:
           npm install -g appium@3.6.0
           appium driver install uiautomator2@8.2.2
 
+      - name: Install matching Chromedriver for the emulator's stock Chrome
+        # Appium's chromedriverAutodownload capability only resolves
+        # against the newer Chrome-for-Testing endpoint, which has no
+        # entries before Chrome 115 -- and the api-level 33 google_apis
+        # image ships a stock Chrome 109.0.5414, so autodownload silently
+        # finds nothing and every test fails with "No Chromedriver found".
+        # A matching driver does exist, just on the legacy
+        # chromedriver.storage.googleapis.com endpoint -- fetch it
+        # explicitly and point Appium straight at it instead.
+        run: |
+          curl -sL -o "${{ github.workspace }}/chromedriver-109.zip" https://chromedriver.storage.googleapis.com/109.0.5414.74/chromedriver_linux64.zip
+          unzip -o "${{ github.workspace }}/chromedriver-109.zip" -d "${{ github.workspace }}/chromedriver-109"
+          chmod +x "${{ github.workspace }}/chromedriver-109/chromedriver"
+
       - name: Start Appium server
         run: |
           nohup appium --base-path /wd/hub --log-timestamp > "${{ github.workspace }}/appium.log" 2>&1 &
@@ -377,6 +391,7 @@ jobs:
         env:
           APPIUM_SERVER_URL: http://127.0.0.1:4723/wd/hub
           APPIUM_BASE_URL: http://10.0.2.2:5173
+          CHROMEDRIVER_EXECUTABLE: ${{ github.workspace }}/chromedriver-109/chromedriver
 
       - name: Upload Appium report
         if: always()
