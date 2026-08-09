@@ -46,15 +46,17 @@ def driver():
     options.browser_name = "Chrome"
     options.set_capability("chromeOptions", {"args": ["--disable-fullscreen"]})
     options.new_command_timeout = 120
-    # GitHub-hosted runners' emulator is a cold KVM instance with no APK/
-    # instrumentation cache, and the default timeouts here (20s/20s/30s) were
-    # observed timing out installing/launching the UiAutomator2 server on it
-    # (adb install + instrumentation bring-up routinely take longer than that
-    # under CI resource contention, even though the emulator itself had
-    # already finished booting). Give it real headroom instead of racing it.
-    options.adb_exec_timeout = 120_000
-    options.uiautomator2_server_install_timeout = 120_000
-    options.uiautomator2_server_launch_timeout = 120_000
+    # GitHub-hosted runners' emulator shares 2 vCPUs with the app's own
+    # Docker stack, and even with a cached AVD snapshot and a single
+    # session-scoped session, the UiAutomator2 instrumentation launch has
+    # been observed consistently exceeding 120s there (every retry hitting
+    # the same "instrumentation process cannot be initialized within
+    # 120000ms" error, not the emulator itself failing to boot) — a
+    # deterministic "needs more time" ceiling rather than random flakiness.
+    # Give it real headroom instead of racing it.
+    options.adb_exec_timeout = 300_000
+    options.uiautomator2_server_install_timeout = 300_000
+    options.uiautomator2_server_launch_timeout = 300_000
     # The api-level 33 google_apis emulator image ships a stock Chrome
     # (109.0.5414) with no bundled chromedriver matching it — Appium's own
     # error names this exact capability as the workaround.
