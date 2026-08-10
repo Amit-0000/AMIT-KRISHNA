@@ -434,24 +434,138 @@ jobs:
           # after `sys.boot_completed=1`, which otherwise makes the very
           # first Appium session's hidden-api-policy reset fail with
           # "Can't find service: settings".
-          script: for i in $(seq 1 30); do adb shell service check settings 2>/dev/null | grep -q "found" && break; sleep 2; done; cd "${{ github.workspace }}/voiceguard/e2e/appium" && python -m pytest -v --json-report --json-report-file="${{ github.workspace }}/voiceguard/e2e/results/appium_report.json" --junitxml="${{ github.workspace }}/voiceguard/e2e/results/appium_report.xml"
+          # --reruns 1: retries a failing test once (test-level flake
+          # tolerance for the mobile suite itself) — separate from and in
+          # addition to the emulator/session-level retries already in
+          # conftest.py's driver fixture.
+          script: for i in $(seq 1 30); do adb shell service check settings 2>/dev/null | grep -q "found" && break; sleep 2; done; cd "${{ github.workspace }}/voiceguard/e2e/appium" && python -m pytest -v --reruns 1 --reruns-delay 3 --json-report --json-report-file="${{ github.workspace }}/voiceguard/e2e/results/appium_report.json" --junitxml="${{ github.workspace }}/voiceguard/e2e/results/appium_report.xml"
         env:
           APPIUM_SERVER_URL: http://127.0.0.1:4723/wd/hub
           APPIUM_BASE_URL: http://10.0.2.2:5173
           CHROMEDRIVER_EXECUTABLE: ${{ github.workspace }}/chromedriver-109/chromedriver
+
+      - name: Parse Appium results
+        # Same always()-must-run reasoning already documented on load-tests'
+        # "Parse results" step: pytest-json-report writes appium_report.json
+        # unconditionally (including on test failures), so this step (and
+        # the HTML report below) must run even when the suite above didn't
+        # fully pass — otherwise a failure run silently ships a stale or
+        # missing summary/report instead of this run's real numbers. These
+        # env values are the same api-level/target/arch/profile and
+        # appium/uiautomator2/chromedriver versions pinned earlier in this
+        # job — kept here too so the report's "Environment" section reflects
+        # this job's actual config instead of parse_results.py's fallback
+        # defaults silently drifting from it.
+        if: always()
+        working-directory: voiceguard/e2e/appium
+        env:
+          ANDROID_API_LEVEL: "33"
+          ANDROID_TARGET: google_apis
+          ANDROID_ARCH: x86_64
+          ANDROID_PROFILE: pixel_5
+          APPIUM_VERSION: "3.6.0"
+          UIAUTOMATOR2_DRIVER_VERSION: "8.2.2"
+          EMULATOR_CHROME_VERSION: "109.0.5414"
+          CHROMEDRIVER_VERSION: "109.0.5414.74"
+        run: python parse_results.py
+
+      - name: Build Appium HTML report
+        if: always()
+        working-directory: voiceguard/e2e/appium
+        run: python build_html_report.py
 
       - name: Upload Appium report
         if: always()
         uses: actions/upload-artifact@v7
         with:
           name: appium-report
-          path: voiceguard/e2e/results/appium_report.*
+          path: |
+            voiceguard/e2e/results/appium_report.*
+            voiceguard/e2e/results/appium_summary.json
+            voiceguard/e2e/results/execution-report.html
+            voiceguard/e2e/results/screenshots/
           retention-days: 30
           if-no-files-found: warn
 
       - name: Tear down
         if: always()
         run: docker compose down -v
+
+  deploy-appium-report:
+    name: deploy-appium-report
+    runs-on: ubuntu-latest
+    needs: [appium-tests]
+    # Mirrors appium-tests' own non-blocking status: publishing this run's
+    # report must never be why the pipeline goes red, and must still be
+    # attempted even when appium-tests itself failed/errored (if: always()),
+    # since a failure run's report is exactly the one worth looking at.
+    if: always()
+    continue-on-error: true
+    # Overrides the workflow-level `defaults.run.working-directory: voiceguard`
+    # back to the repo root — same reason and same override the `summary`
+    # job below already uses: this job's own paths are voiceguard/-prefixed
+    # (voiceguard/e2e/..., voiceguard/publish/...), which would otherwise
+    # resolve to voiceguard/voiceguard/... under the workflow default.
+    defaults:
+      run:
+        working-directory: .
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Download Appium report artifact
+        uses: actions/download-artifact@v8
+        with:
+          name: appium-report
+          path: voiceguard/e2e/results
+
+      - name: Assemble Pages publish directory
+        # reports/latest/ is overwritten every run; reports/history/build-N/
+        # is unique per run and, combined with peaceiris/actions-gh-pages'
+        # keep_files:true below, never gets clobbered by a later deploy —
+        # that's what gives this "latest + history" structure real
+        # persistence across runs instead of each deploy wiping the last.
+        run: |
+          set -e
+          BUILD=${{ github.run_number }}
+          mkdir -p voiceguard/publish/reports/latest voiceguard/publish/reports/history/build-$BUILD
+
+          for f in appium_summary.json execution-report.html; do
+            if [ -f "voiceguard/e2e/results/$f" ]; then
+              cp "voiceguard/e2e/results/$f" voiceguard/publish/reports/latest/
+              cp "voiceguard/e2e/results/$f" voiceguard/publish/reports/history/build-$BUILD/
+            fi
+          done
+          if [ -d voiceguard/e2e/results/screenshots ]; then
+            cp -r voiceguard/e2e/results/screenshots voiceguard/publish/reports/latest/
+            cp -r voiceguard/e2e/results/screenshots voiceguard/publish/reports/history/build-$BUILD/
+          fi
+          cp voiceguard/e2e/appium/trends.html voiceguard/publish/reports/latest/
+
+          echo "--- publish tree ---"
+          find voiceguard/publish -type f
+
+      - name: Update history manifest
+        # peaceiris/actions-gh-pages' keep_files:true preserves prior
+        # history/build-N/ directories on the gh-pages branch across
+        # deploys, but it doesn't know or update trends.html's index — pull
+        # the branch's current manifest (if the branch/file don't exist yet,
+        # e.g. first-ever deploy, start from an empty list) and append this
+        # run's build number, capped to the last 50 so the manifest doesn't
+        # grow without bound over the life of the repo.
+        run: |
+          set -e
+          git fetch origin gh-pages 2>/dev/null || true
+          git show origin/gh-pages:reports/history/index.json > /tmp/prev_index.json 2>/dev/null \
+            || echo '{"builds": []}' > /tmp/prev_index.json
+          python3 voiceguard/e2e/appium/update_history_manifest.py \
+            "$GITHUB_RUN_NUMBER" /tmp/prev_index.json voiceguard/publish/reports/history/index.json
+
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: voiceguard/publish
+          keep_files: true
 
   summary:
     name: summary
@@ -504,8 +618,27 @@ jobs:
           find artifacts -name baseline_results.json -exec cp {} voiceguard/performance/ \;
           find artifacts -name selenium_report.json -exec cp {} voiceguard/e2e/results/ \;
           find artifacts -name appium_report.json -exec cp {} voiceguard/e2e/results/ \; || true
+          find artifacts -name appium_summary.json -exec cp {} voiceguard/e2e/results/ \; || true
           echo "--- assembled tree ---"
           find automated_test voiceguard/performance voiceguard/e2e/results -type f
+
+      - name: Report Appium execution numbers
+        # Real numbers pulled from this run's own appium_summary.json (the
+        # artifact appium-tests' "Parse Appium results" step produced) —
+        # not a re-derivation or estimate. Prints a WARN (not a failure —
+        # appium-tests stays non-blocking, per the job comment and memory
+        # of why that was decided) when the pass rate among tests that
+        # actually executed drops below 95%, giving the ">5% critical
+        # failures" signal visibility without changing the gate below.
+        if: always()
+        run: |
+          SUMMARY=voiceguard/e2e/results/appium_summary.json
+          if [ ! -f "$SUMMARY" ]; then
+            echo "### Appium (Mobile Web)" >> "$GITHUB_STEP_SUMMARY"
+            echo "No appium_summary.json artifact found for this run." >> "$GITHUB_STEP_SUMMARY"
+            exit 0
+          fi
+          python3 voiceguard/e2e/appium/report_summary_markdown.py "$SUMMARY" >> "$GITHUB_STEP_SUMMARY"
 
       - name: Build master Excel report
         run: python voiceguard/reports/build_master_test_report.py

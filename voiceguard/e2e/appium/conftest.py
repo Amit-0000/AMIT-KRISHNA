@@ -15,15 +15,33 @@ this suite is CI-only.
 from __future__ import annotations
 
 import os
+import sys
 import time
+from pathlib import Path
 
 import pytest
 from appium import webdriver
 from appium.options.android import UiAutomator2Options
 from selenium.common.exceptions import WebDriverException
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.support.ui import WebDriverWait
+
+# Lets test modules do `from pages.base_page import BasePage` / `from data.users
+# import ...` regardless of how/where pytest is invoked from, without needing
+# __init__.py-based package discovery to line up with cwd.
+sys.path.insert(0, str(Path(__file__).parent))
+
+from data.users import FIXTURE_USER  # noqa: E402
 
 APPIUM_SERVER_URL = os.environ.get("APPIUM_SERVER_URL", "http://127.0.0.1:4723")
 BASE_URL = os.environ.get("APPIUM_BASE_URL", "http://10.0.2.2:5173")  # 10.0.2.2 = host machine, from the emulator
+
+# e2e/results/, not e2e/appium/results/ — the shared output directory the CI
+# workflow already points --json-report-file at for this suite (and where
+# selenium_report.json already lands), so parse_results.py/build_html_report.py
+# and this suite's screenshots all live next to each other.
+RESULTS_DIR = Path(__file__).parent.parent / "results"
+SCREENSHOTS_DIR = RESULTS_DIR / "screenshots"
 
 
 @pytest.fixture(scope="session")
@@ -35,11 +53,12 @@ def base_url() -> str:
 def driver():
     # Session-scoped: installing + launching the UiAutomator2 server APK is
     # the expensive part of session creation (observed 2-9 min under CI's
-    # 2-vCPU runner, shared with the app's own Docker stack), and neither
-    # test here mutates state the others depend on (navigation resets the
-    # page; /login has no auth-redirect guard, so re-visiting it while
-    # already logged in is safe) — so pay that cost once per run, not once
-    # per test.
+    # 2-vCPU runner, shared with the app's own Docker stack) — pay that cost
+    # once per run, not once per test. Tests share this one browser/cookie
+    # jar, so auth state must be managed deliberately (see
+    # authenticated_driver/unauthenticated_driver below) rather than assumed
+    # fresh: /login and /signup ARE guarded (GuestGuard, frontend/src/App.tsx)
+    # and redirect away once a session cookie exists.
     options = UiAutomator2Options()
     options.platform_name = "Android"
     options.automation_name = "UiAutomator2"
@@ -91,10 +110,58 @@ def driver():
     drv.quit()
 
 
-@pytest.fixture
+@pytest.fixture(scope="session")
 def authenticated_driver(driver, base_url):
+    # Session-scoped and logs in exactly once for the whole run, not once
+    # per test. Two real constraints force this: (1) the backend's default
+    # login rate limit is 10/hour/IP (see
+    # performance/docker-compose.loadtest.yml's override note) — a suite
+    # this size resubmitting the login form per test would blow through
+    # that budget on infra grounds having nothing to do with app
+    # correctness; (2) driver is a single shared browser session, so a
+    # second real submission while already authenticated races GuestGuard's
+    # redirect-away-from-/login (frontend/src/guards/GuestGuard.tsx) — the
+    # login form may already be gone by the time find_element runs.
     driver.get(f"{base_url}/login")
-    driver.find_element("id", "email").send_keys("dast.usera@example.com")
-    driver.find_element("id", "password").send_keys("DastTest!2026a")
+    driver.find_element("id", "email").send_keys(FIXTURE_USER["email"])
+    driver.find_element("id", "password").send_keys(FIXTURE_USER["password"])
     driver.find_element("css selector", "button[type=submit]").click()
+    WebDriverWait(driver, 15).until(EC.url_contains("/dashboard"))
     return driver
+
+
+@pytest.fixture
+def unauthenticated_driver(driver, base_url):
+    """For tests that need a guest (logged-out) view of a GuestGuard-protected
+    page (/signup, /login, /forgot-password, /reset-password) or that assert
+    AuthGuard's redirect-to-/login behavior. Clears the shared driver's
+    session cookies rather than assuming the browser starts each test
+    logged out — it won't, once any test in this run has used
+    authenticated_driver. Cheap (in-browser cookie clear, no new Appium
+    session) unlike re-creating the driver per test."""
+    driver.delete_all_cookies()
+    return driver
+
+
+@pytest.hookimpl(hookwrapper=True)
+def pytest_runtest_makereport(item, call):
+    # Only the "call" phase (not setup/teardown) reflects an actual test
+    # failure worth a screenshot — a fixture error in "setup" has no
+    # meaningful page state to capture yet.
+    outcome = yield
+    report = outcome.get_result()
+    if report.when != "call" or not report.failed:
+        return
+
+    drv = item.funcargs.get("driver") or item.funcargs.get("authenticated_driver")
+    if drv is None:
+        return
+
+    SCREENSHOTS_DIR.mkdir(parents=True, exist_ok=True)
+    safe_name = item.nodeid.replace("/", "_").replace("::", "__").replace(" ", "_")
+    try:
+        drv.save_screenshot(str(SCREENSHOTS_DIR / f"{safe_name}.png"))
+    except WebDriverException:
+        # Best-effort: a screenshot failure must never mask the real test
+        # failure this hook is reacting to.
+        pass
