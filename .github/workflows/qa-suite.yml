@@ -501,6 +501,18 @@ jobs:
     # since a failure run's report is exactly the one worth looking at.
     if: always()
     continue-on-error: true
+    # pages/id-token: required by actions/deploy-pages. contents: write:
+    # this job also pushes the gh-pages branch itself (see "Merge into
+    # persistent gh-pages history store" below) — this repo's Pages source
+    # is the GitHub-Actions-native "workflow" build type (confirmed via
+    # `gh api repos/<owner>/<repo>/pages`), not the classic "deploy from a
+    # branch" mode, so gh-pages here is kept purely as a git-backed store
+    # for reports/history/build-N/ across runs, not what Pages serves from
+    # directly.
+    permissions:
+      contents: write
+      pages: write
+      id-token: write
     # Overrides the workflow-level `defaults.run.working-directory: voiceguard`
     # back to the repo root — same reason and same override the `summary`
     # job below already uses: this job's own paths are voiceguard/-prefixed
@@ -518,12 +530,15 @@ jobs:
           name: appium-report
           path: voiceguard/e2e/results
 
-      - name: Assemble Pages publish directory
-        # reports/latest/ is overwritten every run; reports/history/build-N/
-        # is unique per run and, combined with peaceiris/actions-gh-pages'
-        # keep_files:true below, never gets clobbered by a later deploy —
-        # that's what gives this "latest + history" structure real
-        # persistence across runs instead of each deploy wiping the last.
+      - name: Assemble this run's report content
+        # reports/latest/ is meant to be overwritten every run;
+        # reports/history/build-N/ is unique per run — both get merged into
+        # the persistent gh-pages store in the next step, which is what
+        # actually gives "latest + history" real persistence across runs
+        # under this repo's workflow-based Pages deployment (a single
+        # deploy-pages call fully replaces the live site from whatever
+        # artifact it's given, so that artifact has to already contain the
+        # accumulated history, not just this run's output).
         run: |
           set -e
           BUILD=${{ github.run_number }}
@@ -544,28 +559,63 @@ jobs:
           echo "--- publish tree ---"
           find voiceguard/publish -type f
 
-      - name: Update history manifest
-        # peaceiris/actions-gh-pages' keep_files:true preserves prior
-        # history/build-N/ directories on the gh-pages branch across
-        # deploys, but it doesn't know or update trends.html's index — pull
-        # the branch's current manifest (if the branch/file don't exist yet,
-        # e.g. first-ever deploy, start from an empty list) and append this
-        # run's build number, capped to the last 50 so the manifest doesn't
-        # grow without bound over the life of the repo.
+      - name: Merge into persistent gh-pages history store and push
+        # This repo's Pages source is build_type "workflow" (GitHub-Actions-
+        # native deployment via actions/deploy-pages below), which fully
+        # replaces the live site from a single uploaded artifact on every
+        # deploy — there's no branch-source "keep existing files" behavior
+        # to lean on. gh-pages is kept anyway, purely as a real git-backed
+        # store for reports/history/build-N/ across runs (arguably better
+        # than a plain-file "keep_files" merge, since it's actual version
+        # history): clone it if it exists, start a fresh orphan branch if
+        # this is the first-ever run, copy this run's new content in on top
+        # of whatever's already there, update the trends.html manifest,
+        # commit, and push. The resulting working tree is what gets
+        # uploaded as the Pages artifact in the next steps.
         run: |
           set -e
-          git fetch origin gh-pages 2>/dev/null || true
-          git show origin/gh-pages:reports/history/index.json > /tmp/prev_index.json 2>/dev/null \
-            || echo '{"builds": []}' > /tmp/prev_index.json
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          REPO_URL="https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git"
+
+          if git ls-remote --exit-code --heads "$REPO_URL" gh-pages >/dev/null 2>&1; then
+            git clone --branch gh-pages --single-branch --depth 1 "$REPO_URL" gh-pages-store
+          else
+            mkdir gh-pages-store
+            (cd gh-pages-store && git init -b gh-pages)
+          fi
+
+          mkdir -p gh-pages-store/reports/history
+          rm -rf gh-pages-store/reports/latest
+          cp -r voiceguard/publish/reports/latest gh-pages-store/reports/latest
+          cp -r "voiceguard/publish/reports/history/build-${{ github.run_number }}" gh-pages-store/reports/history/
+
           python3 voiceguard/e2e/appium/update_history_manifest.py \
-            "$GITHUB_RUN_NUMBER" /tmp/prev_index.json voiceguard/publish/reports/history/index.json
+            "${{ github.run_number }}" \
+            gh-pages-store/reports/history/index.json \
+            gh-pages-store/reports/history/index.json
+
+          cd gh-pages-store
+          git add -A
+          git commit -m "Publish Appium report for run ${{ github.run_number }}" --allow-empty
+          git push "$REPO_URL" HEAD:gh-pages
+
+      - name: Configure Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          # gh-pages-store is created at the repo root by the previous step
+          # (that step runs with this job's working-directory: . override),
+          # not under voiceguard/ — and `with.path` here is resolved from
+          # github.workspace regardless of any working-directory default,
+          # same as every other `uses:` step's `with:` in this workflow.
+          path: gh-pages-store
 
       - name: Deploy to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v4
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: voiceguard/publish
-          keep_files: true
+        id: deployment
+        uses: actions/deploy-pages@v4
 
   summary:
     name: summary
