@@ -3,7 +3,7 @@ from __future__ import annotations
 import uuid
 from datetime import datetime
 
-from pydantic import BaseModel, ConfigDict, field_serializer, field_validator
+from pydantic import BaseModel, ConfigDict, EmailStr, Field, field_serializer, field_validator
 
 from api.feedback.models import CATEGORIES, Feedback
 
@@ -11,8 +11,12 @@ from api.feedback.models import CATEGORIES, Feedback
 class FeedbackSubmitRequest(BaseModel):
     category: str
     message: str
-    scan_id: str | None = None
-    email: str | None = None
+    # security-review.md F-28: these now match the DB column limits
+    # (api/feedback/models.py: scan_id String(64), email String(254)) and
+    # email is format-validated, instead of silently reaching Postgres as
+    # unconstrained strings and risking a raw DataError there.
+    scan_id: str | None = Field(default=None, max_length=64)
+    email: EmailStr | None = None
 
     @field_validator("category")
     @classmethod

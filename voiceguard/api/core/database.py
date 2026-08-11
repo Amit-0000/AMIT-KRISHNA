@@ -42,6 +42,7 @@ def init_engine(database_url: str | None = None) -> AsyncEngine:
     if not url.startswith("sqlite"):
         engine_kwargs["pool_size"] = settings.DB_POOL_MIN_SIZE
         engine_kwargs["max_overflow"] = settings.DB_POOL_MAX_SIZE - settings.DB_POOL_MIN_SIZE
+        engine_kwargs["pool_timeout"] = settings.DB_POOL_TIMEOUT_S
 
     _engine = create_async_engine(url, **engine_kwargs)
     _session_factory = async_sessionmaker(bind=_engine, expire_on_commit=False, autoflush=False)

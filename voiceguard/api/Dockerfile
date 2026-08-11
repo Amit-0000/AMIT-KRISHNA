@@ -23,6 +23,18 @@ COPY api/ api/
 # to be installed for auth-only usage (the import itself is guarded).
 COPY src/ src/
 
+# Run as a non-root user (security-review.md F-25) — narrows the blast radius
+# of any future code-execution vulnerability in the app or a dependency.
+# mkdir the upload dir up front and chown /app so the app user can write to
+# it whether or not docker-compose's ./data/uploads bind mount is present;
+# on a Linux host bind-mounting a host directory not owned by this UID, chown
+# the host directory to match (Docker Desktop on Windows/Mac handles this
+# transparently and needs no host-side change).
+RUN useradd --create-home --uid 1000 appuser \
+    && mkdir -p /app/data/uploads \
+    && chown -R appuser:appuser /app
+USER appuser
+
 ENV PYTHONUNBUFFERED=1 \
     PYTHONPATH=/app
 

@@ -42,6 +42,15 @@ RUN pip install --no-cache-dir -r api/requirements-ml.txt
 COPY api/ api/
 COPY src/ src/
 
+# Run as a non-root user (security-review.md F-25) — see api/Dockerfile's
+# identical comment for the bind-mount ownership caveat on Linux hosts.
+# checkpoints/ stays read-only (mounted :ro in docker-compose.yml) so this
+# user only ever needs write access under data/uploads/.
+RUN useradd --create-home --uid 1000 appuser \
+    && mkdir -p /app/data/uploads /app/checkpoints \
+    && chown -R appuser:appuser /app
+USER appuser
+
 ENV PYTHONUNBUFFERED=1 \
     PYTHONPATH=/app
 
@@ -49,5 +58,11 @@ EXPOSE 8000
 
 # --workers 1: model_loader._MODEL_CACHE is an in-process dict — multiple
 # workers would each load their own copy, multiplying RAM for no benefit
-# (same reasoning as the root Dockerfile's own --workers 1).
+# (same reasoning as the root Dockerfile's own --workers 1). The concurrency
+# bottleneck this caused under load (security-review.md F-17) was addressed
+# via DB_POOL_MIN_SIZE/DB_POOL_MAX_SIZE instead (api/core/config.py) — a
+# single async worker can serve far more than 100 concurrent I/O-bound
+# requests once it isn't starved for DB connections; raising --workers here
+# would trade that fixed problem for multiplying the ML model's RAM
+# footprint per worker for no throughput benefit on I/O-bound endpoints.
 CMD ["sh", "-c", "alembic -c api/alembic.ini upgrade head && uvicorn api.main:app --host 0.0.0.0 --port 8000 --workers 1"]

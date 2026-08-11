@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import asyncio
 import logging
+import re
 import smtplib
 from abc import ABC, abstractmethod
 from email.message import EmailMessage
@@ -23,11 +24,22 @@ class ConsoleEmailProvider(EmailProvider):
     this is the intended EMAIL_PROVIDER=console behavior."""
 
     async def send(self, *, to: str, subject: str, html_body: str, text_body: str) -> None:
+        # security-review.md F-15: this logs the live reset/verification token
+        # (needed for local dev/CI to actually complete those flows without a
+        # real mailbox — see e.g. e2e/appium's password-recovery test, which
+        # deliberately reads it back from these logs). Redact it whenever the
+        # environment claims to be production so a real deployment's logs
+        # never carry a usable bearer token even if EMAIL_PROVIDER=console
+        # were left on (validate_production() below also refuses to boot in
+        # that case — this redaction is defense-in-depth, not the primary fix).
+        logged_body = text_body
+        if get_settings().is_production:
+            logged_body = re.sub(r"([?&]token=)[^\s&]+", r"\1<redacted>", text_body)
         logger.info(
             "email_dispatched (console provider)\n--- TO: %s\n--- SUBJECT: %s\n--- BODY:\n%s",
             to,
             subject,
-            text_body,
+            logged_body,
         )
 
 

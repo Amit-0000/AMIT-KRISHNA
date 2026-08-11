@@ -8,6 +8,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from api.core.database import get_db
 from api.core.deps import get_current_user_optional, require_admin
 from api.core.middleware import client_ip
+from api.core.rate_limit import require_feedback_rate_limit
 from api.core.responses import success_envelope
 from api.feedback import service
 from api.feedback.schemas import FeedbackResponse, FeedbackSubmitRequest
@@ -17,7 +18,7 @@ from api.user.models import User
 router = APIRouter(prefix="/feedback", tags=["feedback"])
 
 
-@router.post("", status_code=status.HTTP_201_CREATED)
+@router.post("", status_code=status.HTTP_201_CREATED, dependencies=[Depends(require_feedback_rate_limit)])
 async def submit_feedback(
     payload: FeedbackSubmitRequest,
     request: Request,

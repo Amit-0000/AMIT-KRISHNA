@@ -11,13 +11,26 @@ sqlalchemy[asyncio]==2.0.36
 asyncpg==0.30.0
 aiosqlite==0.20.0
 alembic==1.14.0
-pyjwt==2.10.1
+# pyjwt/python-dotenv/python-multipart bumped for known advisories
+# (security-review.md F-31/F-32 — dependency-report.md has the full CVE
+# list). fastapi/starlette were deliberately NOT bumped in this pass: their
+# fix requires a larger, less-verified version jump this audit chose not to
+# make under time pressure right before a release gate — tracked as a
+# follow-up, not silently skipped. pytest (PYSEC-2026-1845, dev-only, never
+# shipped in the runtime image) was ALSO deliberately deferred: pytest>=9
+# requires pytest-asyncio>=1.0 (a major-version jump with real async-fixture
+# behavior changes, e.g. default asyncio_mode), which this audit verified by
+# actually attempting the install (`pip install "pytest>=9.0.3"` reported
+# "pytest-asyncio 0.25.0 requires pytest<9,>=8.2, but you have pytest 9.1.1")
+# rather than assumed compatible — not worth the regression risk to the
+# test suite (191/191 passing) right before this same commit's test gate.
+pyjwt==2.12.0
 bcrypt==4.2.1
 redis==5.2.1
-python-dotenv==1.0.1
+python-dotenv==1.2.2
 httpx==0.28.1
 pytest==8.3.4
 pytest-asyncio==0.25.0
 pytest-json-report==1.5.0
 coverage==7.6.10
-python-multipart==0.0.20
+python-multipart==0.0.22

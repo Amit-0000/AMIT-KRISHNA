@@ -22,6 +22,16 @@ class Settings(BaseSettings):
     MAX_UPLOAD_SIZE_BYTES: int = 10 * 1024 * 1024
     MAX_AUDIO_DURATION_S: int = 300
 
+    # Comma-separated list of reverse-proxy IPs allowed to set X-Forwarded-For
+    # (see api.core.middleware.client_ip). Empty by default: this app has no
+    # reverse proxy in front of it in the current docker-compose topology, so
+    # the header is never trusted unless a real deployment explicitly lists
+    # its actual proxy IP(s) here. Trusting it unconditionally let any client
+    # spoof its own rate-limit bucket (security-review.md F-14, confirmed via
+    # live exploitation — 15/15 spoofed-IP login attempts bypassed the
+    # 10/hour limit that correctly blocks a real single IP).
+    TRUSTED_PROXY_IPS: str = ""
+
     # Secure cookies require HTTPS. The architecture spec (BATCH_04 S10.2) mandates
     # Secure:true unconditionally, but that makes cookie-based auth undeliverable over
     # plain http://localhost during local development. COOKIE_SECURE lets dev relax this
@@ -43,13 +53,23 @@ class Settings(BaseSettings):
     # once that block was removed (see api.core.security.verify_password),
     # 100 concurrent VUs started exhausting a 20-connection pool outright
     # (sqlalchemy.exc.TimeoutError: QueuePool limit ... reached — see
-    # performance/performance_fix_report.md Phase 4). 50 total connections
-    # stays well inside Postgres's default max_connections=100 with room for
-    # migrations/admin/seed tooling alongside the app.
-    DB_POOL_MIN_SIZE: int = 10
-    DB_POOL_MAX_SIZE: int = 50
+    # performance/performance_fix_report.md Phase 4), which the 10/50 values
+    # below were originally sized to fix. security-review.md F-17 found that
+    # 10/50 was *still* insufficient under a real 100-VU k6 baseline —
+    # 90 QueuePool timeouts, 36.9% request failure rate — so this was raised
+    # again to 20/90. 100 total (base+overflow) stays under Postgres's
+    # default max_connections=100 with the small remaining headroom used for
+    # migrations/admin/seed tooling, which run before or outside the
+    # request-serving pool's lifetime, not concurrently with it.
+    DB_POOL_MIN_SIZE: int = 20
+    DB_POOL_MAX_SIZE: int = 90
     DB_STATEMENT_TIMEOUT_S: int = 30
     DB_CONNECT_TIMEOUT_S: int = 5
+    # Fail a request that can't get a connection in 15s rather than the
+    # SQLAlchemy default 30s — under saturation this turns a 30s hang into a
+    # faster, clearer 500 (still a real failure, but a much better p95/p99
+    # tail than silently hanging for the full default timeout).
+    DB_POOL_TIMEOUT_S: int = 15
 
     # ── Redis ────────────────────────────────────────────────────────────────
     REDIS_URL: str = "redis://localhost:6379/0"
@@ -90,6 +110,10 @@ class Settings(BaseSettings):
     # /scans pipeline) — kept alongside the scan-create limit for parity,
     # since it's just as CPU-bound (see security_review.md F-03/F-04).
     RATE_LIMIT_PREDICT_PER_HOUR_PER_USER: int = 30
+    # security-review.md F-30: POST /feedback accepts anonymous submissions
+    # (get_current_user_optional), so it needs an IP-keyed limit like the
+    # other pre-auth-reachable routes above — it had none at all before this.
+    RATE_LIMIT_FEEDBACK_PER_HOUR_PER_IP: int = 20
 
     # ── Audit ────────────────────────────────────────────────────────────────
     AUDIT_IP_SALT: str = "dev-only-audit-ip-salt-change-me"
@@ -157,6 +181,10 @@ class Settings(BaseSettings):
         return [origin.strip() for origin in self.ALLOWED_ORIGINS.split(",") if origin.strip()]
 
     @property
+    def trusted_proxy_ips_list(self) -> list[str]:
+        return [ip.strip() for ip in self.TRUSTED_PROXY_IPS.split(",") if ip.strip()]
+
+    @property
     def is_production(self) -> bool:
         return self.APP_ENV == "production"
 
@@ -179,6 +207,18 @@ class Settings(BaseSettings):
                 [self.SMTP_HOST, self.SMTP_USERNAME, self.SMTP_PASSWORD]
             ):
                 errors.append("SMTP_HOST, SMTP_USERNAME, SMTP_PASSWORD are required when EMAIL_PROVIDER=smtp")
+            # security-review.md F-15: the console provider logs live, usable
+            # password-reset/email-verification tokens (see api.core.email);
+            # that's fine for local dev/CI but must never be reachable from a
+            # real deployment, so refuse to boot rather than silently
+            # defaulting to it.
+            if self.EMAIL_PROVIDER == "console":
+                errors.append("EMAIL_PROVIDER must be 'smtp' in production (the 'console' provider logs live tokens)")
+            # security-review.md F-21: '*' combined with the app's hardcoded
+            # allow_credentials=True CORS setting lets any origin make
+            # credentialed requests, defeating SameSite cookie protection.
+            if "*" in self.allowed_origins_list:
+                errors.append("ALLOWED_ORIGINS must not contain '*' in production (combined with credentialed CORS, this allows any origin)")
         if errors:
             print("FATAL: invalid configuration for APP_ENV=production:", file=sys.stderr)
             for err in errors:

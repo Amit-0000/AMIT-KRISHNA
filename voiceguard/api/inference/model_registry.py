@@ -83,7 +83,10 @@ async def ensure_default_model_registered(db: AsyncSession) -> ModelVersion | No
     await db.commit()
     logger.info(
         "model_version_registered",
-        extra={"model_version_id": str(model_version.id), "name": model_version.name, "version": model_version.version},
+        # "name"/"version" collide with reserved LogRecord attributes and raise
+        # KeyError from logging.Logger.makeRecord if used as `extra` keys —
+        # prefixed with model_ to avoid the collision (see security-review.md F-16).
+        extra={"model_version_id": str(model_version.id), "model_name": model_version.name, "model_version": model_version.version},
     )
     return model_version
 
@@ -186,10 +189,12 @@ async def register_model_version(
     await db.commit()
     logger.info(
         "model_version_registered",
+        # see the sibling call site in ensure_default_model_registered above
+        # for why these keys are prefixed with model_ (security-review.md F-16)
         extra={
             "model_version_id": str(model_version.id),
-            "name": model_version.name,
-            "version": model_version.version,
+            "model_name": model_version.name,
+            "model_version": model_version.version,
             "architecture": architecture,
         },
     )

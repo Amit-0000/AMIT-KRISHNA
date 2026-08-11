@@ -25,6 +25,13 @@ runs/
 .idea/
 *.swp
 
+# Local secrets — never bake a real .env into an image layer
+# (security-review.md F-29; api/.env.example is intentionally NOT excluded,
+# it's a documented dev-placeholder file meant to ship)
+.env
+api/.env
+frontend/.env
+
 # Docs and notebooks — not needed by the server
 docs/
 notebooks/

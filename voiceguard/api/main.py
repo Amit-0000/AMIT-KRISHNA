@@ -12,7 +12,7 @@ from api.core.config import get_settings
 from api.core.database import dispose_engine, init_engine
 from api.core.deps import require_authenticated
 from api.core.exceptions import InvalidInputError, ServiceUnavailableError, register_exception_handlers
-from api.core.middleware import RequestContextMiddleware
+from api.core.middleware import RequestContextMiddleware, SecurityHeadersMiddleware
 from api.core.rate_limit import require_predict_rate_limit
 from api.core.redis import close_redis, init_redis
 from api.core.responses import success_envelope
@@ -97,6 +97,11 @@ app.add_middleware(
     allow_methods=["GET", "POST", "PATCH", "DELETE", "OPTIONS"],
     allow_headers=["Content-Type", "Authorization", "X-Guest-Token", "X-Request-ID"],
 )
+# Added last so it's outermost (Starlette applies middleware in reverse
+# registration order) — every response, including CORS preflight and
+# exception-handler responses, gets the security headers (security-review.md
+# F-20).
+app.add_middleware(SecurityHeadersMiddleware)
 
 register_exception_handlers(app)
 
@@ -116,14 +121,13 @@ def health():
     return success_envelope({"status": "ok"})
 
 
+PREDICT_UPLOAD_CHUNK_SIZE = 1024 * 1024  # 1 MiB
+
+
 @app.post("/predict", response_model=None, dependencies=[Depends(require_predict_rate_limit)])
 async def predict_endpoint(audio_file: UploadFile = File(...), user: User = Depends(require_authenticated)):
     if app.state.model is None:
         raise ServiceUnavailableError("The detection model is not loaded on this deployment yet.")
-
-    contents = await audio_file.read()
-    if len(contents) > get_settings().MAX_UPLOAD_SIZE_BYTES:
-        raise InvalidInputError("File too large. Max 10MB.")
 
     suffix = Path(audio_file.filename or "").suffix.lower()
     if suffix not in ALLOWED_AUDIO_EXTENSIONS:
@@ -131,13 +135,32 @@ async def predict_endpoint(audio_file: UploadFile = File(...), user: User = Depe
 
     from src.inference.predict import predict
 
-    with tempfile.NamedTemporaryFile(suffix=suffix, delete=False) as tmp:
-        tmp.write(contents)
-        tmp_path = Path(tmp.name)
-
+    max_size = get_settings().MAX_UPLOAD_SIZE_BYTES
+    # security-review.md F-18: stream+check the size incrementally instead of
+    # buffering the full body into memory before checking it — an oversized
+    # request is now aborted the moment it crosses the limit, mirroring
+    # api.scans.service.store_upload's already-fixed pattern on the newer
+    # /scans pipeline.
+    tmp_path: Path | None = None
+    total_size = 0
     try:
+        with tempfile.NamedTemporaryFile(suffix=suffix, delete=False) as tmp:
+            tmp_path = Path(tmp.name)
+            while True:
+                chunk = await audio_file.read(PREDICT_UPLOAD_CHUNK_SIZE)
+                if not chunk:
+                    break
+                total_size += len(chunk)
+                if total_size > max_size:
+                    raise InvalidInputError("File too large. Max 10MB.")
+                tmp.write(chunk)
+
         result = predict(tmp_path, app.state.model, app.state.device)
     finally:
-        tmp_path.unlink(missing_ok=True)
+        # security-review.md F-33: this cleanup now runs for every exit path
+        # (including a write/size-check failure inside the file-creation
+        # block above), not only after a successful predict() call.
+        if tmp_path is not None:
+            tmp_path.unlink(missing_ok=True)
 
     return PredictionResponse(**result)

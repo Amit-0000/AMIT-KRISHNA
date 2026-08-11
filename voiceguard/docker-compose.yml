@@ -43,6 +43,12 @@ services:
       REDIS_URL: redis://redis:6379/0
       ALLOWED_ORIGINS: http://localhost:5173
       APP_BASE_URL: http://localhost:5173
+      # Passed through from the host shell so load tests (and CI's
+      # performance-smoke-test job) can raise the per-IP login limit for a
+      # test run without editing .env — defaults to the real, secure value.
+      # See security-review.md F-14: this can no longer be worked around via
+      # a spoofed X-Forwarded-For header, so this is the supported knob.
+      RATE_LIMIT_LOGIN_PER_HOUR_PER_IP: ${RATE_LIMIT_LOGIN_PER_HOUR_PER_IP:-10}
     ports:
       - "8000:8000"
     depends_on:

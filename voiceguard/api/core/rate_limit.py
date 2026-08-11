@@ -81,3 +81,4 @@ require_scan_create_rate_limit = rate_limit(
 require_predict_rate_limit = rate_limit(
     "predict", limit_attr="RATE_LIMIT_PREDICT_PER_HOUR_PER_USER", by="user"
 )
+require_feedback_rate_limit = rate_limit("feedback", limit_attr="RATE_LIMIT_FEEDBACK_PER_HOUR_PER_IP")
