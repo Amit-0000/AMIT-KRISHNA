@@ -1,0 +1,5 @@
+{
+  "generated_at": "2026-08-11T01:29:05.854238+00:00",
+  "status": "NO_REPORT",
+  "note": "/home/runner/work/AMIT-KRISHNA/AMIT-KRISHNA/voiceguard/e2e/results/appium_report.json not found \u2014 the suite did not reach the point of writing a pytest-json-report, most likely an emulator/Appium-server startup failure upstream of test collection."
+}
