@@ -42,14 +42,18 @@ RUN pip install --no-cache-dir -r api/requirements-ml.txt
 COPY api/ api/
 COPY src/ src/
 
-# Run as a non-root user (security-review.md F-25) — see api/Dockerfile's
-# identical comment for the bind-mount ownership caveat on Linux hosts.
-# checkpoints/ stays read-only (mounted :ro in docker-compose.yml) so this
-# user only ever needs write access under data/uploads/.
+# Run the actual server as a non-root user (security-review.md F-25) — the
+# image starts as root and drops privileges via docker-entrypoint.sh (see
+# api/Dockerfile's identical comment for why: a build-time-only chown can't
+# reach docker-compose's ./data/uploads bind mount, which keeps whatever
+# host-side UID created it). checkpoints/ stays read-only (mounted :ro in
+# docker-compose.yml) so the entrypoint only needs to fix ownership under
+# data/uploads/.
 RUN useradd --create-home --uid 1000 appuser \
     && mkdir -p /app/data/uploads /app/checkpoints \
     && chown -R appuser:appuser /app
-USER appuser
+COPY api/docker-entrypoint.sh /docker-entrypoint.sh
+RUN chmod +x /docker-entrypoint.sh
 
 ENV PYTHONUNBUFFERED=1 \
     PYTHONPATH=/app
@@ -65,4 +69,5 @@ EXPOSE 8000
 # requests once it isn't starved for DB connections; raising --workers here
 # would trade that fixed problem for multiplying the ML model's RAM
 # footprint per worker for no throughput benefit on I/O-bound endpoints.
-CMD ["sh", "-c", "alembic -c api/alembic.ini upgrade head && uvicorn api.main:app --host 0.0.0.0 --port 8000 --workers 1"]
+ENTRYPOINT ["/docker-entrypoint.sh"]
+CMD ["alembic -c api/alembic.ini upgrade head && uvicorn api.main:app --host 0.0.0.0 --port 8000 --workers 1"]

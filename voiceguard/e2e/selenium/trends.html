@@ -1,0 +1,118 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>VoiceGuard — Selenium Web E2E Trends</title>
+<style>
+  :root { color-scheme: light; }
+  body { font-family: system-ui, -apple-system, sans-serif; background:#1F2937; color:#1a1a1a; margin:0; padding:2rem 1rem; }
+  .wrap { max-width: 980px; margin: 0 auto; }
+  h1 { color:#fff; font-size:1.5rem; margin-bottom:0.25rem; }
+  .subtitle { color:#c7cbe0; font-size:0.85rem; margin-bottom:1.5rem; }
+  .card { background:#fff; border-radius:12px; padding:1.5rem; margin-bottom:1.25rem; box-shadow:0 1px 3px rgba(0,0,0,.2); }
+  table { width:100%; border-collapse:collapse; font-size:0.85rem; }
+  th { background:#1F2937; color:#fff; text-align:left; padding:0.5rem 0.75rem; }
+  td { padding:0.5rem 0.75rem; border-bottom:1px solid #e5e7eb; }
+  .bar-row { display:flex; align-items:center; gap:0.75rem; padding:0.35rem 0; }
+  .bar-label { width:110px; font-size:0.75rem; color:#6B7280; flex-shrink:0; }
+  .bar-track { flex:1; background:#F3F4F6; border-radius:4px; overflow:hidden; height:14px; }
+  .bar-fill { height:100%; border-radius:4px; }
+  .bar-value { width:56px; text-align:right; font-size:0.75rem; font-weight:600; flex-shrink:0; }
+  a { color:#2563EB; }
+  #status { color:#6B7280; font-size:0.9rem; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>VoiceGuard — Selenium Web E2E Trends</h1>
+  <div class="subtitle">Pass rate across recent CI runs (most recent first) · <a href="latest/execution-report.html">latest run</a></div>
+
+  <div class="card">
+    <div id="status">Loading history…</div>
+    <div id="bars"></div>
+  </div>
+
+  <div class="card">
+    <table id="table"><thead>
+      <tr><th>Build</th><th>Date</th><th>Total</th><th>Passed</th><th>Failed</th><th>Pass %</th></tr>
+    </thead><tbody></tbody></table>
+  </div>
+</div>
+
+<script>
+// Static page, no build step: reads the sibling history/index.json manifest
+// (a list of build numbers the deploy workflow appends to on every run) and
+// each build's real selenium_summary.json — no chart library, no server.
+// Same shape/approach as the Appium suite's trends.html (voiceguard/e2e/
+// appium/trends.html) — only the summary filename and title differ.
+async function loadTrends() {
+  const statusEl = document.getElementById('status');
+  const barsEl = document.getElementById('bars');
+  const tbody = document.querySelector('#table tbody');
+
+  let manifest;
+  try {
+    const res = await fetch('../history/index.json', { cache: 'no-store' });
+    if (!res.ok) throw new Error(`index.json: ${res.status}`);
+    manifest = await res.json();
+  } catch (err) {
+    statusEl.textContent = `Could not load history manifest: ${err}`;
+    return;
+  }
+
+  const builds = (manifest.builds || []).slice(-20).reverse();
+  if (builds.length === 0) {
+    statusEl.textContent = 'No history yet — check back after the next CI run.';
+    return;
+  }
+
+  const rows = [];
+  for (const build of builds) {
+    try {
+      const res = await fetch(`../history/build-${build}/selenium_summary.json`, { cache: 'no-store' });
+      if (!res.ok) continue;
+      const summary = await res.json();
+      if (summary.status !== 'OK') continue;
+      rows.push({ build, summary });
+    } catch (err) {
+      // Skip a build whose summary failed to load rather than aborting the
+      // whole trend view over one bad/missing artifact.
+    }
+  }
+
+  if (rows.length === 0) {
+    statusEl.textContent = 'History manifest exists, but no build summaries could be loaded yet.';
+    return;
+  }
+  statusEl.textContent = `${rows.length} of ${builds.length} recent build(s) loaded.`;
+
+  for (const { build, summary } of rows) {
+    const pct = summary.totals.pass_pct;
+    const color = pct >= 95 ? '#1E7B34' : (pct >= 80 ? '#9C6500' : '#9C0006');
+    const bar = document.createElement('div');
+    bar.className = 'bar-row';
+    bar.innerHTML = `
+      <div class="bar-label">Build ${build}</div>
+      <div class="bar-track"><div class="bar-fill" style="width:${pct}%;background:${color}"></div></div>
+      <div class="bar-value" style="color:${color}">${pct}%</div>
+    `;
+    barsEl.appendChild(bar);
+
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td><a href="../history/build-${build}/execution-report.html">${build}</a></td>
+      <td>${new Date(summary.generated_at).toLocaleString()}</td>
+      <td>${summary.totals.total}</td>
+      <td style="color:#1E7B34">${summary.totals.passed}</td>
+      <td style="color:#9C0006">${summary.totals.failed}</td>
+      <td style="color:${color};font-weight:600">${pct}%</td>
+    `;
+    tbody.appendChild(tr);
+  }
+}
+
+loadTrends();
+</script>
+</body>
+</html>

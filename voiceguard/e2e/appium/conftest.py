@@ -122,10 +122,24 @@ def authenticated_driver(driver, base_url):
     # second real submission while already authenticated races GuestGuard's
     # redirect-away-from-/login (frontend/src/guards/GuestGuard.tsx) — the
     # login form may already be gone by the time find_element runs.
+    # Explicit waits, not bare find_element + the driver's implicit wait:
+    # confirmed live on the sibling Selenium suite that this fixture's very
+    # first invocation, when it happens to run right after an
+    # unauthenticated_driver test's teardown navigation (driver.get(base_url)
+    # to restore cookie state), can hit a StaleElementReferenceException on
+    # the email field — a race between that teardown's navigation settling
+    # and this setup's own driver.get("/login") + immediate find_element,
+    # not something the implicit wait reliably absorbs.
     driver.get(f"{base_url}/login")
-    driver.find_element("id", "email").send_keys(FIXTURE_USER["email"])
-    driver.find_element("id", "password").send_keys(FIXTURE_USER["password"])
-    driver.find_element("css selector", "button[type=submit]").click()
+    WebDriverWait(driver, 15).until(EC.visibility_of_element_located(("id", "email"))).send_keys(
+        FIXTURE_USER["email"]
+    )
+    WebDriverWait(driver, 15).until(EC.visibility_of_element_located(("id", "password"))).send_keys(
+        FIXTURE_USER["password"]
+    )
+    WebDriverWait(driver, 15).until(
+        EC.element_to_be_clickable(("css selector", "button[type=submit]"))
+    ).click()
     WebDriverWait(driver, 15).until(EC.url_contains("/dashboard"))
     return driver
 
@@ -138,9 +152,40 @@ def unauthenticated_driver(driver, base_url):
     session cookies rather than assuming the browser starts each test
     logged out — it won't, once any test in this run has used
     authenticated_driver. Cheap (in-browser cookie clear, no new Appium
-    session) unlike re-creating the driver per test."""
+    session) unlike re-creating the driver per test.
+
+    Restores those cookies on teardown instead of leaving the browser
+    logged out. Confirmed necessary by a real full-suite run of the sibling
+    Selenium suite (same fixture design, e2e/selenium/conftest.py): without
+    this, every authenticated_driver test that happened to run after ANY
+    unauthenticated_driver test in collection order silently got a
+    logged-out browser (authenticated_driver's fixture body only runs once
+    per session and just returns the cached driver reference — it doesn't
+    re-check auth state), got redirected to /login by AuthGuard, and timed
+    out waiting for content that could never appear. Restoring via saved
+    cookies rather than a real re-login keeps the same rate-limit
+    protection authenticated_driver exists for.
+    """
+    saved_cookies = driver.get_cookies()
     driver.delete_all_cookies()
-    return driver
+    yield driver
+    # No driver.get() before restoring: the whole app is single-origin, so
+    # add_cookie() works from wherever the test left the browser without an
+    # extra navigation first. That extra navigation used to be here
+    # defensively and turned out to be exactly what caused real, confirmed
+    # ElementNotInteractable/StaleElement/Timeout failures (found on the
+    # sibling Selenium suite) in whichever authenticated_driver-using test
+    # ran right after it — two full-page navigations landing back to back
+    # (this teardown's, then the next fixture's own driver.get()) raced
+    # each other.
+    driver.delete_all_cookies()
+    for cookie in saved_cookies:
+        try:
+            driver.add_cookie(cookie)
+        except WebDriverException:
+            # Best-effort per-cookie: one incompatible cookie attribute
+            # must not stop the rest of the session from being restored.
+            pass
 
 
 @pytest.hookimpl(hookwrapper=True)
