@@ -14,7 +14,7 @@ from __future__ import annotations
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 
-from pages.base_page import BasePage
+from pages.base_page import DEFAULT_TIMEOUT, BasePage
 
 
 class LandingPage(BasePage):
@@ -73,7 +73,7 @@ class SignupPage(BasePage):
         self.submit()
 
     def check_email_message_shown(self) -> bool:
-        return "sent a verification link" in self.body_text()
+        return self.body_contains("sent a verification link")
 
 
 class ForgotPasswordPage(BasePage):
@@ -87,7 +87,7 @@ class ForgotPasswordPage(BasePage):
         self.submit()
 
     def check_email_message_shown(self) -> bool:
-        return "sent a link to reset your password" in self.body_text()
+        return self.body_contains("sent a link to reset your password")
 
 
 class ResetPasswordPage(BasePage):
@@ -106,10 +106,10 @@ class ResetPasswordPage(BasePage):
         self.submit()
 
     def shows_invalid_link(self) -> bool:
-        return "invalid or has expired" in self.body_text() or "Reset link invalid" in self.body_text()
+        return self.body_contains("invalid or has expired", "Reset link invalid")
 
     def shows_form(self) -> bool:
-        return self.is_visible(*self.PASSWORD)
+        return self.is_visible(*self.PASSWORD, timeout=DEFAULT_TIMEOUT)
 
 
 class VerifyEmailPage(BasePage):
@@ -122,7 +122,7 @@ class VerifyEmailPage(BasePage):
         self.goto(path)
 
     def shows_missing_token_message(self) -> bool:
-        return "missing a verification token" in self.body_text()
+        return self.body_contains("missing a verification token")
 
     def shows_invalid_or_expired_message(self, timeout: int = 15) -> bool:
         # The real component fires an async authApi.verifyEmail(token) call
@@ -139,4 +139,4 @@ class VerifyEmailPage(BasePage):
         self.submit()
 
     def resend_confirmation_shown(self) -> bool:
-        return "A new verification link has been sent" in self.body_text()
+        return self.body_contains("A new verification link has been sent")

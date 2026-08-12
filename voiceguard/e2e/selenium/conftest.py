@@ -24,6 +24,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 sys.path.insert(0, str(Path(__file__).parent))
 
 from data.users import FIXTURE_USER  # noqa: E402
+from screenshot_naming import screenshot_stem  # noqa: E402
 
 BASE_URL = os.environ.get("SELENIUM_BASE_URL", "http://localhost:5173")
 REPO_ROOT = Path(__file__).resolve().parents[3]
@@ -112,26 +113,40 @@ def unauthenticated_driver(driver, base_url):
     out waiting for content that could never appear. Restoring via saved
     cookies rather than a real re-login keeps the same rate-limit
     protection authenticated_driver exists for.
+
+    Uses the CDP Network domain (getAllCookies/clearBrowserCookies/
+    setCookies), not Selenium's own cookie endpoints (get_cookies/
+    delete_all_cookies/add_cookie) — confirmed live (via a real full-suite
+    run and screenshots of the failures) that Selenium's cookie endpoints
+    only see cookies visible from the *current page's path*, and this
+    backend deliberately scopes its refresh_token cookie to
+    path=/api/v1/auth (api/auth/service.py's REFRESH_COOKIE_PATH) — a path
+    the frontend SPA itself never navigates to. delete_all_cookies() from an
+    ordinary frontend route therefore never actually deleted refresh_token;
+    it stayed live in the browser, and the frontend HTTP client's own
+    401 -> silent-refresh-via-POST-/api/v1/auth/refresh flow used it to
+    transparently re-authenticate mid-test the moment any guest-page auth
+    check 401'd — so a "logged out" guest test could intermittently (and,
+    once enough of the suite had run and timing lined up, deterministically)
+    render as a fully authenticated user instead of the guest page under
+    test. CDP's cookie endpoints operate on the whole browser cookie jar
+    regardless of path, so this actually logs the browser out, and restores
+    both cookies (not just the path-visible one) afterward.
     """
-    saved_cookies = driver.get_cookies()
-    driver.delete_all_cookies()
+    saved_cookies = driver.execute_cdp_cmd("Network.getAllCookies", {})["cookies"]
+    driver.execute_cdp_cmd("Network.clearBrowserCookies", {})
     yield driver
     # No driver.get() before restoring: the whole app is single-origin, so
-    # add_cookie() works from wherever the test left the browser without an
-    # extra navigation first. That extra navigation used to be here
-    # defensively and turned out to be exactly what caused real, confirmed
+    # this works from wherever the test left the browser without an extra
+    # navigation first. That extra navigation used to be here defensively
+    # and turned out to be exactly what caused real, confirmed
     # ElementNotInteractable/StaleElement/Timeout failures in whichever
     # authenticated_driver-using test ran right after it — two full-page
     # navigations landing back to back (this teardown's, then the next
     # fixture's own driver.get()) raced each other in headless Chrome.
-    driver.delete_all_cookies()
-    for cookie in saved_cookies:
-        try:
-            driver.add_cookie(cookie)
-        except WebDriverException:
-            # Best-effort per-cookie: one incompatible cookie attribute
-            # must not stop the rest of the session from being restored.
-            pass
+    driver.execute_cdp_cmd("Network.clearBrowserCookies", {})
+    if saved_cookies:
+        driver.execute_cdp_cmd("Network.setCookies", {"cookies": saved_cookies})
 
 
 @pytest.hookimpl(hookwrapper=True)
@@ -149,7 +164,7 @@ def pytest_runtest_makereport(item, call):
         return
 
     SCREENSHOTS_DIR.mkdir(parents=True, exist_ok=True)
-    safe_name = item.nodeid.replace("/", "_").replace("::", "__").replace(" ", "_")
+    safe_name = screenshot_stem(item.nodeid)
     try:
         # "selenium_" prefix keeps filenames distinct from the Appium
         # suite's screenshots in the same shared results/screenshots/ dir,

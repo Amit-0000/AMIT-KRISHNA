@@ -244,7 +244,14 @@ def test_signup_extremely_long_email_rejected(unauthenticated_driver, base_url):
     page = SignupPage(unauthenticated_driver, base_url)
     page.open()
     long_email = ("a" * 250) + "@example.com"
-    page.fill_form("Selenium QA", long_email, VALID_SIGNUP_PASSWORD, VALID_SIGNUP_PASSWORD)
+    page.fill_id("displayName", "Selenium QA")
+    # fill_id_fast, not fill_form: send_keys()-ing a 250+ char string one
+    # keystroke at a time is slow enough to reproducibly throw
+    # StaleElementReferenceException (confirmed both locally and in CI) —
+    # see BasePage.set_value_js's docstring for why this isn't an app bug.
+    page.fill_id_fast("email", long_email)
+    page.fill_id("password", VALID_SIGNUP_PASSWORD)
+    page.fill_id("confirmPassword", VALID_SIGNUP_PASSWORD)
     page.submit_signup()
     assert "/signup" in page.current_url
 
@@ -253,7 +260,9 @@ def test_login_extremely_long_password_does_not_crash_the_app(unauthenticated_dr
     page = BasePage(unauthenticated_driver, base_url)
     page.goto("/login")
     page.fill_id("email", "selenium.longpw@example.com")
-    page.fill_id("password", "a" * 5000)
+    # fill_id_fast: see test_signup_extremely_long_email_rejected's comment
+    # above — same send_keys()-on-thousands-of-characters flake.
+    page.fill_id_fast("password", "a" * 5000)
     page.submit()
     assert page.body_text() != ""
     assert "/login" in page.current_url

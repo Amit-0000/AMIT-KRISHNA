@@ -8,7 +8,11 @@ from __future__ import annotations
 
 import html
 import json
+import sys
 from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).parent))
+from screenshot_naming import screenshot_stem  # noqa: E402
 
 ROOT = Path(__file__).parent
 RESULTS_DIR = ROOT.parent / "results"  # e2e/results/, shared with parse_results.py and screenshots
@@ -72,7 +76,7 @@ def failed_rows(failed_tests: list[dict]) -> str:
         return f'<p style="color:{GREEN}">No failed tests.</p>'
     parts = []
     for t in failed_tests:
-        safe_name = "selenium_" + t["nodeid"].replace("/", "_").replace("::", "__").replace(" ", "_")
+        safe_name = "selenium_" + screenshot_stem(t["nodeid"])
         shot = f"screenshots/{safe_name}.png"
         shot_link = (
             f'<a href="{esc(shot)}">screenshot</a>'
