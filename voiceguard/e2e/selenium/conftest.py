@@ -114,8 +114,8 @@ def unauthenticated_driver(driver, base_url):
     cookies rather than a real re-login keeps the same rate-limit
     protection authenticated_driver exists for.
 
-    get_cookies()/delete_all_cookies()/add_cookie() only see cookies visible
-    from the *current page's path*, and this backend deliberately scopes its
+    get_cookies()/delete_all_cookies() only see cookies visible from the
+    *current page's path*, and this backend deliberately scopes its
     refresh_token cookie to path=/api/v1/auth (api/auth/service.py's
     REFRESH_COOKIE_PATH) — a path the frontend SPA itself never navigates to.
     Calling those from an ordinary frontend route therefore never actually
@@ -130,29 +130,44 @@ def unauthenticated_driver(driver, base_url):
     backend (any 404 there is fine — nothing reads the response) but is
     still same-origin (proxied through vite, see frontend/vite.config.ts's
     /api proxy) and under /api/v1/auth, which makes refresh_token visible to
-    the cookie calls that follow while the browser briefly sits there.
-    (A Chrome DevTools Protocol Network-domain version of this fixture —
-    getAllCookies/clearBrowserCookies/setCookies, which aren't path-scoped —
-    was tried first and does fix the leak, but a live CI run showed it
-    reliably crashing the shared Chrome session outright (Invalid
-    SessionIdException) after roughly a dozen uses, well before the original
-    bug ever manifested — a worse failure mode than the one it fixed. Plain
-    Selenium cookie calls, just correctly path-scoped, avoid that.)
+    the read+clear that follows while the browser briefly sits there.
+
+    Only ONE extra navigation per test, at setup — not two. Two earlier
+    fixes were each tried against a real CI run and rejected:
+    - A Chrome DevTools Protocol version (Network domain's getAllCookies/
+      clearBrowserCookies/setCookies, none of which are path-scoped) avoids
+      the extra navigation entirely, but reliably crashed the shared Chrome
+      session outright (InvalidSessionIdException) after roughly a dozen
+      uses in CI — worse than the bug it fixed.
+    - A version with a second extra navigation at teardown (to re-visit
+      _COOKIE_SCOPE_PATH before restoring) avoided the CDP crash but still
+      left the CI run crashing early via a Chrome "tab crashed" error,
+      consistent with the doubled per-test navigation load straining an
+      already resource-constrained CI runner over a 400+-test single
+      session.
+    Confirmed empirically (against the real backend) that add_cookie() is
+    NOT path-restricted the way get_cookies()/delete_all_cookies() are —
+    setting a cookie for a given path works from anywhere, only *reading or
+    deleting* one requires being on a matching path. So teardown restores
+    directly via add_cookie() with no navigation at all. This can't be
+    simplified further by only reading+caching the real refresh_token once
+    per whole run instead of once per test: the backend rotates
+    refresh_token on every use (api/auth/service.py's rotate_refresh_token)
+    and treats reuse of an already-rotated token as a theft signal that
+    revokes every session for the user — restoring a stale cached value
+    after any silent refresh happened elsewhere in the run would be actively
+    wrong, not just less correct, so the current real value has to be
+    re-read fresh at each test's own setup.
     """
     _COOKIE_SCOPE_PATH = "/api/v1/auth/__selenium_cookie_scope__"
     driver.get(f"{base_url}{_COOKIE_SCOPE_PATH}")
     saved_cookies = driver.get_cookies()
     driver.delete_all_cookies()
     yield driver
-    # Re-visit the same cookie-scoping path before restoring, for the same
-    # path-visibility reason as setup above — restoring while sitting on
-    # whatever frontend route the test body left behind would silently drop
-    # refresh_token again. This is a different, deliberate navigation from
-    # the "extra navigation" this comment used to warn against (that one
-    # loaded the real SPA and raced the next fixture's own driver.get(); this
-    # one loads an API 404 with no app JS to race against).
-    driver.get(f"{base_url}{_COOKIE_SCOPE_PATH}")
-    driver.delete_all_cookies()
+    # No navigation here (see the docstring): add_cookie() isn't
+    # path-restricted, so each saved cookie can be written back directly
+    # from wherever the test body left the browser, overwriting whatever
+    # (if anything) is currently there for that name+path.
     for cookie in saved_cookies:
         try:
             driver.add_cookie(cookie)
