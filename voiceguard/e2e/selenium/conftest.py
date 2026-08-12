@@ -114,39 +114,52 @@ def unauthenticated_driver(driver, base_url):
     cookies rather than a real re-login keeps the same rate-limit
     protection authenticated_driver exists for.
 
-    Uses the CDP Network domain (getAllCookies/clearBrowserCookies/
-    setCookies), not Selenium's own cookie endpoints (get_cookies/
-    delete_all_cookies/add_cookie) — confirmed live (via a real full-suite
-    run and screenshots of the failures) that Selenium's cookie endpoints
-    only see cookies visible from the *current page's path*, and this
-    backend deliberately scopes its refresh_token cookie to
-    path=/api/v1/auth (api/auth/service.py's REFRESH_COOKIE_PATH) — a path
-    the frontend SPA itself never navigates to. delete_all_cookies() from an
-    ordinary frontend route therefore never actually deleted refresh_token;
-    it stayed live in the browser, and the frontend HTTP client's own
-    401 -> silent-refresh-via-POST-/api/v1/auth/refresh flow used it to
-    transparently re-authenticate mid-test the moment any guest-page auth
-    check 401'd — so a "logged out" guest test could intermittently (and,
-    once enough of the suite had run and timing lined up, deterministically)
-    render as a fully authenticated user instead of the guest page under
-    test. CDP's cookie endpoints operate on the whole browser cookie jar
-    regardless of path, so this actually logs the browser out, and restores
-    both cookies (not just the path-visible one) afterward.
+    get_cookies()/delete_all_cookies()/add_cookie() only see cookies visible
+    from the *current page's path*, and this backend deliberately scopes its
+    refresh_token cookie to path=/api/v1/auth (api/auth/service.py's
+    REFRESH_COOKIE_PATH) — a path the frontend SPA itself never navigates to.
+    Calling those from an ordinary frontend route therefore never actually
+    deleted refresh_token; it stayed live in the browser, and the frontend
+    HTTP client's own 401 -> silent-refresh-via-POST-/api/v1/auth/refresh
+    flow used it to transparently re-authenticate mid-test the moment any
+    guest-page auth check 401'd — so a "logged out" guest test could
+    intermittently (and, once enough of the suite had run and timing lined
+    up, deterministically) render as a fully authenticated user instead of
+    the guest page under test (confirmed via screenshots of a real full-suite
+    run). _COOKIE_SCOPE_PATH below is a route that doesn't exist on the
+    backend (any 404 there is fine — nothing reads the response) but is
+    still same-origin (proxied through vite, see frontend/vite.config.ts's
+    /api proxy) and under /api/v1/auth, which makes refresh_token visible to
+    the cookie calls that follow while the browser briefly sits there.
+    (A Chrome DevTools Protocol Network-domain version of this fixture —
+    getAllCookies/clearBrowserCookies/setCookies, which aren't path-scoped —
+    was tried first and does fix the leak, but a live CI run showed it
+    reliably crashing the shared Chrome session outright (Invalid
+    SessionIdException) after roughly a dozen uses, well before the original
+    bug ever manifested — a worse failure mode than the one it fixed. Plain
+    Selenium cookie calls, just correctly path-scoped, avoid that.)
     """
-    saved_cookies = driver.execute_cdp_cmd("Network.getAllCookies", {})["cookies"]
-    driver.execute_cdp_cmd("Network.clearBrowserCookies", {})
+    _COOKIE_SCOPE_PATH = "/api/v1/auth/__selenium_cookie_scope__"
+    driver.get(f"{base_url}{_COOKIE_SCOPE_PATH}")
+    saved_cookies = driver.get_cookies()
+    driver.delete_all_cookies()
     yield driver
-    # No driver.get() before restoring: the whole app is single-origin, so
-    # this works from wherever the test left the browser without an extra
-    # navigation first. That extra navigation used to be here defensively
-    # and turned out to be exactly what caused real, confirmed
-    # ElementNotInteractable/StaleElement/Timeout failures in whichever
-    # authenticated_driver-using test ran right after it — two full-page
-    # navigations landing back to back (this teardown's, then the next
-    # fixture's own driver.get()) raced each other in headless Chrome.
-    driver.execute_cdp_cmd("Network.clearBrowserCookies", {})
-    if saved_cookies:
-        driver.execute_cdp_cmd("Network.setCookies", {"cookies": saved_cookies})
+    # Re-visit the same cookie-scoping path before restoring, for the same
+    # path-visibility reason as setup above — restoring while sitting on
+    # whatever frontend route the test body left behind would silently drop
+    # refresh_token again. This is a different, deliberate navigation from
+    # the "extra navigation" this comment used to warn against (that one
+    # loaded the real SPA and raced the next fixture's own driver.get(); this
+    # one loads an API 404 with no app JS to race against).
+    driver.get(f"{base_url}{_COOKIE_SCOPE_PATH}")
+    driver.delete_all_cookies()
+    for cookie in saved_cookies:
+        try:
+            driver.add_cookie(cookie)
+        except WebDriverException:
+            # Best-effort per-cookie: one incompatible cookie attribute
+            # must not stop the rest of the session from being restored.
+            pass
 
 
 @pytest.hookimpl(hookwrapper=True)
