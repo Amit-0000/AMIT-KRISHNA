@@ -26,10 +26,13 @@ from api.inference.feature_extraction import ExtractedFeature
 from api.inference.model_loader import LoadedModel
 from api.inference.models import ModelVersion
 from api.inference.service import AI_JOB_TYPE
+from api.notifications import repository as notifications_repository
 from api.scans import repository as scans_repository
 from api.scans.models import Scan
 from api.scans.service import transition
 from api.scans.state_machine import AI_STAGE_FAILURE_TARGET, ScanStatus, can_transition
+
+_VERDICT_LABELS = {"human": "Human", "ai_generated": "AI Generated", "uncertain": "Uncertain"}
 
 logger = logging.getLogger("voiceguard.inference")
 
@@ -150,6 +153,14 @@ async def _run_stage(
         outcome=AuditOutcome.FAILURE,
         user_id=scan.user_id,
         details={"scan_id": str(scan.id), "stage": stage.value, "error_code": scan.error_code},
+    )
+    await notifications_repository.create(
+        db,
+        user_id=scan.user_id,
+        type="scan_failed",
+        title="Scan failed",
+        body=f"{scan.original_filename} — {scan.error_message}",
+        action_url=f"/history/{scan.id}",
     )
     await db.commit()
     raise _PipelineAborted()
@@ -433,6 +444,15 @@ async def run_ai_pipeline_job(scan_id: uuid.UUID, bind: AsyncEngine | None = Non
                     "processing_time_ms": processing_time_ms,
                 },
             )
+            verdict_label = _VERDICT_LABELS.get(confidence_result.verdict, confidence_result.verdict)
+            await notifications_repository.create(
+                db,
+                user_id=scan.user_id,
+                type="scan_complete",
+                title="Scan complete",
+                body=f"{scan.original_filename} — {verdict_label} ({round(confidence_result.confidence * 100)}%)",
+                action_url=f"/scan/{scan.id}",
+            )
             await db.commit()
             logger.info(
                 "ai_pipeline_completed",
@@ -512,6 +532,14 @@ async def run_ai_pipeline_job(scan_id: uuid.UUID, bind: AsyncEngine | None = Non
                 scan.error_code = "AI_PROCESSING_ERROR"
                 scan.error_message = "An unexpected error occurred during analysis. Please try again."
                 await transition(db, scan, failure_target, actor="system", reason="unhandled_exception")
+                await notifications_repository.create(
+                    db,
+                    user_id=scan.user_id,
+                    type="scan_failed",
+                    title="Scan failed",
+                    body=f"{scan.original_filename} — {scan.error_message}",
+                    action_url=f"/history/{scan.id}",
+                )
             else:
                 logger.error(
                     "ai_pipeline_could_not_auto_fail_scan",

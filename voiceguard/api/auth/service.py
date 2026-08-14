@@ -27,6 +27,7 @@ from api.core.security import (
     validate_password_strength,
     verify_password,
 )
+from api.notifications import repository as notifications_repository
 from api.user import repository as user_repository
 from api.user.models import User
 
@@ -284,6 +285,14 @@ async def reset_password(db: AsyncSession, *, raw_token: str, new_password: str)
     await write_audit_log(
         db, event_type=AuditEventType.PASSWORD_RESET_COMPLETED, outcome=AuditOutcome.SUCCESS, user_id=user.id
     )
+    await notifications_repository.create(
+        db,
+        user_id=user.id,
+        type="alert",
+        title="Password reset",
+        body="Your password was reset. If this wasn't you, contact support immediately.",
+        action_url="/settings/account",
+    )
     await send_password_changed_email(to=user.email)
     return user
 
@@ -299,4 +308,12 @@ async def change_password(db: AsyncSession, *, user: User, current_password: str
     await user_repository.set_password_hash(db, user, await hash_password(new_password))
     await repository.revoke_all_refresh_tokens_for_user(db, user.id)
     await write_audit_log(db, event_type=AuditEventType.PASSWORD_CHANGED, outcome=AuditOutcome.SUCCESS, user_id=user.id)
+    await notifications_repository.create(
+        db,
+        user_id=user.id,
+        type="alert",
+        title="Password changed",
+        body="Your password was changed. If this wasn't you, contact support immediately.",
+        action_url="/settings/account",
+    )
     await send_password_changed_email(to=user.email)

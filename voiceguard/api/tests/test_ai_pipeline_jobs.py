@@ -286,6 +286,20 @@ async def test_pipeline_exhausts_retries_and_lands_in_correct_failed_state(
     ).scalars().all()
     assert (events[-1].from_status, events[-1].to_status) == ("running_inference", "inference_failed")
 
+    # Regression coverage for the same "notifications are permanently empty"
+    # bug fixed for scan_complete (see test_notifications.py's
+    # test_scan_completion_creates_a_notification) -- a scan that exhausts
+    # retries and lands in a terminal *_FAILED state must also produce a
+    # real, visible notification (api/inference/jobs.py's _run_stage
+    # failure branch).
+    list_resp = await client.get("/api/v1/notifications")
+    assert list_resp.status_code == 200
+    notifications = list_resp.json()["data"]
+    assert len(notifications) == 1
+    assert notifications[0]["type"] == "scan_failed"
+    assert notifications[0]["read"] is False
+    assert str(scan.id) in notifications[0]["action_url"]
+
 
 # ── Timeout ───────────────────────────────────────────────────────────────────
 

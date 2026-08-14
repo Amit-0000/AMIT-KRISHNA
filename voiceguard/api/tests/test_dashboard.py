@@ -115,3 +115,43 @@ async def test_recent_scans_endpoint(
     assert scans[0]["status"] == "completed"
     assert scans[0]["file_name"] == "clip.wav"
     assert scans[0]["share_token"] is None
+
+
+async def test_dashboard_stats_exclude_deleted_scans(
+    client: AsyncClient, captured_emails: dict[str, str], db_session: AsyncSession, ai_checkpoint: Path
+) -> None:
+    """Regression test for the "AI Detected: 133% of total" bug: deleting a
+    completed scan must remove it from every dashboard stat consistently
+    (total_scans, verdict counts, avg_processing_ms, trend, confidence
+    distribution) — not just from total_scans while its ScanResult keeps
+    counting toward the others forever."""
+    await _register_verify_login(client, captured_emails, email="deleted-scan@example.com")
+    kept_scan_id = await _complete_scan(client, db_session)
+    # Different duration so this isn't byte-identical to the first upload
+    # (identical uploads are rejected as duplicates — not what's under test).
+    deleted_scan_id = await _complete_scan(client, db_session, seconds=1.5)
+
+    before = (await client.get("/api/v1/dashboard")).json()["data"]
+    assert before["stats"]["total_scans"] == 2
+    verdict_total_before = (
+        before["stats"]["ai_detected"] + before["stats"]["human_verified"] + before["stats"]["uncertain"]
+    )
+    assert verdict_total_before == 2
+
+    del_resp = await client.delete(f"/api/v1/scans/{deleted_scan_id}")
+    assert del_resp.status_code == 200, del_resp.text
+
+    after = (await client.get("/api/v1/dashboard")).json()["data"]
+    assert after["stats"]["total_scans"] == 1
+    verdict_total_after = (
+        after["stats"]["ai_detected"] + after["stats"]["human_verified"] + after["stats"]["uncertain"]
+    )
+    # This is the exact invariant that broke: verdict counts must never
+    # exceed total_scans, and after deleting one of two scans both must
+    # read exactly 1 (not verdict_total_after == 2, which is what the
+    # unjoined query produced).
+    assert verdict_total_after == 1
+    assert verdict_total_after <= after["stats"]["total_scans"]
+
+    remaining_ids = {item["scan_id"] for item in after["recent_activity"]}
+    assert remaining_ids == {kept_scan_id}

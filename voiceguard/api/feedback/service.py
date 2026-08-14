@@ -8,6 +8,7 @@ from api.core.audit import AuditEventType, AuditOutcome, write_audit_log
 from api.feedback import repository
 from api.feedback.models import Feedback, priority_for_category
 from api.feedback.schemas import FeedbackSubmitRequest
+from api.notifications import repository as notifications_repository
 from api.user.models import User
 
 
@@ -40,6 +41,17 @@ async def submit_feedback(
         request_id=request_id,
         details={"feedback_id": str(feedback.id), "category": payload.category},
     )
+    # Anonymous submissions (user is None) have no inbox to notify — the
+    # success screen shown right after submitting is their only confirmation.
+    if user is not None:
+        await notifications_repository.create(
+            db,
+            user_id=user.id,
+            type="feedback_thanks",
+            title="Thanks for your feedback",
+            body="We received your feedback and will follow up if we need more detail.",
+            action_url=None,
+        )
     return feedback
 
 

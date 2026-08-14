@@ -1,5 +1,10 @@
 from __future__ import annotations
 
+import io
+import struct
+import uuid
+import wave
+from pathlib import Path
 from urllib.parse import parse_qs, urlparse
 
 import pytest
@@ -7,7 +12,10 @@ from httpx import AsyncClient
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from api.auth import service as auth_service
+from api.inference import jobs as jobs_module
 from api.notifications import repository as notification_repository
+from api.scans import jobs as scans_jobs_module
+from api.scans import repository as scans_repository
 
 pytestmark = pytest.mark.asyncio
 
@@ -117,3 +125,45 @@ async def test_delete_notification(
 
     list_resp = await client.get("/api/v1/notifications")
     assert list_resp.json()["data"] == []
+
+
+def _wav_bytes(seconds: float = 1.0, rate: int = 16000, tone: int = 4000) -> bytes:
+    n_frames = int(seconds * rate)
+    buf = io.BytesIO()
+    with wave.open(buf, "wb") as wf:
+        wf.setnchannels(1)
+        wf.setsampwidth(2)
+        wf.setframerate(rate)
+        wf.writeframes(struct.pack("<" + "h" * n_frames, *([tone] * n_frames)))
+    return buf.getvalue()
+
+
+async def test_scan_completion_creates_a_notification(
+    client: AsyncClient, captured_emails: dict[str, str], db_session: AsyncSession, ai_checkpoint: Path
+) -> None:
+    """Regression test for the "Notifications are permanently empty for
+    every user" bug: notifications.repository.create() existed but nothing
+    in the running app ever called it. A completed scan must produce a real,
+    visible notification."""
+    await _register_and_login(client, captured_emails, email="scan-notif@example.com")
+
+    resp = await client.post("/api/v1/scans", files={"file": ("clip.wav", _wav_bytes(), "audio/wav")})
+    assert resp.status_code == 201, resp.text
+    scan_id = resp.json()["data"]["scan"]["id"]
+    await scans_jobs_module.run_preprocessing_job(uuid.UUID(scan_id), db_session.bind)
+
+    process_resp = await client.post(f"/api/v1/scans/{scan_id}/process")
+    assert process_resp.status_code == 202, process_resp.text
+    scan = await scans_repository.get_by_id(db_session, uuid.UUID(scan_id))
+    await jobs_module.run_ai_pipeline_job(scan.id, db_session.bind)
+
+    list_resp = await client.get("/api/v1/notifications")
+    assert list_resp.status_code == 200
+    notifications = list_resp.json()["data"]
+    assert len(notifications) == 1
+    assert notifications[0]["type"] == "scan_complete"
+    assert notifications[0]["read"] is False
+    assert scan_id in notifications[0]["action_url"]
+
+    unread_resp = await client.get("/api/v1/notifications/unread-count")
+    assert unread_resp.json()["data"]["unread_count"] == 1
