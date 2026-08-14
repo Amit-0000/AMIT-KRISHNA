@@ -376,6 +376,18 @@ jobs:
     needs: [semgrep, trivy, generate-report]
     if: always()
     steps:
+      # Root cause of "An error occurred trying to start process '/usr/bin/bash'
+      # ... No such file or directory": this workflow sets a global
+      # `defaults.run.working-directory: voiceguard`, but unlike every other
+      # job here (semgrep, trivy, gitleaks, unit-tests, api-tests,
+      # performance-smoke-test, generate-report all start with this same
+      # checkout step), `gate` never checked out the repo — so there was no
+      # voiceguard/ directory in the runner's workspace for the shell to cd
+      # into before it could even start, which surfaces as a process-launch
+      # failure mentioning bash rather than a missing-directory error. Not a
+      # missing/broken bash — confirmed via the actual failed run's raw log.
+      - uses: actions/checkout@v7
+
       - name: Evaluate Critical-severity gate
         run: |
           echo "This gate is intentionally scoped to fail ONLY on Critical-severity"
