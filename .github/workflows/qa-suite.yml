@@ -7,8 +7,9 @@ name: QA Suite
 #
 # Jobs: setup-node -> {selenium-tests, appium-tests, load-tests,
 # security-assessment} -> summary, plus an independent unit-tests job.
-# appium-tests is continue-on-error for a documented environmental reason
-# (see its job comment) and is excluded from summary's pass/fail gate.
+# appium-tests gates on a real, configurable pass-rate threshold (see its
+# job comment and check_pass_threshold.py) and is included in summary's
+# pass/fail gate like every other blocking job.
 
 on:
   push:
@@ -358,21 +359,41 @@ jobs:
     name: appium-tests
     runs-on: ubuntu-latest
     needs: [setup-node]
+    # Real-world runs of this job have gone silent for 2+ hours inside the
+    # emulator-runner step with none of that step's own internal timeouts
+    # (boot timeout, instrumentation-launch timeout, adb_exec_timeout) ever
+    # firing — a genuine runner/KVM-level hang, not a slow-but-progressing
+    # run. Left unbounded, the default 360-minute GitHub Actions job timeout
+    # is the only thing that would eventually end it. A tight job-level cap
+    # turns that into a fast, honest failure instead: check_pass_threshold.py
+    # below still runs (if: always()) and reports it as the real infra
+    # failure it is, rather than the workflow looking "still running" for
+    # hours.
+    timeout-minutes: 45
     # The app has no native mobile client — this covers the responsive/
     # mobile-viewport UI path only, via mobile Chrome under UiAutomator2.
     #
-    # continue-on-error is deliberate here, not a shortcut: this job has
-    # been through 5 separate investigated-and-fixed root causes (cold
-    # KVM boot timing out, 5x redundant UiAutomator2 session-creation
-    # cost, an under-sized instrumentation-launch timeout, a broken
-    # chromedriverAutodownload pairing) and now fails intermittently on
-    # the Android system server's own service-startup ordering under this
-    # runner's 2-vCPU contention — non-deterministic timing inside the
-    # emulator, not a code or workflow defect. No larger GitHub-hosted or
-    # self-hosted runner is available on this account. Revisit if that
-    # changes; until then this job shouldn't block the other 5, which
-    # gate normally.
-    continue-on-error: true
+    # This job used to carry a job-level continue-on-error: true, which hid
+    # its real result behind a green checkmark regardless of outcome. Every
+    # root cause behind its past flakiness (cold KVM boot timing, redundant
+    # UiAutomator2 session creation, an under-sized instrumentation-launch
+    # timeout, a broken chromedriverAutodownload pairing, and system-server
+    # startup ordering under CPU contention) has since been fixed — AVD
+    # snapshot caching, the session-scoped driver fixture, the 300s
+    # instrumentation timeouts, the pinned legacy chromedriver, and the
+    # `service check settings` wait loop below, respectively. The job now
+    # gates on a real, configurable pass-rate threshold instead
+    # (APPIUM_MIN_PASS_RATE below, applied by check_pass_threshold.py as the
+    # job's actual last word): only the individual pytest-run step tolerates
+    # a non-zero exit (continue-on-error at the *step* level, so a handful
+    # of failing/flaky tests don't abort the run before the threshold check
+    # and report/artifact steps get to run) — genuine infra failures (no
+    # report produced at all) and a pass rate under threshold both make this
+    # job fail for real, same as any other job in this workflow.
+    env:
+      # Configurable pass-rate bar for this job's real gate (see
+      # check_pass_threshold.py). Executable tests only (excludes skips).
+      APPIUM_MIN_PASS_RATE: "90"
     steps:
       - uses: actions/checkout@v7
 
@@ -476,6 +497,11 @@ jobs:
           echo "appium server did not start in time"; cat "${{ github.workspace }}/appium.log"; exit 1
 
       - name: Run Appium mobile-web suite on Android emulator
+        # Bounded independently of the job-level timeout-minutes above so a
+        # hang here (the observed failure mode) still leaves headroom for
+        # Parse/Build/Threshold-check/Upload/Tear down to run afterward
+        # instead of the whole job timing out mid-suite with nothing salvaged.
+        timeout-minutes: 25
         uses: reactivecircus/android-emulator-runner@v2
         with:
           api-level: 33
@@ -494,15 +520,22 @@ jobs:
           # after `sys.boot_completed=1`, which otherwise makes the very
           # first Appium session's hidden-api-policy reset fail with
           # "Can't find service: settings".
-          # --reruns 1: retries a failing test once (test-level flake
-          # tolerance for the mobile suite itself) — separate from and in
-          # addition to the emulator/session-level retries already in
-          # conftest.py's driver fixture.
+          # --reruns 1: retries a failing test once (2 attempts total,
+          # test-level flake tolerance for the mobile suite itself) —
+          # separate from and in addition to the emulator/session-level
+          # retries already in conftest.py's driver fixture.
           script: for i in $(seq 1 30); do adb shell service check settings 2>/dev/null | grep -q "found" && break; sleep 2; done; cd "${{ github.workspace }}/voiceguard/e2e/appium" && python -m pytest -v --reruns 1 --reruns-delay 3 --json-report --json-report-file="${{ github.workspace }}/voiceguard/e2e/results/appium_report.json" --junitxml="${{ github.workspace }}/voiceguard/e2e/results/appium_report.xml"
         env:
           APPIUM_SERVER_URL: http://127.0.0.1:4723/wd/hub
           APPIUM_BASE_URL: http://10.0.2.2:5173
           CHROMEDRIVER_EXECUTABLE: ${{ github.workspace }}/chromedriver-109/chromedriver
+        # Step-level only: a handful of failing/flaky tests must not abort
+        # the run before the threshold check, report, and artifact-upload
+        # steps below get to run. This does NOT hide the job's real result —
+        # "Apply Appium pass-rate threshold" below is what actually decides
+        # whether this job succeeds, and a genuine infra failure (no report
+        # produced at all) still fails it. See the job-level comment above.
+        continue-on-error: true
 
       - name: Parse Appium results
         # Same always()-must-run reasoning already documented on load-tests'
@@ -534,6 +567,18 @@ jobs:
         working-directory: voiceguard/e2e/appium
         run: python build_html_report.py
 
+      - name: Apply Appium pass-rate threshold
+        # The job's real gate (see the job-level comment above): writes the
+        # Appium Mobile Web Test Summary table to the Actions summary and
+        # exits non-zero when no report was produced, zero tests executed,
+        # or the pass rate among executed tests is below
+        # APPIUM_MIN_PASS_RATE. This step's exit code is what actually
+        # determines this job's pass/fail — nothing upstream is
+        # continue-on-error at the job level anymore.
+        if: always()
+        working-directory: voiceguard/e2e/appium
+        run: python check_pass_threshold.py
+
       - name: Upload Appium report
         if: always()
         uses: actions/upload-artifact@v7
@@ -555,12 +600,13 @@ jobs:
     name: deploy-qa-reports
     runs-on: ubuntu-latest
     needs: [appium-tests, selenium-tests]
-    # Mirrors appium-tests' own non-blocking status: publishing this run's
-    # reports must never be why the pipeline goes red, and must still be
-    # attempted even when appium-tests/selenium-tests failed/errored
-    # (if: always()), since a failure run's report is exactly the one worth
-    # looking at. selenium-tests itself still gates the pipeline normally
-    # (see its job) — only *this publishing job* is non-blocking.
+    # Publishing this run's reports must never be why the pipeline goes red,
+    # and must still be attempted even when appium-tests/selenium-tests
+    # failed/errored (if: always()), since a failure run's report is exactly
+    # the one worth looking at. Both appium-tests and selenium-tests still
+    # gate the pipeline normally on their own real results (see their jobs
+    # and the `summary` job's final gate) — only *this publishing job* is
+    # non-blocking.
     if: always()
     continue-on-error: true
     # pages/id-token: required by actions/deploy-pages. contents: write:
@@ -727,7 +773,7 @@ jobs:
             echo "| setup-node | ${{ needs.setup-node.result }} |"
             echo "| unit-tests | ${{ needs.unit-tests.result }} |"
             echo "| selenium-tests | ${{ needs.selenium-tests.result }} |"
-            echo "| appium-tests | ${{ needs.appium-tests.result }} (non-blocking — see job comment) |"
+            echo "| appium-tests | ${{ needs.appium-tests.result }} |"
             echo "| load-tests | ${{ needs.load-tests.result }} |"
             echo "| security-assessment | ${{ needs.security-assessment.result }} |"
           } >> "$GITHUB_STEP_SUMMARY"
@@ -769,11 +815,13 @@ jobs:
       - name: Report Appium execution numbers
         # Real numbers pulled from this run's own appium_summary.json (the
         # artifact appium-tests' "Parse Appium results" step produced) —
-        # not a re-derivation or estimate. Prints a WARN (not a failure —
-        # appium-tests stays non-blocking, per the job comment and memory
-        # of why that was decided) when the pass rate among tests that
-        # actually executed drops below 95%, giving the ">5% critical
-        # failures" signal visibility without changing the gate below.
+        # not a re-derivation or estimate. appium-tests' own "Apply Appium
+        # pass-rate threshold" step already wrote the authoritative
+        # Appium Mobile Web Test Summary table (with the real PASS/FAIL
+        # verdict against APPIUM_MIN_PASS_RATE) to that job's own step
+        # summary; this is a secondary, informational restatement here
+        # alongside Selenium's for a single consolidated view, not the
+        # thing that decides appium-tests' result.
         if: always()
         run: |
           SUMMARY=voiceguard/e2e/results/appium_summary.json
@@ -783,7 +831,7 @@ jobs:
             exit 0
           fi
           python3 voiceguard/e2e/appium/report_summary_markdown.py "$SUMMARY" \
-            "Appium (Mobile Web)" "non-blocking — see appium-tests job comment" >> "$GITHUB_STEP_SUMMARY"
+            "Appium (Mobile Web)" "see appium-tests job's own summary for the real pass-rate gate result" >> "$GITHUB_STEP_SUMMARY"
 
       - name: Report Selenium execution numbers
         # Same real-numbers-only approach as the Appium step above, from
@@ -813,15 +861,17 @@ jobs:
           retention-days: 90
 
       - name: Fail summary if a blocking job did not succeed
-        # appium-tests is intentionally excluded — it's continue-on-error
-        # for a documented environmental reason (see its job comment) and
-        # must not block the rest of the QA suite from going green.
+        # appium-tests now gates like every other job here — its own result
+        # already reflects the real pass-rate-threshold outcome (see its
+        # job comment and check_pass_threshold.py), not a masked
+        # continue-on-error success.
         if: |
           needs.setup-node.result != 'success' ||
           needs.unit-tests.result != 'success' ||
           needs.selenium-tests.result != 'success' ||
           needs.load-tests.result != 'success' ||
-          needs.security-assessment.result != 'success'
+          needs.security-assessment.result != 'success' ||
+          needs.appium-tests.result != 'success'
         run: |
           echo "One or more blocking QA jobs did not succeed — see the status table above."
           exit 1

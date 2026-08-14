@@ -18,6 +18,8 @@ conftest.py               driver/authenticated_driver/unauthenticated_driver
                            fixtures + failure-screenshot hook
 parse_results.py          appium_report.json -> appium_summary.json
 build_html_report.py      appium_summary.json -> execution-report.html
+check_pass_threshold.py   appium_summary.json -> real pass/fail gate for the
+                           appium-tests job (APPIUM_MIN_PASS_RATE, default 90)
 update_history_manifest.py  maintains reports/history/index.json on gh-pages
 report_summary_markdown.py  prints real numbers into $GITHUB_STEP_SUMMARY
 trends.html                static page, fetches history/*/appium_summary.json
@@ -60,21 +62,29 @@ runner). Because of that:
 
 AVD cache warm-up → bring up the Docker stack → start Appium → run this
 suite on `reactivecircus/android-emulator-runner` (with `--reruns 1` test-
-level retry) → parse results → build the HTML report → upload everything as
-the `appium-report` artifact. A separate `deploy-appium-report` job then
-publishes that artifact to GitHub Pages (`reports/latest/` + an appended
+level retry, i.e. 2 attempts per test) → parse results → build the HTML
+report → **apply a real pass-rate threshold gate** (`check_pass_threshold.py`,
+`APPIUM_MIN_PASS_RATE`, default 90) → upload everything as the
+`appium-report` artifact. A separate `deploy-qa-reports` job then publishes
+that artifact to GitHub Pages (`reports/latest/` + an appended
 `reports/history/build-<run>/`).
 
-This job is `continue-on-error: true` and excluded from the `summary` job's
-pass/fail gate — **on purpose**, not a shortcut. It's been through 5
-documented root-cause fixes for real Android-emulator flakiness on GitHub's
-shared 2-vCPU runners (cold KVM boot timing, redundant session creation,
-under-sized instrumentation timeouts, a broken chromedriver auto-download
-pairing, and now non-deterministic system-server startup ordering under CPU
-contention) and still fails intermittently for infra reasons unrelated to
-this suite's own tests. See the job's inline comment before touching any of
-that setup — the emulator caching, chromedriver pinning, and timeouts are
-tuned against measured CI behavior, not defaults.
+This job gates the pipeline like any other job in this workflow — its
+result reflects the real outcome, not a masked `continue-on-error: true`.
+Only the pytest-run step itself tolerates a non-zero exit (step-level
+`continue-on-error`, so a handful of failing/flaky tests don't abort the run
+before the threshold check and report/artifact steps get to run);
+`check_pass_threshold.py` is what actually decides pass/fail, and a genuine
+infra failure (no report produced at all, or zero tests executed) still
+fails the job. It previously carried a job-level `continue-on-error: true`
+while 5 real root causes of Android-emulator flakiness on GitHub's shared
+2-vCPU runners were investigated and fixed one at a time (cold KVM boot
+timing, redundant session creation, under-sized instrumentation timeouts, a
+broken chromedriver auto-download pairing, and system-server startup
+ordering under CPU contention, guarded by the `service check settings` wait
+loop) — see the job's inline comment before touching any of that setup, the
+emulator caching, chromedriver pinning, and timeouts are tuned against
+measured CI behavior, not defaults.
 
 If a test itself fails (not the infra), `execution-report.html` links a
 failure screenshot (`results/screenshots/<test>.png`, captured by
@@ -112,7 +122,9 @@ creates/updates that branch; it can't flip the repo setting itself).
 - **A GuestGuard-page test unexpectedly redirects to `/dashboard`**: it's
   using plain `driver` instead of `unauthenticated_driver` — see "Fixture
   design" above.
-- **appium-tests is red but the rest of the suite is green**: expected and
-  by design — see "CI flow" above. Check `execution-report.html` in the
-  `appium-report` artifact (or the Pages URL) for what actually failed
-  before assuming it's the known infra flakiness.
+- **appium-tests is red**: it's a real failure now — no continue-on-error
+  is masking it. Check the job's own "Appium Mobile Web Test Summary" step
+  summary first (pass rate vs. `APPIUM_MIN_PASS_RATE`), then
+  `execution-report.html` in the `appium-report` artifact (or the Pages URL)
+  for which specific tests failed and why, before assuming it's emulator
+  infra rather than a real regression.
