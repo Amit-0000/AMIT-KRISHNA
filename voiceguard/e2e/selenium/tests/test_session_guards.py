@@ -59,7 +59,24 @@ def test_authguard_redirects_unauthenticated_user_to_login(unauthenticated_drive
 
 @pytest.mark.parametrize("route", GUEST_GUARDED_ROUTES)
 def test_guestguard_redirects_authenticated_user_away(authenticated_driver, base_url, route):
+    # Bounce through a neutral route before `route` itself: this test runs
+    # right after test_authguard_redirects_unauthenticated_user_to_login's
+    # own parametrization, whose last case can leave the shared browser
+    # already sitting on this exact `route` (e.g. /login) with real
+    # `history.state.usr.from` attached from AuthGuard's own client-side
+    # redirect there. A plain page.goto(route) in that situation is a
+    # same-URL reload, which Chrome serves by keeping the existing history
+    # entry (and its state) rather than starting a fresh one -- confirmed
+    # live via window.history.state before/after (same root cause
+    # documented in conftest.py's authenticated_driver fixture). GuestGuard
+    # then correctly honors that leftover state.from and redirects to it
+    # instead of /dashboard once it sees an authenticated user, which isn't
+    # what *this* test is asserting (it wants the no-`from` baseline
+    # behavior). Landing on `base_url` first guarantees `route` is always a
+    # fresh navigation with no inherited router state, regardless of
+    # whatever the previous test left the browser on.
     page = BasePage(authenticated_driver, base_url)
+    page.goto("/")
     page.goto(route)
     page.wait_url_contains("/dashboard")
     assert "/dashboard" in page.current_url

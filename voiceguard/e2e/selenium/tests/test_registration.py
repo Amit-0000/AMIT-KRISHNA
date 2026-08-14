@@ -87,7 +87,12 @@ def test_signup_duplicate_email_rejected(unauthenticated_driver, base_url):
     page.open()
     page.fill_form("Selenium QA Dup", FIXTURE_USER["email"], VALID_SIGNUP_PASSWORD, VALID_SIGNUP_PASSWORD)
     page.submit_signup()
-    assert "already exists" in page.body_text().lower()
+    # body_contains, not a one-shot body_text() read: the real error message
+    # only appears after the async POST /auth/register round trip resolves
+    # (Signup/index.tsx's EMAIL_ALREADY_EXISTS branch) -- same race
+    # body_contains was already introduced elsewhere in this suite to fix
+    # (see base_page.py's docstring), just not yet applied to this test.
+    assert page.body_contains("already exists")
 
 
 def test_signup_success_shows_check_email(unauthenticated_driver, base_url):

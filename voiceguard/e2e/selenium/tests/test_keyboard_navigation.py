@@ -151,11 +151,24 @@ def test_sidebar_nav_link_reachable_via_tab_on_desktop_viewport(authenticated_dr
 
 
 def test_forgot_password_form_reachable_via_tab(unauthenticated_driver, base_url):
+    # Not _tab_to_ids here: ForgotPasswordPage.tsx's only field after Email
+    # is the "Send reset link" submit <Button>, which (correctly, per
+    # frontend/src/components/ui/button.tsx) has no `id` -- a button needs
+    # none to be focusable or accessible, its name comes from its text
+    # content. _tab_to_ids's id-only filter is right for the login/signup
+    # tests above (which check specific *named* fields like "password" are
+    # reached), but would wrongly report "nothing reachable" here even
+    # though Tab correctly lands on a real, focusable, accessible element.
+    # Assert on the real DOM focus target instead of requiring it to have
+    # an id it has no reason to have.
     page = BasePage(unauthenticated_driver, base_url)
     page.goto("/forgot-password")
     _click_settled(page, By.ID, "email")
-    visited = _tab_to_ids(unauthenticated_driver, max_tabs=3)
-    assert visited, "at least one focusable element with an id should follow the email field"
+    unauthenticated_driver.switch_to.active_element.send_keys(Keys.TAB)
+    focused = unauthenticated_driver.switch_to.active_element
+    assert focused.tag_name.lower() in ("button", "a", "input", "select", "textarea"), (
+        f"Tab from the email field landed on a non-interactive element: <{focused.tag_name}>"
+    )
 
 
 def test_notification_bell_reachable_via_tab_and_activatable_via_enter(authenticated_driver, base_url):

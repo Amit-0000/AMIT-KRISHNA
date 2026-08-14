@@ -20,16 +20,48 @@ from pages.nav import AppChrome, GlobalSearch, NotificationCenter, Sidebar, User
 pytestmark = [pytest.mark.medium]
 
 
+def _reset_ui_persisted_state(driver) -> None:
+    """Resets the client-persisted UI state this file's tests mutate
+    (sidebar collapse, theme) to a known baseline, both before and after
+    each test that uses `chrome`/`sidebar` below.
+
+    uiStore.ts persists both fields together under one zustand-persist
+    localStorage key ('vg-ui') -- patched in place here rather than
+    clearing the key outright, so an unrelated field a future uiStore
+    addition might persist isn't blown away by this file's tests.
+
+    Running this both in setup and teardown (via the fixtures' yield,
+    which pytest still runs on the way out even when the test raised) is
+    what actually fixes cross-test leakage: setup alone would still leave
+    a *failing* test's mutation in place for whatever runs next, and this
+    file previously relied on each test manually toggling back to "as
+    found" -- fragile exactly because a failure before that toggle (as
+    test_sidebar_collapse_state_persists_across_navigation hit) skips it.
+    """
+    driver.execute_script(
+        "const raw = localStorage.getItem('vg-ui');"
+        "const parsed = raw ? JSON.parse(raw) : {state: {}, version: 0};"
+        "parsed.state = parsed.state || {};"
+        "parsed.state.sidebarCollapsed = false;"
+        "parsed.state.theme = 'dark';"
+        "localStorage.setItem('vg-ui', JSON.stringify(parsed));"
+    )
+
+
 @pytest.fixture
 def chrome(authenticated_driver, base_url):
+    _reset_ui_persisted_state(authenticated_driver)
     DashboardPage(authenticated_driver, base_url).goto_dashboard()
-    return AppChrome(authenticated_driver, base_url)
+    yield AppChrome(authenticated_driver, base_url)
+    _reset_ui_persisted_state(authenticated_driver)
 
 
 @pytest.fixture
 def sidebar(authenticated_driver, base_url):
+    _reset_ui_persisted_state(authenticated_driver)
     DashboardPage(authenticated_driver, base_url).goto_dashboard()
-    return Sidebar(authenticated_driver, base_url)
+    yield Sidebar(authenticated_driver, base_url)
+    _reset_ui_persisted_state(authenticated_driver)
 
 
 def test_sidebar_visible_on_desktop_viewport(sidebar):
@@ -184,11 +216,11 @@ def test_theme_toggle_cycles_theme(chrome):
 
 
 def test_sidebar_collapse_state_persists_across_navigation(sidebar):
-    # uiStore.ts persists sidebarCollapsed to localStorage -- its starting
-    # value here depends on whatever an earlier test in this run last left
-    # it as (e.g. test_sidebar_collapse_toggle_and_expands's own toggle
-    # pair), not necessarily "expanded". Capture the real starting state
-    # instead of assuming one.
+    # The `sidebar` fixture resets sidebarCollapsed=false before every test
+    # (see _reset_ui_persisted_state above), so `started_collapsed` is
+    # deterministic here -- captured via the real getter rather than assumed
+    # `False` anyway, so this test still reads correctly if that guarantee
+    # ever changes.
     started_collapsed = sidebar.is_collapsed()
     sidebar.toggle_collapse()
     assert sidebar.is_collapsed() != started_collapsed

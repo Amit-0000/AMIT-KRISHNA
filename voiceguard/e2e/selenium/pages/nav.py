@@ -54,12 +54,24 @@ class Sidebar(BasePage):
     COLLAPSE_TOGGLE = (By.XPATH, '//button[@aria-label="Collapse sidebar" or @aria-label="Expand sidebar"]')
     SETTINGS_LINK = (By.XPATH, '//aside[@aria-label="Main navigation"]//a[contains(., "Settings")]')
 
+    # SIDEBAR_SECTIONS labels -> href, from nav-config.ts. Locating by href
+    # rather than visible text: the collapsed layout (Sidebar.tsx) renders
+    # icon-only with the label visually hidden, so a text-based XPath only
+    # ever matched in the sidebar's default expanded state -- href is
+    # present in the DOM either way, since collapse is a pure CSS/layout
+    # change, not a different link.
+    _LABEL_HREFS = {
+        "Dashboard": "/dashboard",
+        "New Scan": "/scan/new",
+        "History": "/history",
+        "Notifications": "/notifications",
+        "Help Center": "/help",
+        "Give Feedback": "/feedback",
+    }
+
     def nav_link(self, label: str):
-        # SIDEBAR_SECTIONS item labels from nav-config.ts: "Dashboard",
-        # "New Scan", "History", "Notifications", "Help Center",
-        # "Give Feedback" — exact visible link text (rendered as long as the
-        # sidebar isn't collapsed, its default state).
-        return self.find(By.XPATH, f'//nav[@aria-label="Sidebar navigation"]//a[normalize-space()="{label}"]')
+        href = self._LABEL_HREFS[label]
+        return self.find(By.XPATH, f'//nav[@aria-label="Sidebar navigation"]//a[@href="{href}"]')
 
     def go_to(self, label: str) -> None:
         self.click(self.nav_link(label))

@@ -2,7 +2,8 @@
 result/detail, plus the real duplicate-upload rejection feature
 (api/scans/service.py's find_active_duplicate — see
 performance/k6/baseline_load_test.js's uniqueWavBytes() comment for the
-same constraint on the load-test side).
+same constraint on the load-test side, and this file's own
+_generate_unique_wav below for the equivalent on this side).
 
 Tests within this file rely on declaration order (pytest's default) for the
 upload -> duplicate-reject -> result/detail/history sequence: only ONE real
@@ -11,10 +12,27 @@ downstream tests read its outcome back out of the shared browser/`_state`
 rather than re-uploading, since a second identical upload is a rejection by
 design. This is a separate CI job/backend instance from the Appium suite's
 own single real upload, so no cross-suite interference.
+
+SAMPLE_WAV is generated fresh (not a static fixture file) so that re-running
+this suite never collides with a previous run's own upload of the same
+bytes: find_active_duplicate is content-hash-based and has no time window,
+so a static file re-uploaded across many runs (this suite, manual testing,
+CI re-runs) eventually causes THIS suite's *first* upload to spuriously hit
+"active duplicate" before it ever gets to test the real duplicate-rejection
+tests that are supposed to trigger it deliberately. Content, not just the
+filename, must be unique — find_active_duplicate hashes bytes, not names.
 """
 from __future__ import annotations
 
+import atexit
+import io
+import math
+import os
+import struct
+import tempfile
+import time
 import uuid
+import wave
 from pathlib import Path
 
 import pytest
@@ -26,7 +44,39 @@ from pages.scan_pages import NewScanPage, ScanDetailPage, ScanProcessingPage, Sc
 
 pytestmark = [pytest.mark.high]
 
-SAMPLE_WAV = str(Path(__file__).resolve().parents[3] / "performance" / "k6" / "sample.wav")
+
+def _generate_unique_wav(seconds: float = 1.0, rate: int = 16000) -> str:
+    """Writes a small valid WAV with a tone frequency seeded from the
+    current time (plus a random component, so two runs starting in the
+    same second still can't collide) to a fresh temp file, and returns its
+    path. Mirrors baseline_load_test.js's uniqueWavBytes() approach on the
+    Python/Selenium side: real, valid audio, unique content per run."""
+    tone_hz = 4000 + (int(time.time() * 1000) + uuid.uuid4().int) % 2000  # 4000-6000 Hz
+    n_frames = int(seconds * rate)
+    buf = io.BytesIO()
+    with wave.open(buf, "wb") as wf:
+        wf.setnchannels(1)
+        wf.setsampwidth(2)
+        wf.setframerate(rate)
+        wf.writeframes(
+            struct.pack(
+                "<" + "h" * n_frames,
+                *[int(3000 * math.sin(2 * math.pi * tone_hz * (i / rate))) for i in range(n_frames)],
+            )
+        )
+    # Written to the OS temp dir, not the repo tree, so it never shows up as
+    # untracked/generated-junk in `git status` -- cleaned up via atexit
+    # rather than a pytest fixture teardown since SAMPLE_WAV is a
+    # module-level constant several tests reference directly (see module
+    # docstring), not something threaded through as a fixture parameter.
+    fd, path = tempfile.mkstemp(prefix="voiceguard_selenium_sample_", suffix=".wav")
+    with os.fdopen(fd, "wb") as f:
+        f.write(buf.getvalue())
+    atexit.register(lambda: os.path.exists(path) and os.remove(path))
+    return path
+
+
+SAMPLE_WAV = _generate_unique_wav()
 SAMPLE_WAV_FILENAME = Path(SAMPLE_WAV).name
 
 # Populated by test_upload_valid_audio_file_shows_file_card_and_starts_analysis,
