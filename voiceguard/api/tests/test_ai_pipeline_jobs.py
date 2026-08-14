@@ -397,6 +397,89 @@ async def test_unexpected_exception_in_a_stage_still_reaches_a_terminal_state(
     assert len(audit_logs) == 1
 
 
+# ── Unhandled exception with an already-broken DB transaction ──────────────
+# Regression coverage for a defect found by actually running this suite (not
+# by inspection): test_pipeline_stage_timeout_is_recorded_and_retried above
+# occasionally (a genuinely timing-sensitive, non-deterministic interaction —
+# not reliably reproducible via a plain rerun) hit a live
+# sqlalchemy.exc.PendingRollbackError raised from *inside*
+# run_ai_pipeline_job's own last-resort `except Exception` handler: that
+# handler used to log `scan.id` (an ORM attribute read) before calling
+# `db.rollback()`, and if `db`'s transaction was already DEACTIVE — which
+# happens whenever a DBAPI-level error occurs mid-flush anywhere earlier in
+# the same stage, not only under a timeout race — that attribute access
+# itself raised a second exception from inside the code whose entire job is
+# to guarantee a terminal state no matter what went wrong. This test forces
+# that "failed session" condition directly (a CHECK-constraint violation on
+# a flush, exactly the shape of error a real DBAPI failure mid-stage would
+# leave behind) instead of relying on a razor-thin asyncio timeout, so the
+# invariant is verified deterministically rather than only occasionally
+# under load.
+
+
+async def test_unhandled_exception_with_a_broken_transaction_does_not_raise_pendingrollbackerror(
+    client: AsyncClient,
+    captured_emails: dict[str, str],
+    db_session: AsyncSession,
+    ai_checkpoint,
+    monkeypatch: pytest.MonkeyPatch,
+    caplog,
+):
+    from sqlalchemy.exc import PendingRollbackError
+
+    from api.scans.models import ScanEvent
+
+    await _register_verify_login(client, captured_emails)
+    scan_id = await _upload_and_reach_ready_for_ai(client, db_session)
+    scan = await _start_processing(db_session, scan_id)
+
+    async def _break_transaction_then_raise(db: AsyncSession):
+        # Violates ck_scan_events_actor (actor IN ('user', 'system')) —
+        # SQLite enforces CHECK constraints by default, so this flush fails
+        # with a real IntegrityError, leaving `db`'s transaction DEACTIVE
+        # ("...rolled back due to a previous exception during flush") until
+        # something calls rollback() — exactly the state run_ai_pipeline_job's
+        # last-resort handler must be able to recover from.
+        db.add(ScanEvent(scan_id=scan.id, to_status="queued", actor="not-a-valid-actor"))
+        try:
+            await db.flush()
+        except Exception:
+            pass
+        raise RuntimeError("simulated bug hitting an already-broken transaction")
+
+    monkeypatch.setattr(jobs_module, "_stage_prepare_model", _break_transaction_then_raise)
+
+    import logging
+
+    with caplog.at_level(logging.ERROR, logger="voiceguard.inference"):
+        # Must not raise -- and specifically must not raise
+        # PendingRollbackError out of the handler meant to recover from it.
+        await jobs_module.run_ai_pipeline_job(scan.id, db_session.bind)
+
+    await db_session.refresh(scan)
+
+    # Terminal state reached -- not stuck in a processing status.
+    assert scan.status is ScanStatus.MODEL_LOAD_FAILED
+    assert scan.error_code == "AI_PROCESSING_ERROR"
+
+    # The original failure is still visible in the logs, not masked by a
+    # secondary PendingRollbackError.
+    unhandled_records = [r for r in caplog.records if r.message == "ai_pipeline_unhandled_exception"]
+    assert len(unhandled_records) == 1
+    assert not any(
+        r.exc_info and isinstance(r.exc_info[1], PendingRollbackError) for r in caplog.records
+    )
+
+    job = await scans_repository.get_latest_job(db_session, scan.id, job_type=inference_service.AI_JOB_TYPE)
+    assert job.status == "failed"
+    assert job.finished_at is not None
+
+    events = (
+        await db_session.execute(select(ScanEvent).where(ScanEvent.scan_id == scan.id).order_by(ScanEvent.occurred_at))
+    ).scalars().all()
+    assert (events[-1].from_status, events[-1].to_status) == ("preparing_model", "model_load_failed")
+
+
 # ── Cancellation mid-pipeline ────────────────────────────────────────────────
 
 

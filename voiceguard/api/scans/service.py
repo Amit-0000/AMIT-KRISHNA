@@ -4,7 +4,6 @@ import hashlib
 import uuid
 from collections.abc import AsyncIterator
 from datetime import datetime, timedelta, timezone
-from pathlib import Path
 
 from fastapi import UploadFile
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -16,11 +15,14 @@ from api.core.exceptions import (
     EmptyFileError,
     FileTooLargeError,
     FileTooSmallError,
+    MalwareDetectedError,
+    MalwareScanUnavailableError,
     ScanNotFoundError,
     UploadFailedError,
 )
 from api.core.storage import StorageBackend, get_storage_backend
 from api.scans import malware_scan, repository
+from api.scans.malware_scan import MalwareScanStatus
 from api.scans.models import Scan
 from api.scans.state_machine import ScanStatus, is_terminal, validate_transition
 from api.scans.validation import validate_upload_request, validate_upload_size
@@ -227,13 +229,23 @@ async def create_scan(db: AsyncSession, *, user: User, upload_file: UploadFile) 
         )
         raise exc
 
-    scan_result = await malware_scan.scan_file(Path(scan.storage_key))
-    if not scan_result.clean:
+    scan_result = await malware_scan.scan_file(storage, scan.storage_key)
+    if scan_result.status is MalwareScanStatus.MALICIOUS:
         await storage.delete(scan.storage_key)
-        exc = UploadFailedError("The uploaded file failed a malware scan.")
+        exc = MalwareDetectedError("The uploaded file was flagged as malicious and cannot be processed.")
         await _fail_and_persist(
             db, scan, target=ScanStatus.VALIDATION_FAILED,
-            error_code=exc.code, error_message=exc.message, reason=f"malware scan ({scan_result.engine}) flagged file",
+            error_code=exc.code, error_message=exc.message,
+            reason=f"malware scan ({scan_result.engine}) detected: {scan_result.detail}",
+        )
+        raise exc
+    if scan_result.status is MalwareScanStatus.UNAVAILABLE:
+        await storage.delete(scan.storage_key)
+        exc = MalwareScanUnavailableError("The malware scanner is temporarily unavailable. Please try again shortly.")
+        await _fail_and_persist(
+            db, scan, target=ScanStatus.UPLOAD_FAILED,
+            error_code=exc.code, error_message=exc.message,
+            reason=f"malware scan unavailable ({scan_result.engine}): {scan_result.detail}",
         )
         raise exc
 

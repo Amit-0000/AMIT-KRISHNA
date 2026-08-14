@@ -464,12 +464,44 @@ async def run_ai_pipeline_job(scan_id: uuid.UUID, bind: AsyncEngine | None = Non
             # guarantee every scan reaches a terminal state and every failure
             # is visible in the logs, no matter what goes wrong inside a
             # stage body.
+            #
+            # rollback() must run *before* anything below touches `scan` or
+            # `job` — whatever raised may have already left `db`'s
+            # transaction DEACTIVE (e.g. a failed flush deeper in a stage),
+            # and any ORM attribute access against a DEACTIVE transaction
+            # (even a plain read of an already-loaded column, if the
+            # instance's attributes were expired by an earlier operation)
+            # raises sqlalchemy.exc.PendingRollbackError. That secondary
+            # exception used to escape from *inside* this safety net itself,
+            # defeating its one job: reproduced live via
+            # test_pipeline_stage_timeout_is_recorded_and_retried, whose
+            # traceback showed exactly this — a PendingRollbackError raised
+            # out of the `extra={"scan_id": str(scan.id), ...}` logging call
+            # below, before rollback() had run. `scan_id` (this function's
+            # plain uuid.UUID argument, not the ORM-backed `scan.id`) is used
+            # for every log line in this handler so nothing here ever depends
+            # on session/transaction health before the rollback below.
+            await db.rollback()
             logger.exception(
                 "ai_pipeline_unhandled_exception",
-                extra={"scan_id": str(scan.id), "correlation_id": correlation_id},
+                extra={"scan_id": str(scan_id), "correlation_id": correlation_id},
             )
-            await db.rollback()
-            await db.refresh(scan)
+            try:
+                await db.refresh(scan)
+            except Exception:
+                # The row itself is unreachable post-rollback (e.g. deleted
+                # concurrently) — nothing further here can safely touch
+                # `scan`. The original failure is already logged above by
+                # logger.exception (its traceback is preserved via
+                # sys.exc_info(), untouched by the rollback/refresh attempts
+                # in between); this is a distinct, secondary condition, and
+                # is logged as its own event rather than allowed to propagate
+                # and mask the original one.
+                logger.error(
+                    "ai_pipeline_could_not_refresh_scan_after_rollback",
+                    extra={"scan_id": str(scan_id), "correlation_id": correlation_id},
+                )
+                return
             if job is not None:
                 job.status = "failed"
                 job.last_error = f"Unhandled exception — see server logs for correlation_id={correlation_id}"[:1024]

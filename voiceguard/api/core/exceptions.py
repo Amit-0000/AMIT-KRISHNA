@@ -57,6 +57,14 @@ class FileTooLargeError(ValidationError):
     code = "FILE_TOO_LARGE"
 
 
+class MalwareDetectedError(ValidationError):
+    """The malware scanner positively identified the upload as malicious —
+    distinct from MalwareScanUnavailableError (503): this is a confident,
+    real result from a reachable scanner, not an infrastructure failure."""
+
+    code = "MALWARE_DETECTED"
+
+
 # ── 401 ──────────────────────────────────────────────────────────────────────
 class AuthenticationError(BaseVoiceGuardError):
     status_code = status.HTTP_401_UNAUTHORIZED
@@ -169,6 +177,17 @@ class UploadFailedError(ServiceUnavailableError):
     from ValidationError subclasses, which mean the file itself was rejected."""
 
     code = "UPLOAD_FAILED"
+
+
+class MalwareScanUnavailableError(ServiceUnavailableError):
+    """The malware scanner could not be reached, timed out, or reported its
+    own internal error — deliberately NOT treated as "clean". Uploads fail
+    closed (this error, not a passing scan) whenever the scanner's real
+    verdict can't be obtained, per the same fail-closed posture
+    api.core.config.Settings.validate_production() already applies to other
+    security-relevant configuration in this codebase."""
+
+    code = "MALWARE_SCAN_UNAVAILABLE"
 
 
 def _request_id(request: Request) -> str:

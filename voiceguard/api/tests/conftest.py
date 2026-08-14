@@ -126,6 +126,24 @@ async def client(db_session: AsyncSession) -> AsyncGenerator[AsyncClient, None]:
 @pytest.fixture(autouse=True)
 def _isolated_settings(monkeypatch: pytest.MonkeyPatch, tmp_path):
     monkeypatch.setenv("EMAIL_PROVIDER", "console")
+    # Malware scanning: no real clamd daemon runs in this test environment
+    # (see docker-compose.yml's `clamav` service, only present under real
+    # Docker Compose) — default every test to a CLEAN result so the upload
+    # pipeline's existing happy-path tests don't need a live scanner, exactly
+    # the same reasoning EMAIL_PROVIDER=console fakes email delivery here.
+    # api/tests/test_malware_scan.py exercises the real scanning logic
+    # directly (importing scan_file's underlying implementation by name, not
+    # through this patched module attribute) against an in-process fake
+    # clamd socket server; tests that need MALICIOUS/UNAVAILABLE pipeline
+    # behavior override this patch for just that test via their own
+    # monkeypatch.setattr(malware_scan, "scan_file", ...).
+    from api.scans import malware_scan as malware_scan_module
+    from api.scans.malware_scan import MalwareScanResult, MalwareScanStatus
+
+    async def _fake_clean_scan(storage, storage_key):
+        return MalwareScanResult(status=MalwareScanStatus.CLEAN, engine="fake-clean-default")
+
+    monkeypatch.setattr(malware_scan_module, "scan_file", _fake_clean_scan)
     # Scans slice: point uploads at a per-test tmp dir instead of the real
     # data/uploads, and clear get_storage_backend's own lru_cache (separate
     # from get_settings') so it re-reads UPLOAD_STORAGE_ROOT every test.

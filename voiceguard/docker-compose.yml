@@ -32,6 +32,32 @@ services:
       timeout: 5s
       retries: 10
 
+  # Real malware scanning for uploaded files (api.scans.malware_scan), spoken
+  # to over ClamAV's documented INSTREAM protocol on port 3310 — a sidecar
+  # service exactly like postgres/redis above, not bundled into the backend
+  # image, so the served application image stays lean and the virus
+  # signature database can be updated/persisted independently. `backend`
+  # deliberately does NOT block its own startup on this service being fully
+  # healthy (see the plain `depends_on: [clamav]` below, not a
+  # `condition: service_healthy` gate): freshclam's first-boot signature
+  # sync can take minutes, and api.scans.malware_scan already fails uploads
+  # closed (MALWARE_SCAN_UNAVAILABLE, never silently "clean") for exactly as
+  # long as clamd isn't ready yet — the same best-effort-at-boot,
+  # clear-503-until-ready pattern api/main.py's own ML model load already
+  # uses, deliberately reused here rather than inventing a second one.
+  clamav:
+    image: clamav/clamav:stable
+    ports:
+      - "3310:3310"
+    volumes:
+      - voiceguard_clamav_data:/var/lib/clamav
+    healthcheck:
+      test: ["CMD", "clamdscan", "--ping", "1"]
+      interval: 30s
+      timeout: 10s
+      retries: 10
+      start_period: 180s
+
   backend:
     build:
       context: .
@@ -43,6 +69,8 @@ services:
       REDIS_URL: redis://redis:6379/0
       ALLOWED_ORIGINS: http://localhost:5173
       APP_BASE_URL: http://localhost:5173
+      CLAMD_HOST: clamav
+      CLAMD_PORT: "3310"
       # Passed through from the host shell so load tests (and CI's
       # performance-smoke-test job) can raise the per-IP login limit for a
       # test run without editing .env — defaults to the real, secure value.
@@ -56,6 +84,8 @@ services:
         condition: service_healthy
       redis:
         condition: service_healthy
+      clamav:
+        condition: service_started
     volumes:
       - ./checkpoints:/app/checkpoints:ro
       - ./data/uploads:/app/data/uploads
@@ -77,3 +107,4 @@ services:
 volumes:
   voiceguard_postgres_data:
   voiceguard_frontend_node_modules:
+  voiceguard_clamav_data:

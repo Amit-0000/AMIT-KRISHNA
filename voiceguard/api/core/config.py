@@ -130,6 +130,17 @@ class Settings(BaseSettings):
     SCAN_EXPIRY_HOURS: int = 24
     PREPROCESSING_MAX_ATTEMPTS: int = 3
 
+    # ── Malware scanning (api.scans.malware_scan) ──────────────────────────────
+    # A real ClamAV daemon (see docker-compose.yml's `clamav` service), spoken
+    # to directly over its documented INSTREAM wire protocol. Defaults to
+    # "localhost" the same way DATABASE_URL/REDIS_URL default to localhost —
+    # suited for a developer running clamd directly on their host outside
+    # docker-compose, which overrides this to the `clamav` service hostname
+    # exactly like it already overrides DATABASE_URL/REDIS_URL for postgres/redis.
+    CLAMD_HOST: str = "localhost"
+    CLAMD_PORT: int = 3310
+    CLAMD_TIMEOUT_S: float = 20.0
+
     # ── AI Processing Pipeline & Detection Engine (Slice 03) ───────────────────
     # Read from an env var with an explicit default rather than the bare
     # relative "checkpoints/best.pt" api/main.py's legacy /predict uses — see

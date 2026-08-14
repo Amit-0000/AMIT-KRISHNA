@@ -257,6 +257,87 @@ async def test_malicious_filename_is_sanitized(client: AsyncClient, captured_ema
     assert ".." not in stored_name
 
 
+# ── Malware scanning pipeline behavior ──────────────────────────────────────
+# api.scans.malware_scan's own real ClamAV wire-protocol logic is covered by
+# api/tests/test_malware_scan.py; these tests cover the other half of the
+# P0-1 requirement — how api.scans.service.create_scan reacts to each
+# possible scan outcome. conftest.py's autouse _isolated_settings fixture
+# fakes malware_scan.scan_file() to CLEAN for every test by default (no live
+# clamd runs in this test environment); the two tests below override that
+# default for just their own scope to exercise the MALICIOUS and UNAVAILABLE
+# branches specifically.
+
+
+async def test_malicious_upload_is_rejected_and_not_persisted_to_storage(
+    client: AsyncClient, captured_emails: dict[str, str], monkeypatch: pytest.MonkeyPatch
+) -> None:
+    from api.scans import malware_scan as malware_scan_module
+    from api.scans.malware_scan import MalwareScanResult, MalwareScanStatus
+
+    async def _fake_malicious(storage, storage_key):
+        return MalwareScanResult(status=MalwareScanStatus.MALICIOUS, engine="fake-clamav", detail="Eicar-Test-Signature")
+
+    monkeypatch.setattr(malware_scan_module, "scan_file", _fake_malicious)
+
+    await _register_verify_login(client, captured_emails)
+    resp = await _upload(client)
+
+    assert resp.status_code == 400, resp.text
+    body = resp.json()["error"]
+    assert body["code"] == "MALWARE_DETECTED"
+
+    # The scan is still visible in history, in a terminal failed state — the
+    # same "a rejected upload still leaves a record behind" guarantee
+    # test_failed_upload_still_visible_in_history covers for other rejection
+    # reasons, now covering malware detection too.
+    listing = await client.get("/api/v1/scans")
+    scans = listing.json()["data"]["scans"]
+    assert len(scans) == 1
+    assert scans[0]["status"] == "validation_failed"
+    assert scans[0]["error_code"] == "MALWARE_DETECTED"
+
+    # The flagged file must not be left behind in storage.
+    from api.core.storage import get_storage_backend
+
+    storage = get_storage_backend()
+    stored_key = scans[0]["id"] + scans[0]["file_extension"]
+    assert await storage.exists(stored_key) is False
+
+
+async def test_scanner_unavailable_fails_upload_closed_not_clean(
+    client: AsyncClient, captured_emails: dict[str, str], monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """The core P0-1 safety invariant at the pipeline level: if the malware
+    scanner's real verdict can't be obtained, the upload must fail — never
+    silently proceed as if the file were clean."""
+    from api.scans import malware_scan as malware_scan_module
+    from api.scans.malware_scan import MalwareScanResult, MalwareScanStatus
+
+    async def _fake_unavailable(storage, storage_key):
+        return MalwareScanResult(status=MalwareScanStatus.UNAVAILABLE, engine="fake-clamav", detail="connection refused")
+
+    monkeypatch.setattr(malware_scan_module, "scan_file", _fake_unavailable)
+
+    await _register_verify_login(client, captured_emails)
+    resp = await _upload(client)
+
+    assert resp.status_code == 503, resp.text
+    body = resp.json()["error"]
+    assert body["code"] == "MALWARE_SCAN_UNAVAILABLE"
+
+    listing = await client.get("/api/v1/scans")
+    scans = listing.json()["data"]["scans"]
+    assert len(scans) == 1
+    assert scans[0]["status"] == "upload_failed"
+    assert scans[0]["error_code"] == "MALWARE_SCAN_UNAVAILABLE"
+
+    from api.core.storage import get_storage_backend
+
+    storage = get_storage_backend()
+    stored_key = scans[0]["id"] + scans[0]["file_extension"]
+    assert await storage.exists(stored_key) is False
+
+
 # ── Authorization / ownership ─────────────────────────────────────────────────
 
 

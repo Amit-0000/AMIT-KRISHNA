@@ -97,7 +97,15 @@ jobs:
       - uses: actions/checkout@v7
 
       - name: Trivy filesystem scan (dependency CVEs)
-        uses: aquasecurity/trivy-action@0.28.0
+        # v0.28.0 (unqualified) doesn't exist as a resolvable ref — every real
+        # release of this action is tagged with a leading "v" (v0.28.0,
+        # v0.36.0, ...); the missing "v" made every run of this job fail at
+        # "Set up job" before a single step could execute ("Unable to resolve
+        # action `aquasecurity/trivy-action@0.28.0`, unable to find version
+        # `0.28.0`" — confirmed via `gh run view`'s raw log). Pinned to the
+        # latest stable tag rather than just adding the missing "v" to the
+        # original pin.
+        uses: aquasecurity/trivy-action@v0.36.0
         with:
           scan-type: fs
           scan-ref: voiceguard
@@ -110,7 +118,7 @@ jobs:
         run: docker build -f api/Dockerfile.ml -t voiceguard-backend:ci .
 
       - name: Trivy image scan
-        uses: aquasecurity/trivy-action@0.28.0
+        uses: aquasecurity/trivy-action@v0.36.0
         with:
           image-ref: voiceguard-backend:ci
           format: sarif
@@ -174,10 +182,26 @@ jobs:
         with:
           python-version: "3.12"
           cache: pip
-          cache-dependency-path: voiceguard/api/requirements.txt
+          cache-dependency-path: |
+            voiceguard/api/requirements.txt
+            voiceguard/api/requirements-ml.txt
 
       - name: Install backend dependencies
         run: pip install --no-cache-dir -r api/requirements.txt
+
+      # api/tests/ exercises the full AI pipeline (model load, feature
+      # extraction, inference, explainability — see api/tests/conftest.py's
+      # ai_checkpoint fixture and every test_ai_*.py file), which needs
+      # torch/torchaudio/librosa/etc. This job previously installed only
+      # api/requirements.txt (the lean, auth-only slice api/Dockerfile also
+      # uses), so every AI-pipeline test failed with
+      # `ModuleNotFoundError: No module named 'torch'` — confirmed via
+      # `gh run view`'s raw log. api/requirements-ml.txt is this project's
+      # existing, deliberately-narrow ML dependency file (same one
+      # api/Dockerfile.ml installs for the ML-enabled runtime image), reused
+      # here rather than inventing a separate pin set for CI.
+      - name: Install ML dependencies (required by the AI-pipeline test suite)
+        run: pip install --no-cache-dir -r api/requirements-ml.txt
 
       - name: Run pytest
         run: python -m pytest api/tests/ -q --junitxml=pytest-results.xml
@@ -258,8 +282,40 @@ jobs:
           done
           exit 1
 
+      # P0-1 (malware scanning): backend deliberately doesn't block its own
+      # startup/health on clamav (see docker-compose.yml's `clamav` service
+      # comment) — clamd's first-boot signature sync can take a while, and
+      # every scan upload fails closed (never silently "clean") until it's
+      # ready. That's correct production behavior, but this job's k6 script
+      # does real POST /api/v1/scans uploads (k6-load-test.js), so give
+      # clamav a bounded window to finish starting before driving load
+      # through it — otherwise this smoke test would measure "clamav isn't
+      # ready yet" instead of the API's own performance, an unrelated
+      # false failure this step exists to avoid.
+      - name: Wait for ClamAV
+        run: |
+          for i in $(seq 1 30); do
+            if docker compose exec -T clamav clamdscan --ping 1 > /dev/null 2>&1; then exit 0; fi
+            sleep 3
+          done
+          echo "ClamAV not ready after 90s — proceeding anyway; uploads will legitimately fail closed until it is, this is not itself a test failure."
+
       - name: Seed load-test users
-        run: docker compose exec -T backend python performance/seed_users.py 30
+        # performance/seed_users.py is CI/load-test tooling, not part of the
+        # application (api/Dockerfile.ml only COPYs api/ and src/, by
+        # design — see that Dockerfile's own comments on keeping the served
+        # image narrow) — it was never present at /app/performance inside the
+        # backend container, so this step failed with
+        # "python: can't open file '/app/performance/seed_users.py'"
+        # (confirmed via `gh run view`'s raw log). Fixed by copying the
+        # script into the already-running container immediately before
+        # invoking it, scoped to this CI step, rather than baking load-test
+        # tooling into the production image or adding a permanent bind mount
+        # to docker-compose.yml (which is also the file local dev/other CI
+        # jobs use as-is).
+        run: |
+          docker compose cp performance/seed_users.py backend:/app/performance/seed_users.py
+          docker compose exec -T backend python performance/seed_users.py 30
 
       - name: Run reduced-VU k6 smoke test (30 VUs, 20s — see performance-report.md for the real 100-VU baseline result)
         run: |
