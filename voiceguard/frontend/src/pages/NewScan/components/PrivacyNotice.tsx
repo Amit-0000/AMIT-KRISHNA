@@ -14,7 +14,7 @@ export function PrivacyNotice() {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.4, delay: 0.15, ease: [0.25, 0, 0, 1] }}
-      className="rounded-xl border border-white/6 bg-white/[0.02] px-4 py-3.5"
+      className="rounded-xl border border-chrome/6 bg-chrome/[0.02] px-4 py-3.5"
     >
       <div className="flex items-start gap-3">
         <div className="w-7 h-7 rounded-lg bg-human-muted border border-human-border flex items-center justify-center flex-shrink-0 mt-0.5">

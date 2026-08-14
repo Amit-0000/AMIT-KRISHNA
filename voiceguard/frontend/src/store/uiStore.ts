@@ -24,6 +24,7 @@ interface UIState {
   setNotifications: (items: AppNotification[]) => void
   markNotificationRead: (id: string) => void
   markAllNotificationsRead: () => void
+  removeNotification: (id: string) => void
 
   // Theme
   theme: Theme
@@ -83,6 +84,12 @@ export const useUIStore = create<UIState>()(
           notifications: s.notifications.map((n) => ({ ...n, read: true })),
           unreadCount: 0,
         })),
+
+      removeNotification: (id) =>
+        set((s) => {
+          const notifications = s.notifications.filter((n) => n.id !== id)
+          return { notifications, unreadCount: notifications.filter((n) => !n.read).length }
+        }),
 
       // ── Theme ──────────────────────────────────────────────────────────────
       theme: 'dark',

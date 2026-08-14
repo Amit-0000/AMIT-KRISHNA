@@ -7,7 +7,7 @@ import { getArticleBySlug, getRelatedArticles } from './content'
 function ArticleNotFound() {
   return (
     <div className="flex flex-col items-center justify-center min-h-[40vh] text-center px-6 py-16">
-      <div className="w-14 h-14 rounded-2xl bg-white/5 border border-white/8 flex items-center justify-center mb-4">
+      <div className="w-14 h-14 rounded-2xl bg-chrome/5 border border-chrome/8 flex items-center justify-center mb-4">
         <SearchX className="w-6 h-6 text-text-tertiary" aria-hidden="true" />
       </div>
       <h2 className="text-heading-lg font-semibold text-text-primary mb-2">Article not found</h2>

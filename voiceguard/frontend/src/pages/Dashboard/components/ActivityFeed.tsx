@@ -54,7 +54,7 @@ export function ActivityFeed({ items, loading = false }: ActivityFeedProps) {
       transition={{ duration: 0.4, delay: 0.22, ease: [0.25, 0, 0, 1] }}
       className="card-base rounded-xl overflow-hidden"
     >
-      <div className="px-5 py-4 border-b border-white/6">
+      <div className="px-5 py-4 border-b border-chrome/6">
         <h2 className="text-heading-md font-semibold text-text-primary">Recent Activity</h2>
         <p className="text-xs text-text-tertiary mt-0.5">Your last 10 events</p>
       </div>
@@ -89,7 +89,7 @@ export function ActivityFeed({ items, loading = false }: ActivityFeedProps) {
                 transition={{ duration: 0.25, delay: i * 0.05, ease: [0.25, 0, 0, 1] }}
                 className={cn(
                   'flex gap-3 py-3 rounded-lg px-2 transition-colors',
-                  item.scan_id && 'hover:bg-white/3 cursor-pointer'
+                  item.scan_id && 'hover:bg-chrome/3 cursor-pointer'
                 )}
                 onClick={() => {
                   if (item.scan_id) navigate(`/history/${item.scan_id}`)

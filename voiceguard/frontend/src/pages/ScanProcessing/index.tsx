@@ -79,7 +79,7 @@ function ScanProcessingContent({ scanId, onRetry }: ContentProps) {
       <div className="card-base rounded-xl p-5 space-y-5">
         <ProcessingProgress progressPct={displayProgress} />
 
-        <div className="h-px bg-white/5" role="separator" />
+        <div className="h-px bg-chrome/5" role="separator" />
 
         <ProcessingSteps
           progressPct={displayProgress}

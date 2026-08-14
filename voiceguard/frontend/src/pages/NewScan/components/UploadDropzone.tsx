@@ -7,6 +7,8 @@ interface UploadDropzoneProps {
   onDrop: (files: FileList | null) => void
   onBrowse: (e: React.ChangeEvent<HTMLInputElement>) => void
   acceptedFormats: string[]
+  maxSizeMb: number
+  maxDurationMinutes: number
   disabled?: boolean
 }
 
@@ -14,6 +16,8 @@ export function UploadDropzone({
   onDrop,
   onBrowse,
   acceptedFormats,
+  maxSizeMb,
+  maxDurationMinutes,
   disabled = false,
 }: UploadDropzoneProps) {
   const [isDragging, setIsDragging] = useState(false)
@@ -91,7 +95,7 @@ export function UploadDropzone({
           'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2 focus-visible:ring-offset-bg-base',
           isDragging
             ? 'border-brand bg-brand-muted/20 scale-[1.005]'
-            : 'border-white/10 bg-white/[0.02] hover:border-brand/40 hover:bg-brand-muted/8',
+            : 'border-chrome/10 bg-chrome/[0.02] hover:border-brand/40 hover:bg-brand-muted/8',
           disabled && 'cursor-not-allowed opacity-50 pointer-events-none'
         )}
       >
@@ -121,7 +125,7 @@ export function UploadDropzone({
               'w-20 h-20 rounded-2xl flex items-center justify-center border transition-all duration-200',
               isDragging
                 ? 'bg-brand-muted border-brand-border shadow-glow-brand'
-                : 'bg-white/[0.04] border-white/8'
+                : 'bg-chrome/[0.04] border-chrome/8'
             )}
           >
             <Upload
@@ -135,13 +139,13 @@ export function UploadDropzone({
 
           {/* Decorative floating icons */}
           <div
-            className="absolute -top-2 -right-7 w-8 h-8 rounded-xl bg-bg-elevated border border-white/6 flex items-center justify-center"
+            className="absolute -top-2 -right-7 w-8 h-8 rounded-xl bg-bg-elevated border border-chrome/6 flex items-center justify-center"
             aria-hidden="true"
           >
             <Music className="w-4 h-4 text-brand/50" />
           </div>
           <div
-            className="absolute -bottom-2 -left-7 w-8 h-8 rounded-xl bg-bg-elevated border border-white/6 flex items-center justify-center"
+            className="absolute -bottom-2 -left-7 w-8 h-8 rounded-xl bg-bg-elevated border border-chrome/6 flex items-center justify-center"
             aria-hidden="true"
           >
             <FileAudio className="w-4 h-4 text-text-tertiary/60" />
@@ -166,9 +170,9 @@ export function UploadDropzone({
           <p className="text-xs text-text-tertiary leading-relaxed">
             {acceptedFormats.join(' · ')}
             <span className="mx-2 text-text-tertiary/40">·</span>
-            Up to 50 MB
+            Up to {maxSizeMb} MB
             <span className="mx-2 text-text-tertiary/40">·</span>
-            Max 10 minutes
+            Max {maxDurationMinutes} minutes
           </p>
         </div>
 

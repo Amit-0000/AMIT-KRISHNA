@@ -38,7 +38,7 @@ export function Navbar() {
         className={cn(
           'fixed top-0 left-0 right-0 z-50 transition-all duration-300',
           scrolled
-            ? 'surface-glass border-b border-white/6 py-3'
+            ? 'surface-glass border-b border-chrome/6 py-3'
             : 'py-5 bg-transparent'
         )}
         role="banner"
@@ -99,7 +99,7 @@ export function Navbar() {
 
             {/* Mobile menu toggle */}
             <button
-              className="md:hidden flex items-center justify-center w-9 h-9 rounded-lg text-text-secondary hover:text-text-primary hover:bg-white/5 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand"
+              className="md:hidden flex items-center justify-center w-9 h-9 rounded-lg text-text-secondary hover:text-text-primary hover:bg-chrome/5 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand"
               onClick={() => setMobileOpen((v) => !v)}
               aria-label={mobileOpen ? 'Close menu' : 'Open menu'}
               aria-expanded={mobileOpen}
@@ -124,7 +124,7 @@ export function Navbar() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -8 }}
             transition={{ duration: 0.22, ease: [0.25, 0, 0, 1] }}
-            className="fixed inset-x-0 top-[60px] z-40 surface-glass border-b border-white/6 px-4 py-6 md:hidden"
+            className="fixed inset-x-0 top-[60px] z-40 surface-glass border-b border-chrome/6 px-4 py-6 md:hidden"
             role="dialog"
             aria-label="Mobile navigation"
           >
@@ -134,7 +134,7 @@ export function Navbar() {
                   <li key={link.href}>
                     <button
                       onClick={() => handleNavClick(link.href)}
-                      className="w-full text-left px-4 py-3 text-sm text-text-secondary hover:text-text-primary hover:bg-white/5 rounded-lg transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand"
+                      className="w-full text-left px-4 py-3 text-sm text-text-secondary hover:text-text-primary hover:bg-chrome/5 rounded-lg transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand"
                     >
                       {link.label}
                     </button>

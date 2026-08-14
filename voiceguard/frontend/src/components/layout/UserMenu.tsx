@@ -43,7 +43,7 @@ export function UserMenu({ collapsed = false }: UserMenuProps) {
         <button
           className={cn(
             'flex items-center gap-2.5 rounded-lg px-2 py-1.5 transition-colors',
-            'hover:bg-white/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand',
+            'hover:bg-chrome/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand',
             collapsed ? 'justify-center w-10 h-10 p-0' : 'w-full'
           )}
           aria-label={collapsed ? `Account menu for ${user.display_name}` : undefined}
@@ -71,7 +71,7 @@ export function UserMenu({ collapsed = false }: UserMenuProps) {
         className="w-56"
       >
         {/* User identity */}
-        <div className="px-2.5 py-2.5 border-b border-white/8 mb-1">
+        <div className="px-2.5 py-2.5 border-b border-chrome/8 mb-1">
           <p className="text-sm font-medium text-text-primary truncate">{user.display_name}</p>
           <p className="text-xs text-text-tertiary truncate mt-0.5">{user.email}</p>
           <span className="inline-block mt-2 text-[10px] font-semibold uppercase tracking-widest px-2 py-0.5 rounded-full bg-brand-muted border border-brand-border text-brand">

@@ -27,7 +27,7 @@ const COLOR_MAP: Record<CardColor, { icon: string; bg: string; border: string }>
   human:    { icon: 'text-human',    bg: 'bg-human-muted',    border: 'border-human-border' },
   ai:       { icon: 'text-ai',       bg: 'bg-ai-muted',       border: 'border-ai-border' },
   uncertain:{ icon: 'text-uncertain',bg: 'bg-uncertain-muted',border: 'border-uncertain-border' },
-  neutral:  { icon: 'text-text-secondary', bg: 'bg-white/5',  border: 'border-white/10' },
+  neutral:  { icon: 'text-text-secondary', bg: 'bg-chrome/5',  border: 'border-chrome/10' },
 }
 
 export function StatsCard({
@@ -81,7 +81,7 @@ export function StatsCard({
             className={cn(
               'flex items-center gap-1 text-xs font-medium px-2 py-1 rounded-full',
               trendIsNeutral
-                ? 'text-text-tertiary bg-white/5'
+                ? 'text-text-tertiary bg-chrome/5'
                 : trendIsPositive
                 ? 'text-human bg-human-muted border border-human-border'
                 : 'text-ai bg-ai-muted border border-ai-border'

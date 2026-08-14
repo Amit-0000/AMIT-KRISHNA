@@ -38,7 +38,7 @@ function NotifItem({
       transition={{ duration: 0.22, ease: [0.25, 0, 0, 1] }}
       className={cn(
         'flex gap-3 px-4 py-3.5 transition-colors cursor-pointer',
-        notif.action_url ? 'hover:bg-white/4' : 'cursor-default',
+        notif.action_url ? 'hover:bg-chrome/4' : 'cursor-default',
         !notif.read && 'bg-brand-muted/30'
       )}
       onClick={handleClick}
@@ -150,13 +150,13 @@ export function NotificationCenter() {
             animate={{ opacity: 1, x: 0, scale: 1 }}
             exit={{ opacity: 0, x: 16, scale: 0.98 }}
             transition={{ duration: 0.22, ease: [0.25, 0, 0, 1] }}
-            className="fixed right-4 top-[68px] z-50 w-[360px] rounded-2xl bg-bg-elevated border border-white/8 shadow-elevated overflow-hidden"
+            className="fixed right-4 top-[68px] z-50 w-[360px] rounded-2xl bg-bg-elevated border border-chrome/8 shadow-elevated overflow-hidden"
             role="dialog"
             aria-label="Notifications"
             aria-modal="false"
           >
             {/* Header */}
-            <div className="flex items-center justify-between px-4 py-4 border-b border-white/6">
+            <div className="flex items-center justify-between px-4 py-4 border-b border-chrome/6">
               <div className="flex items-center gap-2">
                 <Bell className="w-4 h-4 text-brand" aria-hidden="true" />
                 <h2 className="text-sm font-semibold text-text-primary">Notifications</h2>
@@ -170,7 +170,7 @@ export function NotificationCenter() {
                 {unreadCount > 0 && (
                   <button
                     onClick={handleMarkAllRead}
-                    className="flex items-center gap-1.5 px-2 py-1 rounded-md text-xs text-text-tertiary hover:text-text-primary hover:bg-white/5 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand"
+                    className="flex items-center gap-1.5 px-2 py-1 rounded-md text-xs text-text-tertiary hover:text-text-primary hover:bg-chrome/5 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand"
                     aria-label="Mark all notifications as read"
                   >
                     <CheckCheck className="w-3.5 h-3.5" aria-hidden="true" />
@@ -179,7 +179,7 @@ export function NotificationCenter() {
                 )}
                 <button
                   onClick={() => setOpen(false)}
-                  className="flex items-center justify-center w-7 h-7 rounded-md text-text-tertiary hover:text-text-primary hover:bg-white/5 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand"
+                  className="flex items-center justify-center w-7 h-7 rounded-md text-text-tertiary hover:text-text-primary hover:bg-chrome/5 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand"
                   aria-label="Close notifications"
                 >
                   <X className="w-4 h-4" aria-hidden="true" />
@@ -197,7 +197,7 @@ export function NotificationCenter() {
                   </p>
                 </div>
               ) : (
-                <div className="divide-y divide-white/6">
+                <div className="divide-y divide-chrome/6">
                   {notifications.map((n) => (
                     <NotifItem key={n.id} notif={n} onRead={handleMarkRead} />
                   ))}
@@ -206,7 +206,7 @@ export function NotificationCenter() {
             </ScrollArea>
 
             {/* Footer */}
-            <div className="px-4 py-3 border-t border-white/6">
+            <div className="px-4 py-3 border-t border-chrome/6">
               <Button
                 variant="ghost"
                 size="sm"

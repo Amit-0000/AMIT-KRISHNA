@@ -26,14 +26,14 @@ export function TopBar({ breadcrumbs }: TopBarProps) {
       <motion.header
         animate={{ paddingLeft: sidebarWidth }}
         transition={{ duration: 0.22, ease: [0.25, 0, 0, 1] }}
-        className="fixed top-0 right-0 left-0 z-20 h-14 flex items-center bg-bg-base/90 backdrop-blur-sm border-b border-white/6"
+        className="fixed top-0 right-0 left-0 z-20 h-14 flex items-center bg-bg-base/90 backdrop-blur-sm border-b border-chrome/6"
         role="banner"
       >
         <div className="flex items-center gap-3 w-full px-4">
           {/* Mobile hamburger */}
           <button
             onClick={() => setMobileDrawerOpen(true)}
-            className="lg:hidden flex items-center justify-center w-9 h-9 rounded-lg text-text-secondary hover:text-text-primary hover:bg-white/5 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand"
+            className="lg:hidden flex items-center justify-center w-9 h-9 rounded-lg text-text-secondary hover:text-text-primary hover:bg-chrome/5 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand"
             aria-label="Open navigation"
             aria-expanded={false}
             aria-controls="mobile-nav"
@@ -53,14 +53,14 @@ export function TopBar({ breadcrumbs }: TopBarProps) {
                 onClick={() => setSearchOpen(true)}
                 className={cn(
                   'hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm text-text-tertiary',
-                  'border border-white/8 bg-white/3 hover:bg-white/6 hover:text-text-secondary',
+                  'border border-chrome/8 bg-chrome/3 hover:bg-chrome/6 hover:text-text-secondary',
                   'transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand'
                 )}
                 aria-label="Search (Command K)"
               >
                 <Search className="w-3.5 h-3.5" aria-hidden="true" />
                 <span className="hidden md:block">Search…</span>
-                <span className="hidden md:block text-[10px] font-medium px-1.5 py-0.5 rounded border border-white/10 font-mono">
+                <span className="hidden md:block text-[10px] font-medium px-1.5 py-0.5 rounded border border-chrome/10 font-mono">
                   ⌘K
                 </span>
               </button>
@@ -69,7 +69,7 @@ export function TopBar({ breadcrumbs }: TopBarProps) {
             {/* Mobile search icon */}
             <button
               onClick={() => setSearchOpen(true)}
-              className="sm:hidden flex items-center justify-center w-9 h-9 rounded-lg text-text-tertiary hover:text-text-primary hover:bg-white/5 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand"
+              className="sm:hidden flex items-center justify-center w-9 h-9 rounded-lg text-text-tertiary hover:text-text-primary hover:bg-chrome/5 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand"
               aria-label="Search"
             >
               <Search className="w-4.5 h-4.5" aria-hidden="true" />
@@ -87,7 +87,7 @@ export function TopBar({ breadcrumbs }: TopBarProps) {
                   'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand',
                   notifOpen
                     ? 'bg-brand-muted text-brand'
-                    : 'text-text-tertiary hover:text-text-primary hover:bg-white/5'
+                    : 'text-text-tertiary hover:text-text-primary hover:bg-chrome/5'
                 )}
                 aria-label={`Notifications${unreadCount > 0 ? `, ${unreadCount} unread` : ''}`}
                 aria-pressed={notifOpen}

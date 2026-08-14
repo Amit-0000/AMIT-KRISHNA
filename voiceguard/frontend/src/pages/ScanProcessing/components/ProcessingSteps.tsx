@@ -105,7 +105,7 @@ export function ProcessingSteps({ progressPct, isCompleted }: ProcessingStepsPro
                   />
                 </div>
               ) : (
-                <div className="w-5 h-5 rounded-full border border-white/10 bg-white/[0.02]" />
+                <div className="w-5 h-5 rounded-full border border-chrome/10 bg-chrome/[0.02]" />
               )}
             </div>
 

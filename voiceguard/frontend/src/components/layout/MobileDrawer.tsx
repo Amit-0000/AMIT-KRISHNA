@@ -61,13 +61,13 @@ export function MobileDrawer() {
             animate={{ x: 0 }}
             exit={{ x: '-100%' }}
             transition={{ duration: 0.28, ease: [0.25, 0, 0, 1] }}
-            className="fixed left-0 top-0 h-full w-72 z-50 bg-bg-surface border-r border-white/6 flex flex-col lg:hidden"
+            className="fixed left-0 top-0 h-full w-72 z-50 bg-bg-surface border-r border-chrome/6 flex flex-col lg:hidden"
             role="dialog"
             aria-label="Navigation menu"
             aria-modal="true"
           >
             {/* Header */}
-            <div className="flex items-center justify-between px-4 h-14 border-b border-white/6 flex-shrink-0">
+            <div className="flex items-center justify-between px-4 h-14 border-b border-chrome/6 flex-shrink-0">
               <div className="flex items-center gap-2.5">
                 <div className="relative flex items-center justify-center w-8 h-8 rounded-lg bg-brand-muted border border-brand-border">
                   <Shield className="w-4 h-4 text-brand" aria-hidden="true" />
@@ -79,7 +79,7 @@ export function MobileDrawer() {
               </div>
               <button
                 onClick={() => setOpen(false)}
-                className="flex items-center justify-center w-8 h-8 rounded-lg text-text-tertiary hover:text-text-primary hover:bg-white/5 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand"
+                className="flex items-center justify-center w-8 h-8 rounded-lg text-text-tertiary hover:text-text-primary hover:bg-chrome/5 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand"
                 aria-label="Close navigation"
               >
                 <X className="w-4 h-4" aria-hidden="true" />
@@ -117,7 +117,7 @@ export function MobileDrawer() {
                                   : 'bg-brand-muted text-brand'
                                 : item.id === 'new-scan'
                                 ? 'bg-brand/10 text-brand hover:bg-brand hover:text-white'
-                                : 'text-text-secondary hover:bg-white/5 hover:text-text-primary'
+                                : 'text-text-secondary hover:bg-chrome/5 hover:text-text-primary'
                             )}
                             aria-current={isActive ? 'page' : undefined}
                           >
@@ -151,7 +151,7 @@ export function MobileDrawer() {
                             'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand',
                             isActive
                               ? 'bg-brand-muted text-brand'
-                              : 'text-text-secondary hover:bg-white/5 hover:text-text-primary'
+                              : 'text-text-secondary hover:bg-chrome/5 hover:text-text-primary'
                           )}
                           aria-current={isActive ? 'page' : undefined}
                         >
@@ -166,7 +166,7 @@ export function MobileDrawer() {
             </nav>
 
             {/* User */}
-            <div className="border-t border-white/6 px-3 py-3 flex-shrink-0">
+            <div className="border-t border-chrome/6 px-3 py-3 flex-shrink-0">
               <UserMenu collapsed={false} />
             </div>
           </motion.aside>

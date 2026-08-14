@@ -7,7 +7,7 @@ const PRINCIPLES = [
     icon: Lock,
     title: 'Audio never stored permanently',
     description:
-      'Your audio file is deleted within 60 seconds after inference completes. We store only the result (verdict, confidence, heatmap). The audio bytes are never written to a database.',
+      'Your audio file is deleted within 60 seconds after inference completes. We store only the result (verdict, confidence, and the explanation). The audio bytes are never written to a database.',
     color: 'text-human',
     bg: 'bg-human-muted',
     border: 'border-human-border',

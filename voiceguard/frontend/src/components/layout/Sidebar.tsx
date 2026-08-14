@@ -21,13 +21,13 @@ export function Sidebar() {
       <motion.aside
         animate={{ width: collapsed ? SIDEBAR_COLLAPSED : SIDEBAR_EXPANDED }}
         transition={{ duration: 0.22, ease: [0.25, 0, 0, 1] }}
-        className="hidden lg:flex flex-col fixed left-0 top-0 h-full z-30 bg-bg-surface border-r border-white/6 overflow-hidden"
+        className="hidden lg:flex flex-col fixed left-0 top-0 h-full z-30 bg-bg-surface border-r border-chrome/6 overflow-hidden"
         aria-label="Main navigation"
       >
         {/* Logo */}
         <div
           className={cn(
-            'flex items-center h-14 border-b border-white/6 flex-shrink-0',
+            'flex items-center h-14 border-b border-chrome/6 flex-shrink-0',
             collapsed ? 'justify-center px-0' : 'px-4 gap-2.5'
           )}
         >
@@ -90,7 +90,7 @@ export function Sidebar() {
                                 : 'bg-brand-muted text-brand'
                               : item.id === 'new-scan'
                               ? 'bg-brand/10 text-brand hover:bg-brand hover:text-white'
-                              : 'text-text-secondary hover:bg-white/5 hover:text-text-primary'
+                              : 'text-text-secondary hover:bg-chrome/5 hover:text-text-primary'
                           )}
                           aria-current={isActive ? 'page' : undefined}
                           aria-label={collapsed ? item.label : undefined}
@@ -140,7 +140,7 @@ export function Sidebar() {
         </nav>
 
         {/* Bottom: Settings + User */}
-        <div className="border-t border-white/6 px-2 py-3 space-y-1 flex-shrink-0">
+        <div className="border-t border-chrome/6 px-2 py-3 space-y-1 flex-shrink-0">
           {/* Settings link */}
           {(() => {
             const Icon = SETTINGS_NAV.icon
@@ -155,7 +155,7 @@ export function Sidebar() {
                     collapsed && 'justify-center px-0 w-10 h-10 mx-auto',
                     isActive
                       ? 'bg-brand-muted text-brand'
-                      : 'text-text-secondary hover:bg-white/5 hover:text-text-primary'
+                      : 'text-text-secondary hover:bg-chrome/5 hover:text-text-primary'
                   )}
                   aria-current={isActive ? 'page' : undefined}
                   aria-label={collapsed ? 'Settings' : undefined}
@@ -187,7 +187,7 @@ export function Sidebar() {
             onClick={toggleSidebar}
             className={cn(
               'w-full flex items-center gap-3 rounded-lg px-2.5 py-2 text-xs text-text-tertiary',
-              'hover:bg-white/5 hover:text-text-secondary transition-colors duration-150',
+              'hover:bg-chrome/5 hover:text-text-secondary transition-colors duration-150',
               'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand',
               collapsed && 'justify-center px-0 w-10 h-10 mx-auto'
             )}

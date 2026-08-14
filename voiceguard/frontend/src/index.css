@@ -3,14 +3,49 @@
 @tailwind utilities;
 
 @layer base {
-  :root {
-    --background: 240 8% 5%;
-    --foreground: 240 100% 97%;
+  /* Theme tokens. `applyTheme()` in store/uiStore.ts toggles exactly one of
+     `.dark`/`.light` on <html> — these two blocks are the only place the two
+     themes actually differ. Every component consumes these via Tailwind's
+     bg, text, border and chrome utilities (see tailwind.config.ts), so
+     theming a new component never requires touching this file again. */
+  :root,
+  .dark {
+    --color-bg-base: 8 8 16;
+    --color-bg-surface: 14 14 26;
+    --color-bg-elevated: 20 20 40;
+    --color-bg-overlay: 26 26 50;
+
+    --color-text-primary: 240 240 255;
+    --color-text-secondary: 139 139 167;
+    --color-text-tertiary: 74 74 106;
+    --color-text-inverse: 8 8 16;
+
+    /* Neutral used for subtle borders/hover overlays/dividers (`chrome-*`
+       and `border-*` utilities) — white-based so `chrome/8` etc. reads as a
+       faint light line on a dark surface. */
+    --color-chrome: 255 255 255;
+  }
+
+  .light {
+    --color-bg-base: 244 244 248;
+    --color-bg-surface: 255 255 255;
+    --color-bg-elevated: 255 255 255;
+    --color-bg-overlay: 255 255 255;
+
+    --color-text-primary: 18 18 30;
+    --color-text-secondary: 90 90 112;
+    --color-text-tertiary: 140 140 160;
+    --color-text-inverse: 255 255 255;
+
+    /* Black-based in light mode, so the exact same `chrome/8` utility that
+       reads as a faint light line in dark mode reads as a faint dark line
+       here — same role, opposite base color. */
+    --color-chrome: 10 10 20;
   }
 
   * {
     box-sizing: border-box;
-    border-color: rgba(255, 255, 255, 0.06);
+    border-color: rgb(var(--color-chrome) / 0.06);
   }
 
   html {
@@ -21,8 +56,8 @@
   }
 
   body {
-    background-color: #080810;
-    color: #F0F0FF;
+    background-color: rgb(var(--color-bg-base));
+    color: rgb(var(--color-text-primary));
     font-family: 'Inter', system-ui, -apple-system, sans-serif;
     line-height: 1.5;
     margin: 0;
@@ -32,7 +67,7 @@
 
   ::selection {
     background-color: rgba(123, 108, 234, 0.3);
-    color: #F0F0FF;
+    color: rgb(var(--color-text-primary));
   }
 
   :focus-visible {
@@ -52,12 +87,12 @@
   }
 
   ::-webkit-scrollbar-thumb {
-    background: rgba(255, 255, 255, 0.12);
+    background: rgb(var(--color-chrome) / 0.12);
     border-radius: 3px;
   }
 
   ::-webkit-scrollbar-thumb:hover {
-    background: rgba(255, 255, 255, 0.2);
+    background: rgb(var(--color-chrome) / 0.2);
   }
 }
 
@@ -70,20 +105,20 @@
   }
 
   .text-gradient-hero {
-    background: linear-gradient(135deg, #F0F0FF 0%, #B4B4FF 50%, #7B6CEA 100%);
+    background: linear-gradient(135deg, rgb(var(--color-text-primary)) 0%, #B4B4FF 50%, #7B6CEA 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
   }
 
   .surface-glass {
-    background: rgba(14, 14, 26, 0.8);
+    background: rgb(var(--color-bg-surface) / 0.8);
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
   }
 
   .surface-glass-light {
-    background: rgba(20, 20, 40, 0.6);
+    background: rgb(var(--color-bg-elevated) / 0.6);
     backdrop-filter: blur(8px);
     -webkit-backdrop-filter: blur(8px);
   }
@@ -91,7 +126,7 @@
   .border-brand-gradient {
     border: 1px solid transparent;
     background:
-      linear-gradient(#0E0E1A, #0E0E1A) padding-box,
+      linear-gradient(rgb(var(--color-bg-surface)), rgb(var(--color-bg-surface))) padding-box,
       linear-gradient(135deg, rgba(123, 108, 234, 0.5), rgba(155, 143, 245, 0.2)) border-box;
   }
 
@@ -185,15 +220,15 @@
     font-weight: 500;
     font-size: 14px;
     background-color: transparent;
-    color: #F0F0FF;
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: rgb(var(--color-text-primary));
+    border: 1px solid rgb(var(--color-chrome) / 0.1);
     cursor: pointer;
     transition: all 150ms cubic-bezier(0.25, 0, 0, 1);
   }
 
   .btn-secondary:hover {
-    background-color: rgba(255, 255, 255, 0.05);
-    border-color: rgba(255, 255, 255, 0.2);
+    background-color: rgb(var(--color-chrome) / 0.05);
+    border-color: rgb(var(--color-chrome) / 0.2);
   }
 
   .btn-secondary:active {
@@ -212,9 +247,9 @@
 
   .card-base {
     border-radius: 12px;
-    border: 1px solid rgba(255, 255, 255, 0.06);
-    background-color: #0E0E1A;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.05);
+    border: 1px solid rgb(var(--color-chrome) / 0.06);
+    background-color: rgb(var(--color-bg-surface));
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4), 0 0 0 1px rgb(var(--color-chrome) / 0.05);
     transition: box-shadow 220ms cubic-bezier(0.25, 0, 0, 1), border-color 220ms cubic-bezier(0.25, 0, 0, 1);
   }
 

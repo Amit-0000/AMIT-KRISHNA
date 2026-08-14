@@ -43,7 +43,7 @@ export function StorageCard({ stats, loading = false }: StorageCardProps) {
         <>
           {/* Progress bar */}
           <div
-            className="w-full h-2 rounded-full bg-white/8 overflow-hidden mb-2"
+            className="w-full h-2 rounded-full bg-chrome/8 overflow-hidden mb-2"
             role="progressbar"
             aria-valuenow={pct}
             aria-valuemin={0}

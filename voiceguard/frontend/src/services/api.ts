@@ -109,13 +109,9 @@ export const scanApi = {
     api.get<{ technical: import('@/types').AIScanTechnical }>(`/scans/${scanId}/technical`),
   explanation: (scanId: string) =>
     api.get<{ explanation: import('@/types').AIScanExplanation }>(`/scans/${scanId}/explanation`),
-  // submitFeedback (per-scan verdict correction) has no backend route yet —
-  // distinct from feedbackApi.submit (general product feedback) below, which
-  // is live.
-  submitFeedback: (scanId: string, verdict: import('@/types').Verdict) =>
-    api.post(`/scans/${scanId}/feedback`, { user_verdict: verdict }),
   share: (scanId: string) =>
-    api.post<{ share_url: string }>(`/scans/${scanId}/share`),
+    api.post<{ share_url: string; token: string; expires_at: string | null }>(`/scans/${scanId}/share`),
+  unshare: (scanId: string) => api.delete(`/scans/${scanId}/share`),
   // Public, unauthenticated lookup for the /r/:scanId shared-result page —
   // a separate route from result() above since it must not require the
   // owner's session. `scanId` here is really the opaque share token minted
@@ -138,6 +134,8 @@ export const notificationApi = {
     api.patch(`/notifications/${id}/read`),
   markAllRead: () =>
     api.post('/notifications/mark-all-read'),
+  delete: (id: string) =>
+    api.delete(`/notifications/${id}`),
 }
 
 // ─── User / profile endpoints ─────────────────────────────────────────────────
@@ -153,8 +151,10 @@ export const userApi = {
 }
 
 // ─── Feedback endpoints ────────────────────────────────────────────────────────
-// General product feedback — distinct from scanApi.submitFeedback (per-scan
-// verdict correction).
+// General product feedback, including per-scan verdict corrections — the
+// Feedback page's "Incorrect result" category + optional scan ID field
+// (pages/Feedback/index.tsx) is how a user reports a wrong verdict; there is
+// no separate structured verdict-correction endpoint.
 
 export const feedbackApi = {
   submit: (payload: { category: string; message: string; scan_id?: string; email?: string }) =>

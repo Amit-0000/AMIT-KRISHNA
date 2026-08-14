@@ -6,9 +6,9 @@ const STEPS = [
   {
     number: '01',
     icon: Upload,
-    title: 'Upload or record audio',
+    title: 'Upload your audio',
     description:
-      'Drop any audio file (WAV, MP3, FLAC, OGG, M4A) up to 10MB, or record directly from your microphone. No account required for your first scan.',
+      'Drop any audio file (WAV, MP3, FLAC, OGG, M4A) up to 10MB. Create a free account to get started — your history and results are saved to it.',
     color: 'text-brand',
     bgColor: 'bg-brand-muted',
     borderColor: 'border-brand-border',
@@ -28,7 +28,7 @@ const STEPS = [
     icon: ShieldCheck,
     title: 'Get your forensic verdict',
     description:
-      'Receive a verdict (human / AI-generated / uncertain) with a confidence score, per-segment breakdown, and Grad-CAM frequency heatmap showing exactly which patterns triggered the detection.',
+      'Receive a verdict (human / AI-generated / uncertain) with a confidence score, per-segment breakdown, and the specific audio regions that most influenced the decision.',
     color: 'text-human',
     bgColor: 'bg-human-muted',
     borderColor: 'border-human-border',
@@ -72,7 +72,7 @@ export function HowItWorksSection() {
         <div className="relative">
           {/* Connector line */}
           <div
-            className="hidden lg:block absolute top-[52px] left-[16.66%] right-[16.66%] h-px bg-gradient-to-r from-transparent via-white/10 to-transparent"
+            className="hidden lg:block absolute top-[52px] left-[16.66%] right-[16.66%] h-px bg-gradient-to-r from-transparent via-chrome/10 to-transparent"
             aria-hidden="true"
           />
 
@@ -100,7 +100,7 @@ export function HowItWorksSection() {
                       <Icon className={`w-6 h-6 ${step.color}`} aria-hidden="true" />
                     </div>
                     <span
-                      className="absolute -top-2 -right-2 text-[10px] font-bold text-text-tertiary bg-bg-elevated border border-white/8 rounded-full w-6 h-6 flex items-center justify-center"
+                      className="absolute -top-2 -right-2 text-[10px] font-bold text-text-tertiary bg-bg-elevated border border-chrome/8 rounded-full w-6 h-6 flex items-center justify-center"
                       aria-hidden="true"
                     >
                       {step.number}

@@ -35,7 +35,7 @@ export function SharedResultPage() {
             </div>
           ) : query.isError || !query.data ? (
             <div className="card-base rounded-2xl p-8 text-center">
-              <div className="w-14 h-14 rounded-2xl bg-white/5 border border-white/8 flex items-center justify-center mx-auto mb-5">
+              <div className="w-14 h-14 rounded-2xl bg-chrome/5 border border-chrome/8 flex items-center justify-center mx-auto mb-5">
                 <ShieldOff className="w-6 h-6 text-text-tertiary" aria-hidden="true" />
               </div>
               <h1 className="text-heading-lg font-semibold text-text-primary mb-2">

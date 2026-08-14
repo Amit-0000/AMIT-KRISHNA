@@ -11,9 +11,9 @@ const buttonVariants = cva(
         default:
           'bg-brand text-white hover:bg-brand-light hover:shadow-glow-brand',
         secondary:
-          'bg-transparent text-text-primary border border-white/10 hover:bg-white/5 hover:border-white/20',
+          'bg-transparent text-text-primary border border-chrome/10 hover:bg-chrome/5 hover:border-chrome/20',
         ghost:
-          'bg-transparent text-text-secondary hover:bg-white/5 hover:text-text-primary',
+          'bg-transparent text-text-secondary hover:bg-chrome/5 hover:text-text-primary',
         destructive:
           'bg-ai text-white hover:bg-ai/90',
         link:

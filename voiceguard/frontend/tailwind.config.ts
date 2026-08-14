@@ -10,14 +10,18 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        // Core backgrounds
+        // Core backgrounds — CSS-variable-backed so they resolve differently
+        // per theme (see index.css's `.dark`/`.light` blocks). The
+        // `<alpha-value>` placeholder lets Tailwind's opacity modifiers
+        // (e.g. `bg-bg-elevated/50`) keep working against the variable.
         bg: {
-          base: '#080810',
-          surface: '#0E0E1A',
-          elevated: '#141428',
-          overlay: '#1A1A32',
+          base: 'rgb(var(--color-bg-base) / <alpha-value>)',
+          surface: 'rgb(var(--color-bg-surface) / <alpha-value>)',
+          elevated: 'rgb(var(--color-bg-elevated) / <alpha-value>)',
+          overlay: 'rgb(var(--color-bg-overlay) / <alpha-value>)',
         },
-        // Brand accent
+        // Brand accent — intentionally theme-invariant (same purple reads
+        // fine on both a near-black and a near-white surface).
         brand: {
           DEFAULT: '#7B6CEA',
           light: '#9B8FF5',
@@ -25,7 +29,9 @@ const config: Config = {
           muted: 'rgba(123, 108, 234, 0.15)',
           border: 'rgba(123, 108, 234, 0.3)',
         },
-        // Verdict colors
+        // Verdict colors — also theme-invariant by design: these are status
+        // colors (human/ai/uncertain) that must stay recognizable regardless
+        // of theme, the same way a stop sign stays red in light or dark.
         human: {
           DEFAULT: '#32D583',
           muted: 'rgba(50, 213, 131, 0.12)',
@@ -44,19 +50,26 @@ const config: Config = {
           border: 'rgba(245, 166, 35, 0.25)',
           text: '#C8821A',
         },
-        // Text hierarchy
+        // Text hierarchy — CSS-variable-backed, swaps per theme.
         text: {
-          primary: '#F0F0FF',
-          secondary: '#8B8BA7',
-          tertiary: '#4A4A6A',
-          inverse: '#080810',
+          primary: 'rgb(var(--color-text-primary) / <alpha-value>)',
+          secondary: 'rgb(var(--color-text-secondary) / <alpha-value>)',
+          tertiary: 'rgb(var(--color-text-tertiary) / <alpha-value>)',
+          inverse: 'rgb(var(--color-text-inverse) / <alpha-value>)',
         },
-        // Border system
+        // Border system — derived from `chrome` below, at fixed alphas.
         border: {
-          DEFAULT: 'rgba(255, 255, 255, 0.06)',
-          subtle: 'rgba(255, 255, 255, 0.04)',
-          strong: 'rgba(255, 255, 255, 0.12)',
+          DEFAULT: 'rgb(var(--color-chrome) / 0.06)',
+          subtle: 'rgb(var(--color-chrome) / 0.04)',
+          strong: 'rgb(var(--color-chrome) / 0.12)',
         },
+        // "Chrome" — the theme-relative neutral used for subtle borders,
+        // hover overlays, and dividers throughout the app (previously
+        // hardcoded as raw `white/N` utilities everywhere, which is why
+        // light mode used to render identically to dark: white-on-white is
+        // invisible). Resolves to white in dark mode, near-black in light
+        // mode — same role `white/N` always played, now theme-aware.
+        chrome: 'rgb(var(--color-chrome) / <alpha-value>)',
       },
       fontFamily: {
         sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif'],

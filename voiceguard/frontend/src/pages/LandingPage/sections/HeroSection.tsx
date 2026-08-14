@@ -114,7 +114,7 @@ export function HeroSection() {
                 <Lock className="w-3.5 h-3.5 text-human/60 flex-shrink-0" aria-hidden="true" />
                 Audio never stored permanently
               </div>
-              <div className="hidden sm:block w-px h-4 bg-white/10" aria-hidden="true" />
+              <div className="hidden sm:block w-px h-4 bg-chrome/10" aria-hidden="true" />
               <div className="flex items-center gap-2 text-sm text-text-tertiary">
                 <Zap className="w-3.5 h-3.5 text-brand/60 flex-shrink-0" aria-hidden="true" />
                 Results in under 2 seconds

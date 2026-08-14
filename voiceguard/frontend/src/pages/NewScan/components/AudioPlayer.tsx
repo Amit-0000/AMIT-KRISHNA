@@ -85,7 +85,7 @@ export function AudioPlayer({
         tabIndex={0}
         className={cn(
           'relative h-1 rounded-full cursor-pointer',
-          'bg-white/8',
+          'bg-chrome/8',
           'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-1 focus-visible:ring-offset-bg-surface'
         )}
         onClick={handleTrackClick}
@@ -111,7 +111,7 @@ export function AudioPlayer({
           {/* Restart */}
           <button
             onClick={onRestart}
-            className="w-7 h-7 rounded-lg flex items-center justify-center text-text-tertiary hover:text-text-secondary hover:bg-white/5 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand"
+            className="w-7 h-7 rounded-lg flex items-center justify-center text-text-tertiary hover:text-text-secondary hover:bg-chrome/5 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand"
             aria-label="Restart from beginning"
           >
             <SkipBack className="w-3.5 h-3.5" aria-hidden="true" />
@@ -138,7 +138,7 @@ export function AudioPlayer({
           {/* Mute */}
           <button
             onClick={onToggleMute}
-            className="w-7 h-7 rounded-lg flex items-center justify-center text-text-tertiary hover:text-text-secondary hover:bg-white/5 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand"
+            className="w-7 h-7 rounded-lg flex items-center justify-center text-text-tertiary hover:text-text-secondary hover:bg-chrome/5 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand"
             aria-label={player.isMuted ? 'Unmute' : 'Mute'}
           >
             {player.isMuted ? (

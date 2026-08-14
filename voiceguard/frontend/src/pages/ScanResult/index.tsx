@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { motion } from 'framer-motion'
-import { ChevronDown, History, RotateCcw } from 'lucide-react'
+import { ChevronDown, Flag, History, RotateCcw } from 'lucide-react'
 import { PageContainer } from '@/components/layout/PageContainer'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Button } from '@/components/ui/button'
@@ -10,6 +10,7 @@ import { scanApi } from '@/services/api'
 import { VerdictCard } from './components/VerdictCard'
 import { TechnicalDetails } from './components/TechnicalDetails'
 import { ExplanationPanel } from './components/ExplanationPanel'
+import { ShareDialog } from './components/ShareDialog'
 import { useScanExplanation, useScanResult, useScanTechnical } from './hooks/useScanResult'
 
 // ─── Not-yet-complete fallback ────────────────────────────────────────────────
@@ -113,7 +114,7 @@ export function ScanResultPage() {
         <div className="card-base rounded-xl overflow-hidden">
           <button
             onClick={() => setShowTechnical((v) => !v)}
-            className="w-full flex items-center justify-between p-4 text-sm font-medium text-text-primary hover:bg-white/[0.02] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand"
+            className="w-full flex items-center justify-between p-4 text-sm font-medium text-text-primary hover:bg-chrome/[0.02] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand"
             aria-expanded={showTechnical}
           >
             Technical details
@@ -123,7 +124,7 @@ export function ScanResultPage() {
             />
           </button>
           {showTechnical && (
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="border-t border-white/6">
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="border-t border-chrome/6">
               <TechnicalDetails technical={technical} isLoading={technicalLoading} />
             </motion.div>
           )}
@@ -140,11 +141,22 @@ export function ScanResultPage() {
               View history
             </Button>
           </Link>
+          <ShareDialog scanId={scanId} />
           <Link to="/scan/new">
             <Button className="gap-2">
               <RotateCcw className="w-4 h-4" aria-hidden="true" />
               Scan another file
             </Button>
+          </Link>
+        </div>
+
+        <div className="flex justify-center">
+          <Link
+            to={`/feedback?scanId=${scanId}`}
+            className="inline-flex items-center gap-1.5 text-xs text-text-tertiary hover:text-text-secondary transition-colors"
+          >
+            <Flag className="w-3.5 h-3.5" aria-hidden="true" />
+            Report an incorrect verdict
           </Link>
         </div>
       </div>

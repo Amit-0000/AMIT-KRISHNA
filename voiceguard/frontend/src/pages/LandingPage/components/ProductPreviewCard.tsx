@@ -6,7 +6,7 @@ import { useReducedMotion } from '@/hooks/useReducedMotion'
 
 const CONFIDENCE = 91.4
 
-// Simplified gradient heatmap data (frequency band intensities, left to right)
+// Simplified illustrative confidence-per-segment data, left (start of clip) to right (end)
 const HEATMAP_BANDS = [
   0.12, 0.18, 0.25, 0.35, 0.55, 0.72, 0.85, 0.91, 0.88, 0.80,
   0.68, 0.74, 0.82, 0.78, 0.65, 0.55, 0.45, 0.38, 0.28, 0.22,
@@ -104,10 +104,10 @@ export function ProductPreviewCard() {
       {/* Card */}
       <motion.div
         style={reducedMotion ? {} : { boxShadow }}
-        className="relative rounded-2xl bg-bg-surface border border-white/8 overflow-hidden"
+        className="relative rounded-2xl bg-bg-surface border border-chrome/8 overflow-hidden"
       >
         {/* Card header */}
-        <div className="px-5 pt-5 pb-4 border-b border-white/6">
+        <div className="px-5 pt-5 pb-4 border-b border-chrome/6">
           <div className="flex items-center justify-between mb-1">
             <div className="flex items-center gap-2">
               <Shield className="w-4 h-4 text-brand" aria-hidden="true" />
@@ -148,7 +148,7 @@ export function ProductPreviewCard() {
                 {confidenceDisplayed.toFixed(1)}%
               </span>
             </div>
-            <div className="h-2 rounded-full bg-white/6 overflow-hidden" role="progressbar" aria-valuenow={confidenceDisplayed} aria-valuemin={0} aria-valuemax={100} aria-label={`AI confidence: ${confidenceDisplayed.toFixed(1)}%`}>
+            <div className="h-2 rounded-full bg-chrome/6 overflow-hidden" role="progressbar" aria-valuenow={confidenceDisplayed} aria-valuemin={0} aria-valuemax={100} aria-label={`AI confidence: ${confidenceDisplayed.toFixed(1)}%`}>
               <motion.div
                 className="h-full rounded-full bg-gradient-to-r from-ai/70 to-ai"
                 initial={{ width: '0%' }}
@@ -162,7 +162,7 @@ export function ProductPreviewCard() {
                 {(100 - CONFIDENCE).toFixed(1)}%
               </span>
             </div>
-            <div className="h-1.5 rounded-full bg-white/6 overflow-hidden mt-1" role="progressbar" aria-valuenow={100 - CONFIDENCE} aria-valuemin={0} aria-valuemax={100} aria-label={`Human confidence: ${(100 - CONFIDENCE).toFixed(1)}%`}>
+            <div className="h-1.5 rounded-full bg-chrome/6 overflow-hidden mt-1" role="progressbar" aria-valuenow={100 - CONFIDENCE} aria-valuemin={0} aria-valuemax={100} aria-label={`Human confidence: ${(100 - CONFIDENCE).toFixed(1)}%`}>
               <motion.div
                 className="h-full rounded-full bg-human/50"
                 initial={{ width: '0%' }}
@@ -172,16 +172,18 @@ export function ProductPreviewCard() {
             </div>
           </div>
 
-          {/* Frequency heatmap */}
-          <div className="rounded-lg overflow-hidden border border-white/6 mb-4">
-            <div className="px-3 py-2 border-b border-white/6 flex items-center justify-between">
+          {/* Most-influential-regions preview — mirrors the real ScanResult
+              explanation panel's salient-region timeline, not a frequency
+              heatmap (VoiceGuard doesn't produce one). */}
+          <div className="rounded-lg overflow-hidden border border-chrome/6 mb-4">
+            <div className="px-3 py-2 border-b border-chrome/6 flex items-center justify-between">
               <span className="text-[10px] font-semibold text-text-tertiary uppercase tracking-widest">
-                Frequency Analysis
+                Most Influential Regions
               </span>
-              <span className="text-[10px] text-text-tertiary">Grad-CAM · 0–8kHz</span>
+              <span className="text-[10px] text-text-tertiary">Per-segment confidence</span>
             </div>
             <div className="relative h-20 bg-[#0a0a18]" aria-hidden="true">
-              {/* Heatmap visualization */}
+              {/* Illustrative bars */}
               <div className="absolute inset-0 flex items-end pb-1 px-1 gap-[2px]">
                 {HEATMAP_BANDS.map((intensity, i) => (
                   <motion.div
@@ -198,9 +200,9 @@ export function ProductPreviewCard() {
                   />
                 ))}
               </div>
-              {/* Frequency labels */}
-              <div className="absolute bottom-1 left-2 text-[8px] text-white/30">0 Hz</div>
-              <div className="absolute bottom-1 right-2 text-[8px] text-white/30">8 kHz</div>
+              {/* Timeline labels */}
+              <div className="absolute bottom-1 left-2 text-[8px] text-chrome/30">0:00</div>
+              <div className="absolute bottom-1 right-2 text-[8px] text-chrome/30">clip end</div>
             </div>
           </div>
 

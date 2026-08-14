@@ -59,7 +59,7 @@ function ConfidenceBar({ value, verdict }: { value: number; verdict: Verdict }) 
 
   return (
     <div className="flex items-center gap-2 min-w-[80px]">
-      <div className="flex-1 h-1.5 rounded-full bg-white/8 overflow-hidden">
+      <div className="flex-1 h-1.5 rounded-full bg-chrome/8 overflow-hidden">
         <div
           className={cn('h-full rounded-full', color)}
           style={{ width: `${value}%` }}
@@ -125,7 +125,7 @@ function ScanRow({
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       transition={{ duration: 0.18 }}
-      className="group border-b border-white/4 hover:bg-white/[0.02] transition-colors cursor-pointer"
+      className="group border-b border-chrome/4 hover:bg-chrome/[0.02] transition-colors cursor-pointer"
       onClick={() => navigate(`/history/${scan.scan_id}`)}
       onKeyDown={(e) => {
         if (e.key === 'Enter' || e.key === ' ') navigate(`/history/${scan.scan_id}`)
@@ -137,7 +137,7 @@ function ScanRow({
       {/* File name */}
       <td className="py-3 pl-4 pr-3 max-w-[200px]">
         <div className="flex items-center gap-2.5 min-w-0">
-          <div className="flex-shrink-0 w-7 h-7 rounded-md bg-white/5 border border-white/8 flex items-center justify-center">
+          <div className="flex-shrink-0 w-7 h-7 rounded-md bg-chrome/5 border border-chrome/8 flex items-center justify-center">
             <FileAudio className="w-3.5 h-3.5 text-text-tertiary" aria-hidden="true" />
           </div>
           <div className="min-w-0">
@@ -186,7 +186,7 @@ function ScanRow({
             <Tooltip content="View result" side="top">
               <button
                 onClick={() => navigate(`/history/${scan.scan_id}`)}
-                className="flex items-center justify-center w-7 h-7 rounded-md text-text-tertiary hover:text-text-primary hover:bg-white/8 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand"
+                className="flex items-center justify-center w-7 h-7 rounded-md text-text-tertiary hover:text-text-primary hover:bg-chrome/8 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand"
                 aria-label={`View ${scan.file_name}`}
               >
                 <ExternalLink className="w-3.5 h-3.5" aria-hidden="true" />
@@ -247,7 +247,7 @@ export function RecentAnalysisTable() {
       className="card-base rounded-xl overflow-hidden"
     >
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center gap-3 px-5 py-4 border-b border-white/6">
+      <div className="flex flex-col sm:flex-row sm:items-center gap-3 px-5 py-4 border-b border-chrome/6">
         <div className="flex-1">
           <h2 className="text-heading-md font-semibold text-text-primary">Recent Analyses</h2>
           {!isLoading && (
@@ -272,7 +272,7 @@ export function RecentAnalysisTable() {
       <div className="overflow-x-auto">
         <table className="w-full text-sm" role="grid" aria-label="Recent analyses">
           <thead>
-            <tr className="border-b border-white/6" role="row">
+            <tr className="border-b border-chrome/6" role="row">
               {SORTABLE_COLS.map((col) => (
                 <th
                   key={col.key}
@@ -307,7 +307,7 @@ export function RecentAnalysisTable() {
           <tbody role="rowgroup">
             {isLoading ? (
               Array.from({ length: 5 }).map((_, i) => (
-                <tr key={i} className="border-b border-white/4" role="row">
+                <tr key={i} className="border-b border-chrome/4" role="row">
                   {Array.from({ length: 6 }).map((__, j) => (
                     <td key={j} className="py-3 px-3">
                       <Skeleton className="h-4 rounded" style={{ width: j === 0 ? '80%' : j === 5 ? '40px' : '60%' }} />
@@ -345,7 +345,7 @@ export function RecentAnalysisTable() {
       {/* Pagination */}
       {!isLoading && filteredCount > pageSize && (
         <div
-          className="flex items-center justify-between gap-4 px-5 py-3 border-t border-white/6"
+          className="flex items-center justify-between gap-4 px-5 py-3 border-t border-chrome/6"
           role="navigation"
           aria-label="Table pagination"
         >
@@ -357,7 +357,7 @@ export function RecentAnalysisTable() {
             <button
               onClick={() => setPage(page - 1)}
               disabled={page === 1}
-              className="flex items-center justify-center w-7 h-7 rounded-md text-text-tertiary hover:text-text-primary hover:bg-white/5 disabled:opacity-30 disabled:cursor-not-allowed transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand"
+              className="flex items-center justify-center w-7 h-7 rounded-md text-text-tertiary hover:text-text-primary hover:bg-chrome/5 disabled:opacity-30 disabled:cursor-not-allowed transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand"
               aria-label="Previous page"
             >
               <ChevronLeft className="w-4 h-4" aria-hidden="true" />
@@ -382,7 +382,7 @@ export function RecentAnalysisTable() {
                       'w-7 h-7 rounded-md text-xs font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand',
                       page === item
                         ? 'bg-brand text-white'
-                        : 'text-text-tertiary hover:text-text-primary hover:bg-white/5'
+                        : 'text-text-tertiary hover:text-text-primary hover:bg-chrome/5'
                     )}
                     aria-label={`Page ${item}`}
                     aria-current={page === item ? 'page' : undefined}
@@ -394,7 +394,7 @@ export function RecentAnalysisTable() {
             <button
               onClick={() => setPage(page + 1)}
               disabled={page === totalPages}
-              className="flex items-center justify-center w-7 h-7 rounded-md text-text-tertiary hover:text-text-primary hover:bg-white/5 disabled:opacity-30 disabled:cursor-not-allowed transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand"
+              className="flex items-center justify-center w-7 h-7 rounded-md text-text-tertiary hover:text-text-primary hover:bg-chrome/5 disabled:opacity-30 disabled:cursor-not-allowed transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand"
               aria-label="Next page"
             >
               <ChevronRight className="w-4 h-4" aria-hidden="true" />

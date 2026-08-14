@@ -49,7 +49,7 @@ export function HelpCenterPage() {
             'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand',
             category === null
               ? 'bg-brand text-white border-brand'
-              : 'text-text-secondary border-white/10 hover:bg-white/5'
+              : 'text-text-secondary border-chrome/10 hover:bg-chrome/5'
           )}
         >
           All topics
@@ -63,7 +63,7 @@ export function HelpCenterPage() {
               'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand',
               category === c
                 ? 'bg-brand text-white border-brand'
-                : 'text-text-secondary border-white/10 hover:bg-white/5'
+                : 'text-text-secondary border-chrome/10 hover:bg-chrome/5'
             )}
           >
             {c}
@@ -73,7 +73,7 @@ export function HelpCenterPage() {
 
       {filtered.length === 0 ? (
         <div className="flex flex-col items-center justify-center min-h-[30vh] text-center px-6 py-12">
-          <div className="w-14 h-14 rounded-2xl bg-white/5 border border-white/8 flex items-center justify-center mb-4">
+          <div className="w-14 h-14 rounded-2xl bg-chrome/5 border border-chrome/8 flex items-center justify-center mb-4">
             <SearchX className="w-6 h-6 text-text-tertiary" aria-hidden="true" />
           </div>
           <h2 className="text-heading-md font-semibold text-text-primary mb-1">No articles found</h2>

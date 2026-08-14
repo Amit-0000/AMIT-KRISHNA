@@ -10,6 +10,7 @@ import {
 } from 'recharts'
 import { motion } from 'framer-motion'
 import { Skeleton } from '@/components/ui/skeleton'
+import { useResolvedTheme } from '@/hooks/useResolvedTheme'
 import type { ConfidenceBucket } from '../types'
 
 interface CustomTooltipProps {
@@ -29,7 +30,7 @@ function CustomTooltip({ active, payload, label }: CustomTooltipProps) {
       : 'Definitive zone'
 
   return (
-    <div className="rounded-xl bg-bg-elevated border border-white/10 p-3 shadow-elevated">
+    <div className="rounded-xl bg-bg-elevated border border-chrome/10 p-3 shadow-elevated">
       <p className="text-xs font-semibold text-text-primary mb-1">{label}</p>
       <p className="text-xs text-text-secondary">{payload[0].value} scans</p>
       <p className="text-[10px] text-text-tertiary mt-1">{zoneLabel}</p>
@@ -51,6 +52,11 @@ interface ConfidenceChartProps {
 }
 
 export function ConfidenceChart({ data, loading = false }: ConfidenceChartProps) {
+  const resolvedTheme = useResolvedTheme()
+  const gridColor = resolvedTheme === 'dark' ? 'rgba(255,255,255,0.05)' : 'rgba(10,10,20,0.08)'
+  const cursorFill = resolvedTheme === 'dark' ? 'rgba(255,255,255,0.03)' : 'rgba(10,10,20,0.04)'
+  const tickColor = resolvedTheme === 'dark' ? '#8B8BA7' : '#5A5A70'
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 12 }}
@@ -71,12 +77,12 @@ export function ConfidenceChart({ data, loading = false }: ConfidenceChartProps)
             <BarChart data={data} margin={{ top: 4, right: 4, bottom: 0, left: -20 }}>
               <CartesianGrid
                 strokeDasharray="3 3"
-                stroke="rgba(255,255,255,0.05)"
+                stroke={gridColor}
                 vertical={false}
               />
               <XAxis
                 dataKey="range"
-                tick={{ fill: '#8B8BA7', fontSize: 10 }}
+                tick={{ fill: tickColor, fontSize: 10 }}
                 axisLine={false}
                 tickLine={false}
                 interval={0}
@@ -85,12 +91,12 @@ export function ConfidenceChart({ data, loading = false }: ConfidenceChartProps)
                 height={40}
               />
               <YAxis
-                tick={{ fill: '#8B8BA7', fontSize: 11 }}
+                tick={{ fill: tickColor, fontSize: 11 }}
                 axisLine={false}
                 tickLine={false}
                 allowDecimals={false}
               />
-              <Tooltip content={<CustomTooltip />} cursor={{ fill: 'rgba(255,255,255,0.03)' }} />
+              <Tooltip content={<CustomTooltip />} cursor={{ fill: cursorFill }} />
               <Bar dataKey="count" radius={[4, 4, 0, 0]}>
                 {data?.map((entry, i) => (
                   <Cell key={i} fill={zoneColor(entry.zone)} fillOpacity={0.85} />

@@ -60,7 +60,7 @@ function ScanRow({
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       transition={{ duration: 0.18 }}
-      className="group border-b border-white/4 hover:bg-white/[0.02] transition-colors cursor-pointer"
+      className="group border-b border-chrome/4 hover:bg-chrome/[0.02] transition-colors cursor-pointer"
       onClick={() => navigate(`/history/${scan.id}`)}
       onKeyDown={(e) => {
         if (e.key === 'Enter' || e.key === ' ') navigate(`/history/${scan.id}`)
@@ -71,7 +71,7 @@ function ScanRow({
     >
       <td className="py-3 pl-4 pr-3 max-w-[220px]">
         <div className="flex items-center gap-2.5 min-w-0">
-          <div className="flex-shrink-0 w-7 h-7 rounded-md bg-white/5 border border-white/8 flex items-center justify-center">
+          <div className="flex-shrink-0 w-7 h-7 rounded-md bg-chrome/5 border border-chrome/8 flex items-center justify-center">
             <FileAudio className="w-3.5 h-3.5 text-text-tertiary" aria-hidden="true" />
           </div>
           <div className="min-w-0">
@@ -111,7 +111,7 @@ function ScanRow({
             <Tooltip content="View details" side="top">
               <button
                 onClick={() => navigate(`/history/${scan.id}`)}
-                className="flex items-center justify-center w-7 h-7 rounded-md text-text-tertiary hover:text-text-primary hover:bg-white/8 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand"
+                className="flex items-center justify-center w-7 h-7 rounded-md text-text-tertiary hover:text-text-primary hover:bg-chrome/8 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand"
                 aria-label={`View ${scan.original_filename}`}
               >
                 <ExternalLink className="w-3.5 h-3.5" aria-hidden="true" />
@@ -193,7 +193,7 @@ export function ScanHistoryTable() {
       className="card-base rounded-xl overflow-hidden"
     >
       {/* Header / filters */}
-      <div className="flex flex-col sm:flex-row sm:items-center gap-3 px-5 py-4 border-b border-white/6">
+      <div className="flex flex-col sm:flex-row sm:items-center gap-3 px-5 py-4 border-b border-chrome/6">
         <div className="flex-1">
           <h2 className="text-heading-md font-semibold text-text-primary">Your scans</h2>
           {!isLoading && (
@@ -209,7 +209,7 @@ export function ScanHistoryTable() {
           id="scan-status-filter"
           value={statusFilter}
           onChange={(e) => setStatusFilter(e.target.value as ScanRecordStatus | 'all')}
-          className="w-full sm:w-44 rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-sm text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand"
+          className="w-full sm:w-44 rounded-lg border border-chrome/10 bg-chrome/5 px-3 py-2 text-sm text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand"
         >
           {STATUS_FILTER_OPTIONS.map((opt) => (
             <option key={opt.value} value={opt.value}>
@@ -222,7 +222,7 @@ export function ScanHistoryTable() {
       <div className="overflow-x-auto">
         <table className="w-full text-sm" role="grid" aria-label="Scan history">
           <thead>
-            <tr className="border-b border-white/6" role="row">
+            <tr className="border-b border-chrome/6" role="row">
               <th scope="col" className="py-3 pl-4 pr-3 text-left font-medium text-text-tertiary text-xs uppercase tracking-wider">
                 File
               </th>
@@ -254,7 +254,7 @@ export function ScanHistoryTable() {
           <tbody role="rowgroup">
             {isLoading ? (
               Array.from({ length: 5 }).map((_, i) => (
-                <tr key={i} className="border-b border-white/4" role="row">
+                <tr key={i} className="border-b border-chrome/4" role="row">
                   {Array.from({ length: 4 }).map((__, j) => (
                     <td key={j} className="py-3 px-3">
                       <Skeleton className="h-4 rounded" style={{ width: j === 0 ? '80%' : j === 3 ? '40px' : '60%' }} />
@@ -298,7 +298,7 @@ export function ScanHistoryTable() {
 
       {!isLoading && total > pageSize && (
         <div
-          className="flex items-center justify-between gap-4 px-5 py-3 border-t border-white/6"
+          className="flex items-center justify-between gap-4 px-5 py-3 border-t border-chrome/6"
           role="navigation"
           aria-label="Table pagination"
         >
@@ -309,7 +309,7 @@ export function ScanHistoryTable() {
             <button
               onClick={() => setPage(page - 1)}
               disabled={page === 1}
-              className="flex items-center justify-center w-7 h-7 rounded-md text-text-tertiary hover:text-text-primary hover:bg-white/5 disabled:opacity-30 disabled:cursor-not-allowed transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand"
+              className="flex items-center justify-center w-7 h-7 rounded-md text-text-tertiary hover:text-text-primary hover:bg-chrome/5 disabled:opacity-30 disabled:cursor-not-allowed transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand"
               aria-label="Previous page"
             >
               <ChevronLeft className="w-4 h-4" aria-hidden="true" />
@@ -320,7 +320,7 @@ export function ScanHistoryTable() {
             <button
               onClick={() => setPage(page + 1)}
               disabled={page === totalPages}
-              className="flex items-center justify-center w-7 h-7 rounded-md text-text-tertiary hover:text-text-primary hover:bg-white/5 disabled:opacity-30 disabled:cursor-not-allowed transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand"
+              className="flex items-center justify-center w-7 h-7 rounded-md text-text-tertiary hover:text-text-primary hover:bg-chrome/5 disabled:opacity-30 disabled:cursor-not-allowed transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand"
               aria-label="Next page"
             >
               <ChevronRight className="w-4 h-4" aria-hidden="true" />

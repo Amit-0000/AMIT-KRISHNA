@@ -64,7 +64,7 @@ export function OnboardingPage() {
     },
     'use-case': {
       title: 'What brings you here?',
-      description: 'This helps us tailor tips — it never limits what you can do.',
+      description: "Just so we understand our users better — it never limits what you can do.",
     },
     privacy: {
       title: 'Your privacy, by default',
@@ -81,7 +81,7 @@ export function OnboardingPage() {
             key={s}
             className={cn(
               'h-1.5 rounded-full transition-all duration-300',
-              i === stepIndex ? 'w-6 bg-brand' : 'w-1.5 bg-white/15'
+              i === stepIndex ? 'w-6 bg-brand' : 'w-1.5 bg-chrome/15'
             )}
           />
         ))}
@@ -125,7 +125,7 @@ export function OnboardingPage() {
                       'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand',
                       useCase === id
                         ? 'border-brand/50 bg-brand-muted text-brand'
-                        : 'border-white/10 text-text-secondary hover:bg-white/5'
+                        : 'border-chrome/10 text-text-secondary hover:bg-chrome/5'
                     )}
                   >
                     <Icon className="w-4 h-4 flex-shrink-0" aria-hidden="true" />
@@ -144,7 +144,7 @@ export function OnboardingPage() {
             <div className="space-y-6">
               <ul className="space-y-3" role="list">
                 {PRIVACY_ITEMS.map(({ icon: Icon, text }) => (
-                  <li key={text} className="flex items-center gap-3 rounded-lg bg-white/[0.02] border border-white/6 px-4 py-3">
+                  <li key={text} className="flex items-center gap-3 rounded-lg bg-chrome/[0.02] border border-chrome/6 px-4 py-3">
                     <div className="w-8 h-8 rounded-lg bg-human-muted border border-human-border flex items-center justify-center flex-shrink-0">
                       <Icon className="w-4 h-4 text-human" aria-hidden="true" />
                     </div>

@@ -1,5 +1,6 @@
-import { useState, useEffect, useCallback, useRef } from 'react'
+import { useState, useEffect, useCallback, useRef, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { useQuery } from '@tanstack/react-query'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
   Search,
@@ -19,6 +20,7 @@ import {
 import { useUIStore } from '@/store/uiStore'
 import { useKeyboard } from '@/hooks/useKeyboard'
 import { cn } from '@/lib/utils'
+import { fetchRecentScans } from '@/pages/Dashboard/services/dashboardApi'
 import type { SearchResult } from '@/types'
 
 // ─── Static quick-access results ─────────────────────────────────────────────
@@ -86,8 +88,30 @@ export function GlobalSearch() {
     setQuery('')
   }, [setOpen])
 
+  // Real scan content, searched by filename — only fetched while the
+  // palette is open, and only once (react-query caches it for the session).
+  const { data: recentScans } = useQuery({
+    queryKey: ['search-recent-scans'],
+    queryFn: fetchRecentScans,
+    enabled: isOpen,
+    staleTime: 60_000,
+  })
+
+  const scanResults: SearchResult[] = useMemo(
+    () =>
+      (recentScans ?? []).map((scan) => ({
+        id: `scan-${scan.scan_id}`,
+        type: 'scan' as const,
+        label: scan.file_name,
+        description: `${scan.verdict === 'ai_generated' ? 'AI Generated' : scan.verdict === 'human' ? 'Human' : 'Uncertain'} · ${Math.round(scan.confidence)}%`,
+        href: `/scan/${scan.scan_id}`,
+        verdict: scan.verdict,
+      })),
+    [recentScans]
+  )
+
   const results = query.trim()
-    ? QUICK_ACTIONS.filter(
+    ? [...QUICK_ACTIONS, ...scanResults].filter(
         (r) =>
           r.label.toLowerCase().includes(query.toLowerCase()) ||
           (r.description?.toLowerCase().includes(query.toLowerCase()))
@@ -146,9 +170,9 @@ export function GlobalSearch() {
             aria-label="Search"
             aria-modal="true"
           >
-            <div className="rounded-2xl bg-bg-elevated border border-white/10 shadow-elevated overflow-hidden">
+            <div className="rounded-2xl bg-bg-elevated border border-chrome/10 shadow-elevated overflow-hidden">
               {/* Search input */}
-              <div className="flex items-center gap-3 px-4 py-3.5 border-b border-white/6">
+              <div className="flex items-center gap-3 px-4 py-3.5 border-b border-chrome/6">
                 <Search className="w-4 h-4 text-text-tertiary flex-shrink-0" aria-hidden="true" />
                 <input
                   ref={inputRef}
@@ -175,7 +199,7 @@ export function GlobalSearch() {
                 )}
                 <button
                   onClick={close}
-                  className="px-2 py-1 rounded-md border border-white/10 text-[10px] font-medium text-text-tertiary hover:text-text-secondary transition-colors"
+                  className="px-2 py-1 rounded-md border border-chrome/10 text-[10px] font-medium text-text-tertiary hover:text-text-secondary transition-colors"
                   aria-label="Close search (Escape)"
                 >
                   ESC
@@ -210,7 +234,7 @@ export function GlobalSearch() {
                           'flex items-center gap-3 px-4 py-2.5 cursor-pointer transition-colors',
                           i === activeIdx
                             ? 'bg-brand-muted/40'
-                            : 'hover:bg-white/4'
+                            : 'hover:bg-chrome/4'
                         )}
                         onClick={() => handleSelect(result)}
                         onMouseEnter={() => setActiveIdx(i)}
@@ -220,7 +244,7 @@ export function GlobalSearch() {
                             'w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0',
                             result.type === 'action'
                               ? 'bg-brand-muted border border-brand-border'
-                              : 'bg-white/5 border border-white/8'
+                              : 'bg-chrome/5 border border-chrome/8'
                           )}
                         >
                           <ResultIcon result={result} />
@@ -245,7 +269,7 @@ export function GlobalSearch() {
               </div>
 
               {/* Footer hint */}
-              <div className="flex items-center gap-4 px-4 py-2.5 border-t border-white/6">
+              <div className="flex items-center gap-4 px-4 py-2.5 border-t border-chrome/6">
                 <div className="flex items-center gap-1.5 text-[10px] text-text-tertiary">
                   <Keyboard className="w-3 h-3" aria-hidden="true" />
                   <span>↑↓ navigate</span>

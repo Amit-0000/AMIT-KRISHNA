@@ -25,7 +25,7 @@ export function ProcessingProgress({ progressPct }: ProcessingProgressProps) {
       </div>
 
       {/* Track */}
-      <div className="h-1.5 bg-white/8 rounded-full overflow-hidden">
+      <div className="h-1.5 bg-chrome/8 rounded-full overflow-hidden">
         <motion.div
           className="h-full bg-gradient-to-r from-brand to-brand-light rounded-full"
           initial={{ width: '0%' }}

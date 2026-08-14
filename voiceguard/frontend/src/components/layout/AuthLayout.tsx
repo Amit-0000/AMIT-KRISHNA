@@ -19,7 +19,7 @@ export function AuthLayout({ title, description, children, footer }: AuthLayoutP
         <span className="text-heading-lg font-bold text-text-primary">VoiceGuard</span>
       </Link>
 
-      <div className="w-full max-w-md bg-bg-elevated border border-white/8 rounded-2xl shadow-elevated p-8">
+      <div className="w-full max-w-md bg-bg-elevated border border-chrome/8 rounded-2xl shadow-elevated p-8">
         <div className="mb-6 text-center">
           <h1 className="text-display-sm font-bold text-text-primary">{title}</h1>
           {description && <p className="mt-2 text-sm text-text-secondary">{description}</p>}

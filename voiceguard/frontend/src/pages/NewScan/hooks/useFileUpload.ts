@@ -279,5 +279,7 @@ export function useFileUpload() {
     retryValidation,
     retryUpload,
     acceptedFormats,
+    maxSizeMb: MAX_SIZE / (1024 * 1024),
+    maxDurationMinutes: MAX_DURATION / 60,
   }
 }

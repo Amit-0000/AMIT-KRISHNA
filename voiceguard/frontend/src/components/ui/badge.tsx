@@ -11,7 +11,7 @@ const badgeVariants = cva(
         human: 'bg-human-muted text-human border border-human-border',
         ai: 'bg-ai-muted text-ai border border-ai-border',
         uncertain: 'bg-uncertain-muted text-uncertain border border-uncertain-border',
-        neutral: 'bg-white/8 text-text-secondary border border-white/10',
+        neutral: 'bg-chrome/8 text-text-secondary border border-chrome/10',
         success: 'bg-human-muted text-human border border-human-border',
         warning: 'bg-uncertain-muted text-uncertain border border-uncertain-border',
         error: 'bg-ai-muted text-ai border border-ai-border',

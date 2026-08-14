@@ -34,7 +34,7 @@ export function SettingsLayout({ children }: SettingsLayoutProps) {
                     'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand',
                     isActive
                       ? 'bg-brand-muted text-brand'
-                      : 'text-text-secondary hover:bg-white/5 hover:text-text-primary'
+                      : 'text-text-secondary hover:bg-chrome/5 hover:text-text-primary'
                   )
                 }
               >

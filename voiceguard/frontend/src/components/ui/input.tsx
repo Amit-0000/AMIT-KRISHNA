@@ -27,7 +27,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
             'disabled:cursor-not-allowed disabled:opacity-50',
             error
               ? 'border-ai/50 focus-visible:ring-ai'
-              : 'border-white/10 hover:border-white/20',
+              : 'border-chrome/10 hover:border-chrome/20',
             leftIcon && 'pl-9',
             rightIcon && 'pr-9',
             className

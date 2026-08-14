@@ -12,6 +12,7 @@ import {
 import { motion } from 'framer-motion'
 import { Skeleton } from '@/components/ui/skeleton'
 import { cn } from '@/lib/utils'
+import { useResolvedTheme } from '@/hooks/useResolvedTheme'
 import type { TrendDataPoint } from '../types'
 
 type Period = '7d' | '14d' | '30d'
@@ -33,7 +34,7 @@ function CustomTooltip({ active, payload, label }: CustomTooltipProps) {
   if (!active || !payload?.length) return null
 
   return (
-    <div className="rounded-xl bg-bg-elevated border border-white/10 p-3 shadow-elevated min-w-[160px]">
+    <div className="rounded-xl bg-bg-elevated border border-chrome/10 p-3 shadow-elevated min-w-[160px]">
       <p className="text-xs font-semibold text-text-primary mb-2">{label}</p>
       {payload.map((entry) => (
         <div key={entry.dataKey} className="flex items-center justify-between gap-4 text-xs">
@@ -67,6 +68,13 @@ const PERIOD_LABELS: Record<Period, string> = {
 
 export function TrendChart({ data, loading = false }: TrendChartProps) {
   const [period, setPeriod] = useState<Period>('30d')
+  const resolvedTheme = useResolvedTheme()
+  // recharts takes literal color props (not Tailwind classes), so grid/tick
+  // colors — which are theme-dependent, unlike the fixed verdict colors
+  // below — are resolved here instead of via CSS variables.
+  const gridColor = resolvedTheme === 'dark' ? 'rgba(255,255,255,0.05)' : 'rgba(10,10,20,0.08)'
+  const cursorColor = resolvedTheme === 'dark' ? 'rgba(255,255,255,0.08)' : 'rgba(10,10,20,0.12)'
+  const tickColor = resolvedTheme === 'dark' ? '#8B8BA7' : '#5A5A70'
 
   const periodData = data
     ? data.slice(period === '7d' ? -7 : period === '14d' ? -14 : 0)
@@ -89,7 +97,7 @@ export function TrendChart({ data, loading = false }: TrendChartProps) {
           <p className="text-xs text-text-tertiary mt-0.5">Scans over time by verdict</p>
         </div>
         <div
-          className="flex items-center gap-1 p-1 rounded-lg bg-bg-base border border-white/8"
+          className="flex items-center gap-1 p-1 rounded-lg bg-bg-base border border-chrome/8"
           role="radiogroup"
           aria-label="Time period"
         >
@@ -133,27 +141,27 @@ export function TrendChart({ data, loading = false }: TrendChartProps) {
             </defs>
             <CartesianGrid
               strokeDasharray="3 3"
-              stroke="rgba(255,255,255,0.05)"
+              stroke={gridColor}
               vertical={false}
             />
             <XAxis
               dataKey="date"
-              tick={{ fill: '#8B8BA7', fontSize: 11 }}
+              tick={{ fill: tickColor, fontSize: 11 }}
               axisLine={false}
               tickLine={false}
               interval={tickInterval}
             />
             <YAxis
-              tick={{ fill: '#8B8BA7', fontSize: 11 }}
+              tick={{ fill: tickColor, fontSize: 11 }}
               axisLine={false}
               tickLine={false}
               allowDecimals={false}
             />
-            <Tooltip content={<CustomTooltip />} cursor={{ stroke: 'rgba(255,255,255,0.08)' }} />
+            <Tooltip content={<CustomTooltip />} cursor={{ stroke: cursorColor }} />
             <Legend
               iconType="circle"
               iconSize={8}
-              wrapperStyle={{ paddingTop: '12px', fontSize: '11px', color: '#8B8BA7' }}
+              wrapperStyle={{ paddingTop: '12px', fontSize: '11px', color: tickColor }}
               formatter={(value) => value.replace('_', ' ')}
             />
             <Area

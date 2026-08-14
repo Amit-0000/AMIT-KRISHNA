@@ -13,16 +13,17 @@ const FOOTER_LINKS = {
     { label: 'Sign in', href: '/login' },
   ],
   Legal: [
-    { label: 'Privacy Policy', href: '/privacy' },
-    { label: 'Terms of Service', href: '/terms' },
-    { label: 'Cookie Policy', href: '/cookies' },
+    // Terms of Service and Cookie Policy pages don't exist yet — no VoiceGuard
+    // legal team has produced that copy, so this deliberately links only to
+    // the one page that's real rather than pointing at 404s or placeholders.
+    { label: 'Privacy & Data', href: '/help/data-privacy-and-retention' },
   ],
 }
 
 export function Footer() {
   return (
     <footer
-      className="border-t border-white/6 bg-bg-surface pt-16 pb-10"
+      className="border-t border-chrome/6 bg-bg-surface pt-16 pb-10"
       role="contentinfo"
       aria-label="Site footer"
     >
@@ -91,7 +92,7 @@ export function Footer() {
         </div>
 
         {/* Bottom bar */}
-        <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-8 border-t border-white/6">
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-8 border-t border-chrome/6">
           <p className="text-xs text-text-tertiary">
             © {new Date().getFullYear()} VoiceGuard. Free to use.
           </p>

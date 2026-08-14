@@ -1,12 +1,13 @@
 import { useEffect } from 'react'
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
-import { Toaster } from 'sonner'
+import { Toaster, toast } from 'sonner'
 import { LandingPage } from '@/pages/LandingPage'
 import { AppShell } from '@/components/layout/AppShell'
 import { AuthGuard } from '@/guards/AuthGuard'
 import { GuestGuard } from '@/guards/GuestGuard'
 import { OnboardingGuard } from '@/guards/OnboardingGuard'
 import { useAuthStore } from '@/store/authStore'
+import { useResolvedTheme } from '@/hooks/useResolvedTheme'
 import { DashboardPage } from '@/pages/Dashboard'
 import { NewScanPage } from '@/pages/NewScan'
 import { ScanProcessingPage } from '@/pages/ScanProcessing'
@@ -33,10 +34,44 @@ import { OnboardingPage } from '@/pages/Onboarding'
 function AppInit() {
   const checkSession = useAuthStore((s) => s.checkSession)
   useEffect(() => { checkSession() }, [checkSession])
+
+  // api.ts dispatches this on every 429 (login/register/scan-create/etc. all
+  // have per-route rate limits — see api/core/rate_limit.py); mounted here,
+  // globally and unconditionally, since a 429 can happen on pre-auth routes
+  // (login, register, forgot-password) just as easily as authenticated ones.
+  useEffect(() => {
+    const handler = (e: Event) => {
+      const retryAfter = (e as CustomEvent<{ retryAfter?: string }>).detail?.retryAfter
+      const seconds = retryAfter ? Number(retryAfter) : NaN
+      toast.error(
+        Number.isFinite(seconds) && seconds > 0
+          ? `You're going too fast — try again in ${seconds}s.`
+          : "You're going too fast — try again in a moment."
+      )
+    }
+    window.addEventListener('vg:rate-limited', handler)
+    return () => window.removeEventListener('vg:rate-limited', handler)
+  }, [])
+
   return null
 }
 
 // ─── Root ─────────────────────────────────────────────────────────────────────
+
+function ThemedToaster() {
+  const resolvedTheme = useResolvedTheme()
+  return (
+    <Toaster
+      position="bottom-right"
+      theme={resolvedTheme}
+      toastOptions={{
+        classNames: {
+          toast: 'bg-bg-elevated border border-chrome/8 text-text-primary rounded-xl',
+        },
+      }}
+    />
+  )
+}
 
 export default function App() {
   return (
@@ -148,17 +183,7 @@ export default function App() {
       </Routes>
 
       {/* Global toast notifications */}
-      <Toaster
-        position="bottom-right"
-        toastOptions={{
-          style: {
-            background: '#141428',
-            border: '1px solid rgba(255,255,255,0.08)',
-            color: '#F0F0FF',
-            borderRadius: '12px',
-          },
-        }}
-      />
+      <ThemedToaster />
     </BrowserRouter>
   )
 }

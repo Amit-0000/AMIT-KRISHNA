@@ -7,6 +7,7 @@ export function useNotifications() {
   const setNotifications = useUIStore((s) => s.setNotifications)
   const markRead = useUIStore((s) => s.markNotificationRead)
   const markAllRead = useUIStore((s) => s.markAllNotificationsRead)
+  const removeNotification = useUIStore((s) => s.removeNotification)
   const unreadCount = useUIStore((s) => s.unreadCount)
 
   const [isLoading, setIsLoading] = useState(notifications.length === 0)
@@ -49,6 +50,15 @@ export function useNotifications() {
     }
   }
 
+  async function handleDelete(id: string) {
+    removeNotification(id)
+    try {
+      await notificationApi.delete(id)
+    } catch {
+      /* best-effort — a failed delete just means it reappears on next reload */
+    }
+  }
+
   return {
     notifications,
     unreadCount,
@@ -57,5 +67,6 @@ export function useNotifications() {
     refetch: load,
     markRead: handleMarkRead,
     markAllRead: handleMarkAllRead,
+    deleteNotification: handleDelete,
   }
 }

@@ -35,7 +35,7 @@ const ACTIONS: ActionItem[] = [
   },
   {
     label: 'Share a Result',
-    description: 'Generate a public share link',
+    description: 'Open a past scan to generate its link',
     href: '/history',
     icon: Share2,
   },
@@ -61,10 +61,10 @@ export function QuickActions() {
       transition={{ duration: 0.4, delay: 0.08, ease: [0.25, 0, 0, 1] }}
       className="card-base rounded-xl overflow-hidden"
     >
-      <div className="px-4 py-3.5 border-b border-white/6">
+      <div className="px-4 py-3.5 border-b border-chrome/6">
         <h2 className="text-heading-sm font-semibold text-text-primary">Quick Actions</h2>
       </div>
-      <ul role="list" className="divide-y divide-white/4">
+      <ul role="list" className="divide-y divide-chrome/4">
         {ACTIONS.map((action) => {
           const Icon = action.icon
           return (
@@ -76,7 +76,7 @@ export function QuickActions() {
                   'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-brand',
                   action.primary
                     ? 'hover:bg-brand-muted/40'
-                    : 'hover:bg-white/3'
+                    : 'hover:bg-chrome/3'
                 )}
               >
                 <div
@@ -84,7 +84,7 @@ export function QuickActions() {
                     'flex-shrink-0 w-8 h-8 rounded-lg flex items-center justify-center border transition-colors',
                     action.primary
                       ? 'bg-brand-muted border-brand-border text-brand group-hover:bg-brand group-hover:text-white group-hover:border-brand'
-                      : 'bg-white/5 border-white/8 text-text-secondary group-hover:text-text-primary'
+                      : 'bg-chrome/5 border-chrome/8 text-text-secondary group-hover:text-text-primary'
                   )}
                 >
                   <Icon className="w-4 h-4" aria-hidden="true" />

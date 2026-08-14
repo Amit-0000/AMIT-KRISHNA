@@ -56,7 +56,7 @@ export function ExplanationPanel({
       )}
 
       {explanation.salient_regions.length > 0 && (
-        <div className="pt-3 border-t border-white/6">
+        <div className="pt-3 border-t border-chrome/6">
           <h3 className="text-xs uppercase tracking-wider text-text-tertiary mb-2">
             Most influential audio regions
           </h3>
@@ -66,7 +66,7 @@ export function ExplanationPanel({
                 <span className="font-mono text-text-secondary tabular-nums w-28">
                   {fmtTime(region.start_s)} – {fmtTime(region.end_s)}
                 </span>
-                <div className="flex-1 h-1.5 rounded-full bg-white/5 overflow-hidden">
+                <div className="flex-1 h-1.5 rounded-full bg-chrome/5 overflow-hidden">
                   <div
                     className="h-full rounded-full bg-brand"
                     style={{ width: `${Math.round(region.importance * 100)}%` }}

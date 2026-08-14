@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
-import { AlertTriangle, BellOff, CheckCheck, RefreshCw } from 'lucide-react'
+import { AlertTriangle, BellOff, CheckCheck, RefreshCw, X } from 'lucide-react'
 import { PageContainer } from '@/components/layout/PageContainer'
 import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
@@ -14,7 +14,7 @@ type FilterTab = 'all' | 'unread' | 'read'
 
 function NotificationsSkeleton() {
   return (
-    <div className="card-base rounded-xl divide-y divide-white/6 overflow-hidden">
+    <div className="card-base rounded-xl divide-y divide-chrome/6 overflow-hidden">
       {Array.from({ length: 5 }).map((_, i) => (
         <div key={i} className="flex gap-3 px-5 py-4">
           <Skeleton className="w-8 h-8 rounded-lg flex-shrink-0" />
@@ -46,7 +46,7 @@ function NotificationsErrorState({ onRetry }: { onRetry: () => void }) {
 function NotificationsEmptyState({ filter }: { filter: FilterTab }) {
   return (
     <div className="flex flex-col items-center justify-center min-h-[40vh] text-center px-6 py-16">
-      <div className="w-16 h-16 rounded-2xl bg-white/5 border border-white/8 flex items-center justify-center mb-5">
+      <div className="w-16 h-16 rounded-2xl bg-chrome/5 border border-chrome/8 flex items-center justify-center mb-5">
         <BellOff className="w-7 h-7 text-text-tertiary" aria-hidden="true" />
       </div>
       <h2 className="text-heading-lg font-semibold text-text-primary mb-2">
@@ -66,9 +66,11 @@ function NotificationsEmptyState({ filter }: { filter: FilterTab }) {
 function NotificationRow({
   notif,
   onRead,
+  onDelete,
 }: {
   notif: AppNotification
   onRead: (id: string) => void
+  onDelete: (id: string) => void
 }) {
   const navigate = useNavigate()
 
@@ -86,7 +88,7 @@ function NotificationRow({
       transition={{ duration: 0.2 }}
       className={cn(
         'flex gap-4 px-5 py-4 transition-colors',
-        notif.action_url && 'cursor-pointer hover:bg-white/[0.02]',
+        notif.action_url && 'cursor-pointer hover:bg-chrome/[0.02]',
         !notif.read && 'bg-brand-muted/20'
       )}
       onClick={notif.action_url ? handleClick : undefined}
@@ -96,7 +98,7 @@ function NotificationRow({
         if ((e.key === 'Enter' || e.key === ' ') && notif.action_url) handleClick()
       }}
     >
-      <div className="flex-shrink-0 w-8 h-8 rounded-lg bg-white/5 border border-white/8 flex items-center justify-center mt-0.5">
+      <div className="flex-shrink-0 w-8 h-8 rounded-lg bg-chrome/5 border border-chrome/8 flex items-center justify-center mt-0.5">
         <NotifIcon type={notif.type} />
       </div>
       <div className="flex-1 min-w-0">
@@ -116,17 +118,29 @@ function NotificationRow({
           )}
         </div>
       </div>
-      {!notif.read && (
+      <div className="flex-shrink-0 flex items-start gap-1">
+        {!notif.read && (
+          <button
+            onClick={(e) => {
+              e.stopPropagation()
+              onRead(notif.id)
+            }}
+            className="self-start text-xs text-text-tertiary hover:text-brand transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand rounded px-1.5 py-0.5"
+          >
+            Mark read
+          </button>
+        )}
         <button
           onClick={(e) => {
             e.stopPropagation()
-            onRead(notif.id)
+            onDelete(notif.id)
           }}
-          className="flex-shrink-0 self-start text-xs text-text-tertiary hover:text-brand transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand rounded px-1.5 py-0.5"
+          aria-label="Delete notification"
+          className="self-start p-1 rounded text-text-tertiary hover:text-ai transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand"
         >
-          Mark read
+          <X className="w-3.5 h-3.5" aria-hidden="true" />
         </button>
-      )}
+      </div>
     </motion.div>
   )
 }
@@ -138,7 +152,8 @@ const TABS: { value: FilterTab; label: string }[] = [
 ]
 
 export function NotificationsPage() {
-  const { notifications, unreadCount, isLoading, isError, refetch, markRead, markAllRead } = useNotifications()
+  const { notifications, unreadCount, isLoading, isError, refetch, markRead, markAllRead, deleteNotification } =
+    useNotifications()
   const [filter, setFilter] = useState<FilterTab>('all')
 
   const filtered = useMemo(() => {
@@ -168,7 +183,7 @@ export function NotificationsPage() {
       <div
         role="tablist"
         aria-label="Filter notifications"
-        className="flex items-center gap-1 p-1 mb-4 rounded-lg bg-white/5 border border-white/8 w-fit"
+        className="flex items-center gap-1 p-1 mb-4 rounded-lg bg-chrome/5 border border-chrome/8 w-fit"
       >
         {TABS.map((tab) => (
           <button
@@ -199,10 +214,10 @@ export function NotificationsPage() {
       ) : filtered.length === 0 ? (
         <NotificationsEmptyState filter={filter} />
       ) : (
-        <div className="card-base rounded-xl divide-y divide-white/6 overflow-hidden">
+        <div className="card-base rounded-xl divide-y divide-chrome/6 overflow-hidden">
           <AnimatePresence initial={false} mode="popLayout">
             {filtered.map((notif) => (
-              <NotificationRow key={notif.id} notif={notif} onRead={markRead} />
+              <NotificationRow key={notif.id} notif={notif} onRead={markRead} onDelete={deleteNotification} />
             ))}
           </AnimatePresence>
         </div>

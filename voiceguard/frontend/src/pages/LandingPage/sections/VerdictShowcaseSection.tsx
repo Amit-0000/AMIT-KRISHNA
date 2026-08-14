@@ -100,7 +100,7 @@ function VerdictCard({ verdict, index, inView }: {
           </span>
         </div>
         <div
-          className="h-2 rounded-full bg-white/6 overflow-hidden"
+          className="h-2 rounded-full bg-chrome/6 overflow-hidden"
           role="progressbar"
           aria-valuenow={verdict.confidence}
           aria-valuemin={0}

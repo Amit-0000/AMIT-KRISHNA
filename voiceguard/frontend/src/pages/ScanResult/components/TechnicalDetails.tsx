@@ -4,7 +4,7 @@ import type { AIScanTechnical } from '@/types'
 
 function Row({ label, value }: { label: string; value: string }) {
   return (
-    <div className="flex items-center justify-between py-2 border-b border-white/5 last:border-0">
+    <div className="flex items-center justify-between py-2 border-b border-chrome/5 last:border-0">
       <span className="text-xs text-text-tertiary">{label}</span>
       <span className="text-sm font-medium text-text-primary tabular-nums">{value}</span>
     </div>
@@ -43,7 +43,7 @@ export function TechnicalDetails({ technical, isLoading }: { technical?: AIScanT
       </div>
 
       {technical.stage_timings.length > 0 && (
-        <div className="mt-4 pt-4 border-t border-white/6">
+        <div className="mt-4 pt-4 border-t border-chrome/6">
           <h3 className="text-xs uppercase tracking-wider text-text-tertiary mb-2">Pipeline stage timing</h3>
           <div className="space-y-1">
             {technical.stage_timings.map((t, i) => (

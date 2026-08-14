@@ -32,8 +32,8 @@ export function AppearancePage() {
         <div className="card-base rounded-xl p-6">
           <h3 className="text-sm font-semibold text-text-primary mb-1">Theme</h3>
           <p className="text-xs text-text-tertiary mb-4">
-            VoiceGuard is designed dark-first. "System" and "Light" will switch automatically once a light
-            palette ships — your preference is saved either way.
+            Choose Light, Dark, or System to match your OS. Your preference is saved to this device and
+            applied everywhere in VoiceGuard.
           </p>
           <div
             role="radiogroup"
@@ -53,7 +53,7 @@ export function AppearancePage() {
                     'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand',
                     active
                       ? 'border-brand/50 bg-brand-muted'
-                      : 'border-white/8 bg-white/[0.02] hover:bg-white/5 hover:border-white/15'
+                      : 'border-chrome/8 bg-chrome/[0.02] hover:bg-chrome/5 hover:border-chrome/15'
                   )}
                 >
                   <Icon className={cn('w-5 h-5', active ? 'text-brand' : 'text-text-tertiary')} aria-hidden="true" />
@@ -84,7 +84,7 @@ export function AppearancePage() {
                 'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand',
                 !sidebarCollapsed
                   ? 'border-brand/50 bg-brand-muted text-brand'
-                  : 'border-white/8 text-text-secondary hover:bg-white/5'
+                  : 'border-chrome/8 text-text-secondary hover:bg-chrome/5'
               )}
             >
               <PanelLeft className="w-4 h-4" aria-hidden="true" />
@@ -98,7 +98,7 @@ export function AppearancePage() {
                 'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand',
                 sidebarCollapsed
                   ? 'border-brand/50 bg-brand-muted text-brand'
-                  : 'border-white/8 text-text-secondary hover:bg-white/5'
+                  : 'border-chrome/8 text-text-secondary hover:bg-chrome/5'
               )}
             >
               <PanelLeftClose className="w-4 h-4" aria-hidden="true" />

@@ -31,7 +31,7 @@ export function ModelStatusCard({ status, loading = false }: ModelStatusCardProp
       transition={{ duration: 0.4, delay: 0.12, ease: [0.25, 0, 0, 1] }}
       className="card-base rounded-xl overflow-hidden"
     >
-      <div className="px-4 py-3.5 border-b border-white/6 flex items-center justify-between">
+      <div className="px-4 py-3.5 border-b border-chrome/6 flex items-center justify-between">
         <div className="flex items-center gap-2">
           <Cpu className="w-4 h-4 text-brand" aria-hidden="true" />
           <h2 className="text-heading-sm font-semibold text-text-primary">Model Status</h2>
@@ -74,7 +74,7 @@ export function ModelStatusCard({ status, loading = false }: ModelStatusCardProp
                 <span className="text-xs font-semibold text-text-primary font-mono">{value}</span>
               </div>
             ))}
-            <div className="pt-2 border-t border-white/6">
+            <div className="pt-2 border-t border-chrome/6">
               <p className="text-[10px] text-text-tertiary">
                 Last checked {formatRelativeTime(status.last_checked)}
               </p>
@@ -87,7 +87,7 @@ export function ModelStatusCard({ status, loading = false }: ModelStatusCardProp
         href="https://arxiv.org/abs/1901.09394"
         target="_blank"
         rel="noopener noreferrer"
-        className="flex items-center gap-1.5 px-4 py-3 border-t border-white/6 text-xs text-text-tertiary hover:text-text-secondary transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-brand"
+        className="flex items-center gap-1.5 px-4 py-3 border-t border-chrome/6 text-xs text-text-tertiary hover:text-text-secondary transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-brand"
         aria-label="LCNN paper (opens in new tab)"
       >
         <ExternalLink className="w-3 h-3" aria-hidden="true" />

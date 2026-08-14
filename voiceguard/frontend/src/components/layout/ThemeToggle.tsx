@@ -32,7 +32,7 @@ export function ThemeToggle({ variant = 'cycle' }: ThemeToggleProps) {
       <Tooltip content={current.label} side="bottom">
         <button
           onClick={cycle}
-          className="flex items-center justify-center w-9 h-9 rounded-lg text-text-tertiary hover:text-text-primary hover:bg-white/5 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand"
+          className="flex items-center justify-center w-9 h-9 rounded-lg text-text-tertiary hover:text-text-primary hover:bg-chrome/5 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand"
           aria-label={`Current theme: ${current.label}. Click to cycle.`}
         >
           <Icon className="w-4.5 h-4.5" aria-hidden="true" />
@@ -43,7 +43,7 @@ export function ThemeToggle({ variant = 'cycle' }: ThemeToggleProps) {
 
   return (
     <div
-      className="flex items-center gap-1 p-1 rounded-lg bg-bg-base border border-white/8"
+      className="flex items-center gap-1 p-1 rounded-lg bg-bg-base border border-chrome/8"
       role="radiogroup"
       aria-label="Color theme"
     >
@@ -58,7 +58,7 @@ export function ThemeToggle({ variant = 'cycle' }: ThemeToggleProps) {
             'flex items-center justify-center w-8 h-8 rounded-md transition-all duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand',
             theme === value
               ? 'bg-brand-muted text-brand'
-              : 'text-text-tertiary hover:text-text-secondary hover:bg-white/5'
+              : 'text-text-tertiary hover:text-text-secondary hover:bg-chrome/5'
           )}
         >
           <Icon className="w-4 h-4" aria-hidden="true" />

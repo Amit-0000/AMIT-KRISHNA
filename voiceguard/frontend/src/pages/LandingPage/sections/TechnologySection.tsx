@@ -15,7 +15,7 @@ const PIPELINE_STEPS = [
   { icon: Activity, label: 'Audio → LPS', desc: 'STFT with Hamming window converts raw audio to Log Power Spectrum' },
   { icon: Layers, label: 'LCNN forward pass', desc: '9 convolutional layers with Max-Feature-Map activation extract artifact features' },
   { icon: Eye, label: 'Grad-CAM', desc: 'Gradient-weighted class activation maps from features[9] layer highlight suspicious frequencies' },
-  { icon: Database, label: 'Segment aggregation', desc: 'Scores from all 3-second segments are averaged; representative heatmap selected' },
+  { icon: Database, label: 'Segment aggregation', desc: 'Scores from all 3-second segments are averaged into the final verdict; the most influential segments are surfaced in the result explanation' },
 ]
 
 export function TechnologySection() {
@@ -65,7 +65,7 @@ export function TechnologySection() {
                     initial={{ opacity: 0, x: -16 }}
                     animate={inView ? { opacity: 1, x: 0 } : {}}
                     transition={{ duration: 0.4, delay: 0.1 + i * 0.1, ease: [0.25, 0, 0, 1] }}
-                    className="flex gap-4 items-start p-4 rounded-xl bg-bg-surface border border-white/6"
+                    className="flex gap-4 items-start p-4 rounded-xl bg-bg-surface border border-chrome/6"
                   >
                     <div className="flex-shrink-0 w-8 h-8 rounded-lg bg-brand-muted border border-brand-border flex items-center justify-center mt-0.5">
                       <Icon className="w-4 h-4 text-brand" aria-hidden="true" />
@@ -89,8 +89,8 @@ export function TechnologySection() {
             animate={inView ? { opacity: 1, y: 0 } : {}}
             transition={{ duration: 0.5, delay: 0.2, ease: [0.25, 0, 0, 1] }}
           >
-            <div className="rounded-2xl border border-white/8 bg-bg-surface overflow-hidden">
-              <div className="px-6 py-4 border-b border-white/6 flex items-center gap-2">
+            <div className="rounded-2xl border border-chrome/8 bg-bg-surface overflow-hidden">
+              <div className="px-6 py-4 border-b border-chrome/6 flex items-center gap-2">
                 <div className="w-2 h-2 rounded-full bg-ai" aria-hidden="true" />
                 <div className="w-2 h-2 rounded-full bg-uncertain" aria-hidden="true" />
                 <div className="w-2 h-2 rounded-full bg-human" aria-hidden="true" />
@@ -98,7 +98,7 @@ export function TechnologySection() {
                   model_card.json · LCNN v2.1.0
                 </span>
               </div>
-              <div className="divide-y divide-white/6" role="list" aria-label="Model specifications">
+              <div className="divide-y divide-chrome/6" role="list" aria-label="Model specifications">
                 {TECH_SPECS.map((spec, i) => (
                   <motion.div
                     key={spec.label}
@@ -120,7 +120,7 @@ export function TechnologySection() {
               </div>
 
               {/* Weakness disclosure */}
-              <div className="px-6 py-4 border-t border-white/6 bg-uncertain-muted/40">
+              <div className="px-6 py-4 border-t border-chrome/6 bg-uncertain-muted/40">
                 <p className="text-xs font-semibold text-uncertain mb-1">Known limitation</p>
                 <p className="text-xs text-text-secondary leading-relaxed">
                   Neural codec attacks (VALL-E style) achieve 36.8% EER on this model.

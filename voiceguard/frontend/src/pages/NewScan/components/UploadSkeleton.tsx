@@ -4,7 +4,7 @@ export function UploadSkeleton() {
   return (
     <div aria-label="Loading upload interface…" aria-busy="true" className="space-y-5">
       {/* Dropzone placeholder */}
-      <div className="rounded-2xl border-2 border-dashed border-white/8 min-h-[340px] flex flex-col items-center justify-center gap-5 p-8">
+      <div className="rounded-2xl border-2 border-dashed border-chrome/8 min-h-[340px] flex flex-col items-center justify-center gap-5 p-8">
         <Skeleton className="w-20 h-20 rounded-2xl" />
         <div className="space-y-2.5 text-center">
           <Skeleton className="w-52 h-5 rounded mx-auto" />
@@ -14,7 +14,7 @@ export function UploadSkeleton() {
       </div>
 
       {/* Privacy notice placeholder */}
-      <div className="rounded-xl border border-white/6 bg-white/[0.02] px-4 py-3.5">
+      <div className="rounded-xl border border-chrome/6 bg-chrome/[0.02] px-4 py-3.5">
         <div className="flex gap-3">
           <Skeleton className="w-7 h-7 rounded-lg flex-shrink-0" />
           <div className="flex-1 space-y-2">

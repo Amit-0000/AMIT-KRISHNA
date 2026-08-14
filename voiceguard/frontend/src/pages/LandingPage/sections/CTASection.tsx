@@ -79,9 +79,9 @@ export function CTASection() {
             <span className="text-gradient-brand">Find out now.</span>
           </h2>
           <p className="text-body-lg text-text-secondary max-w-xl mx-auto mb-10">
-            Upload your first audio file in seconds — no account required for
-            guest scans. Create a free account to save your history, share
-            results, and access Grad-CAM frequency analysis.
+            Create a free account and upload your first audio file in
+            seconds — save your history, get a per-segment breakdown, and
+            share results with a link when you need to.
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center mb-8">

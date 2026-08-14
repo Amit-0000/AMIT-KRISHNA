@@ -23,6 +23,8 @@ export function NewScanPage() {
     cancelUpload,
     retryValidation,
     acceptedFormats,
+    maxSizeMb,
+    maxDurationMinutes,
   } = useFileUpload()
 
   const { player, toggle, seekByFraction, setVolume, toggleMute, seek } =
@@ -60,6 +62,8 @@ export function NewScanPage() {
               onDrop={handleDrop}
               onBrowse={handleBrowse}
               acceptedFormats={acceptedFormats}
+              maxSizeMb={maxSizeMb}
+              maxDurationMinutes={maxDurationMinutes}
             />
           )}
         </AnimatePresence>

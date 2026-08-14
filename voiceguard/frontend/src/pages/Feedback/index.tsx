@@ -108,12 +108,12 @@ export function FeedbackPage() {
           <div className="w-14 h-14 rounded-2xl bg-uncertain-muted border border-uncertain-border flex items-center justify-center mx-auto mb-5">
             <AlertTriangle className="w-7 h-7 text-uncertain" aria-hidden="true" />
           </div>
-          <h1 className="text-heading-lg font-semibold text-text-primary mb-2">Couldn't send that yet</h1>
+          <h1 className="text-heading-lg font-semibold text-text-primary mb-2">Couldn't send that</h1>
           <p className="text-sm text-text-secondary mb-6">
-            Feedback submission isn't wired up on our servers yet. Your message wasn't lost — copy it below and
-            try again shortly, or hold onto it until this is live.
+            Something went wrong sending your feedback. Your message wasn't lost — copy it below and try again,
+            or hold onto it for later.
           </p>
-          <div className="text-left text-sm text-text-secondary bg-white/[0.03] border border-white/8 rounded-lg p-4 mb-6 whitespace-pre-wrap">
+          <div className="text-left text-sm text-text-secondary bg-chrome/[0.03] border border-chrome/8 rounded-lg p-4 mb-6 whitespace-pre-wrap">
             {lastMessage}
           </div>
           <div className="flex items-center justify-center gap-3">
@@ -154,7 +154,7 @@ export function FeedbackPage() {
                       'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand',
                       field.value === value
                         ? 'border-brand/50 bg-brand-muted text-brand'
-                        : 'border-white/8 text-text-secondary hover:bg-white/5'
+                        : 'border-chrome/8 text-text-secondary hover:bg-chrome/5'
                     )}
                   >
                     <Icon className="w-4 h-4 flex-shrink-0" aria-hidden="true" />
@@ -177,7 +177,7 @@ export function FeedbackPage() {
                 'flex w-full rounded-lg border bg-bg-elevated px-3 py-2 text-sm text-text-primary resize-none',
                 'placeholder:text-text-tertiary transition-colors duration-150',
                 'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:border-brand/50',
-                errors.message ? 'border-ai/50 focus-visible:ring-ai' : 'border-white/10 hover:border-white/20'
+                errors.message ? 'border-ai/50 focus-visible:ring-ai' : 'border-chrome/10 hover:border-chrome/20'
               )}
               aria-invalid={!!errors.message}
               aria-describedby={errors.message ? 'message-error' : undefined}

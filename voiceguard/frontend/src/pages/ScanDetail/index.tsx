@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
 import { motion } from 'framer-motion'
-import { ChevronDown, ChevronLeft, FileAudio, RotateCcw, Trash2 } from 'lucide-react'
+import { ChevronDown, ChevronLeft, FileAudio, Flag, RotateCcw, Trash2 } from 'lucide-react'
 import { PageContainer } from '@/components/layout/PageContainer'
 import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
@@ -13,6 +13,7 @@ import { ScanStatusBadge, TERMINAL_SCAN_STATUSES } from '@/pages/History/compone
 import { VerdictCard } from '@/pages/ScanResult/components/VerdictCard'
 import { ExplanationPanel } from '@/pages/ScanResult/components/ExplanationPanel'
 import { TechnicalDetails } from '@/pages/ScanResult/components/TechnicalDetails'
+import { ShareDialog } from '@/pages/ScanResult/components/ShareDialog'
 import { useScanExplanation, useScanResult, useScanTechnical } from '@/pages/ScanResult/hooks/useScanResult'
 import { toast } from 'sonner'
 
@@ -110,7 +111,7 @@ export function ScanDetailPage() {
 
         {/* File info header */}
         <div className="card-base rounded-xl p-4 flex items-center gap-4">
-          <div className="w-11 h-11 rounded-xl bg-white/5 border border-white/8 flex items-center justify-center flex-shrink-0">
+          <div className="w-11 h-11 rounded-xl bg-chrome/5 border border-chrome/8 flex items-center justify-center flex-shrink-0">
             <FileAudio className="w-5 h-5 text-text-tertiary" aria-hidden="true" />
           </div>
           <div className="flex-1 min-w-0">
@@ -145,7 +146,7 @@ export function ScanDetailPage() {
               <div className="card-base rounded-xl overflow-hidden">
                 <button
                   onClick={() => setShowTechnical((v) => !v)}
-                  className="w-full flex items-center justify-between p-4 text-sm font-medium text-text-primary hover:bg-white/[0.02] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand"
+                  className="w-full flex items-center justify-between p-4 text-sm font-medium text-text-primary hover:bg-chrome/[0.02] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand"
                   aria-expanded={showTechnical}
                 >
                   Technical details
@@ -155,7 +156,7 @@ export function ScanDetailPage() {
                   />
                 </button>
                 {showTechnical && (
-                  <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="border-t border-white/6">
+                  <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="border-t border-chrome/6">
                     <TechnicalDetails technical={technical} isLoading={technicalLoading} />
                   </motion.div>
                 )}
@@ -163,6 +164,16 @@ export function ScanDetailPage() {
               <p className="text-center text-xs text-text-tertiary">
                 Analyzed {formatDate(result.created_at)} · {result.processing_time_ms} ms total
               </p>
+              <div className="flex items-center justify-center gap-4 pt-1">
+                <ShareDialog scanId={scanId} />
+                <Link
+                  to={`/feedback?scanId=${scanId}`}
+                  className="inline-flex items-center gap-1.5 text-xs text-text-tertiary hover:text-text-secondary transition-colors"
+                >
+                  <Flag className="w-3.5 h-3.5" aria-hidden="true" />
+                  Report an incorrect verdict
+                </Link>
+              </div>
             </>
           )
         ) : (

@@ -108,7 +108,7 @@ export function UseCasesSection() {
                       'w-9 h-9 rounded-lg flex items-center justify-center',
                       uc.featured
                         ? 'bg-brand-muted border border-brand-border'
-                        : 'bg-white/5 border border-white/8'
+                        : 'bg-chrome/5 border border-chrome/8'
                     )}
                   >
                     <Icon

@@ -54,7 +54,7 @@ export function DashboardSkeleton() {
 
           {/* Table */}
           <div className="card-base rounded-xl overflow-hidden">
-            <div className="flex items-center justify-between px-5 py-4 border-b border-white/6">
+            <div className="flex items-center justify-between px-5 py-4 border-b border-chrome/6">
               <Skeleton className="w-36 h-5 rounded" />
               <Skeleton className="w-64 h-9 rounded-lg" />
             </div>

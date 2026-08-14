@@ -141,7 +141,7 @@ export function ProfilePage() {
             <div>
               <p className="text-xs text-text-tertiary uppercase tracking-wider mb-1.5">Daily scan usage</p>
               <div className="flex items-center gap-3 max-w-sm">
-                <div className="flex-1 h-2 rounded-full bg-white/5 overflow-hidden">
+                <div className="flex-1 h-2 rounded-full bg-chrome/5 overflow-hidden">
                   <div
                     className="h-full rounded-full bg-brand"
                     style={{

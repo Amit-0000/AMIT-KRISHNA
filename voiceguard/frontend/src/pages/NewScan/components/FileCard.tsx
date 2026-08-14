@@ -81,7 +81,7 @@ export function FileCard({ metadata, onRemove, replaceInputId, onBrowse }: FileC
         {/* Replace */}
         <label
           htmlFor={replaceInputId}
-          className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium text-text-secondary hover:text-text-primary hover:bg-white/5 border border-transparent hover:border-white/8 transition-colors cursor-pointer focus-within:ring-2 focus-within:ring-brand"
+          className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium text-text-secondary hover:text-text-primary hover:bg-chrome/5 border border-transparent hover:border-chrome/8 transition-colors cursor-pointer focus-within:ring-2 focus-within:ring-brand"
           title="Replace file"
         >
           <RefreshCw className="w-3.5 h-3.5" aria-hidden="true" />

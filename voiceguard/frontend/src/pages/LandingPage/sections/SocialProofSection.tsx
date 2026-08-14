@@ -23,7 +23,7 @@ export function SocialProofSection() {
   return (
     <section
       ref={ref}
-      className="py-20 border-t border-white/6"
+      className="py-20 border-t border-chrome/6"
       aria-label="Platform statistics"
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -65,7 +65,7 @@ export function SocialProofSection() {
               <div
                 key={label}
                 role="listitem"
-                className="px-4 py-2 rounded-full border border-white/8 bg-white/3 text-xs text-text-secondary font-medium"
+                className="px-4 py-2 rounded-full border border-chrome/8 bg-chrome/3 text-xs text-text-secondary font-medium"
               >
                 {label}
               </div>
