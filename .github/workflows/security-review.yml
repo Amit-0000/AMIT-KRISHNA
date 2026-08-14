@@ -305,15 +305,18 @@ jobs:
         # application (api/Dockerfile.ml only COPYs api/ and src/, by
         # design — see that Dockerfile's own comments on keeping the served
         # image narrow) — it was never present at /app/performance inside the
-        # backend container, so this step failed with
+        # backend container, so this step originally failed with
         # "python: can't open file '/app/performance/seed_users.py'"
-        # (confirmed via `gh run view`'s raw log). Fixed by copying the
-        # script into the already-running container immediately before
-        # invoking it, scoped to this CI step, rather than baking load-test
-        # tooling into the production image or adding a permanent bind mount
-        # to docker-compose.yml (which is also the file local dev/other CI
-        # jobs use as-is).
+        # (confirmed via `gh run view`'s raw log). First fix attempt (`docker
+        # compose cp` alone) was insufficient and confirmed insufficient by a
+        # real run too: `docker cp`/`docker compose cp` does not create
+        # missing intermediate destination directories when copying a single
+        # file — it failed with "Could not find the file /app/performance in
+        # container" since that directory doesn't exist in this lean image.
+        # `mkdir -p` first, then copy, matches how `docker cp` is actually
+        # documented to behave.
         run: |
+          docker compose exec -T backend mkdir -p /app/performance
           docker compose cp performance/seed_users.py backend:/app/performance/seed_users.py
           docker compose exec -T backend python performance/seed_users.py 30
 
