@@ -47,7 +47,12 @@ class MobileDrawer(BasePage):
     NAV_LANDMARK = (By.CSS_SELECTOR, 'nav[aria-label="Mobile navigation"]')
 
     def is_open(self) -> bool:
-        return self.is_visible(*self.PANEL, timeout=5)
+        # 10s, not the previous 5s: a real CI failure's captured screenshot
+        # showed the drawer genuinely open at report time, just past the
+        # 5s window is_open() itself had already given up within — the
+        # open transition itself was fine, the wait was just too tight
+        # under CI's shared emulator load.
+        return self.is_visible(*self.PANEL, timeout=10)
 
     def close(self) -> None:
         self.tap(self.find_clickable(*self.CLOSE_BUTTON))
@@ -78,7 +83,7 @@ class GlobalSearch(BasePage):
     NO_RESULTS = (By.XPATH, '//div[@id="search-results"]//div[contains(text(), "No results for")]')
 
     def is_open(self) -> bool:
-        return self.is_visible(*self.DIALOG, timeout=5)
+        return self.is_visible(*self.DIALOG, timeout=10)
 
     def type_query(self, text: str) -> None:
         self.type_text(self.find(*self.INPUT), text)
@@ -103,7 +108,7 @@ class NotificationCenter(BasePage):
     EMPTY_STATE_TEXT = (By.XPATH, '//p[contains(text(), "No notifications yet")]')
 
     def is_open(self) -> bool:
-        return self.is_visible(*self.PANEL, timeout=5)
+        return self.is_visible(*self.PANEL, timeout=10)
 
     def is_empty(self) -> bool:
         return self.is_present(*self.EMPTY_STATE_TEXT)
@@ -127,7 +132,7 @@ class UserMenu(BasePage):
     SIGN_OUT_ITEM = (By.XPATH, '//div[@role="menuitem"][contains(., "Sign out")]')
 
     def is_open(self) -> bool:
-        return self.is_visible(*self.MENU, timeout=5)
+        return self.is_visible(*self.MENU, timeout=10)
 
     def go_to_profile(self) -> None:
         self.tap(self.find_clickable(*self.PROFILE_ITEM))

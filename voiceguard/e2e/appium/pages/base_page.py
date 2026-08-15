@@ -62,6 +62,13 @@ class BasePage:
     # ── interaction (touch, via mobile Chrome's DOM — real tap events are
     # dispatched by UiAutomator2 under the hood on .click()) ──────────────
     def tap(self, element: WebElement) -> None:
+        # Real CI failures ("element click intercepted") on longer mobile
+        # forms (e.g. Signup, whose submit button sits below a
+        # PasswordRequirements checklist rendered in normal document flow,
+        # not an overlay) showed the target element wasn't actually in the
+        # visible viewport at click time -- scroll it there explicitly
+        # first rather than relying on the click command's own scroll step.
+        self.scroll_into_view(element)
         element.click()
 
     def tap_id(self, element_id: str, timeout: int = DEFAULT_TIMEOUT) -> None:
@@ -72,6 +79,7 @@ class BasePage:
         self.tap(self.find_clickable(By.CSS_SELECTOR, f"#{element_id}", timeout=timeout))
 
     def type_text(self, element: WebElement, text: str) -> None:
+        self.scroll_into_view(element)
         element.clear()
         element.send_keys(text)
 
