@@ -161,9 +161,8 @@ def unauthenticated_driver(driver, base_url):
     session) unlike re-creating the driver per test.
 
     Restores those cookies on teardown instead of leaving the browser
-    logged out. Confirmed necessary by a real full-suite run of the sibling
-    Selenium suite (same fixture design, e2e/selenium/conftest.py): without
-    this, every authenticated_driver test that happened to run after ANY
+    logged out — confirmed necessary by a real full-suite run: without this,
+    every authenticated_driver test that happened to run after ANY
     unauthenticated_driver test in collection order silently got a
     logged-out browser (authenticated_driver's fixture body only runs once
     per session and just returns the cached driver reference — it doesn't
@@ -171,28 +170,50 @@ def unauthenticated_driver(driver, base_url):
     out waiting for content that could never appear. Restoring via saved
     cookies rather than a real re-login keeps the same rate-limit
     protection authenticated_driver exists for.
+
+    get_cookies()/delete_all_cookies() only see cookies visible from the
+    *current page's path*, and this backend deliberately scopes its
+    refresh_token cookie to path=/api/v1/auth (api/auth/service.py's
+    REFRESH_COOKIE_PATH) — a path the frontend SPA itself never navigates to.
+    Calling those from an ordinary frontend route therefore never actually
+    deleted refresh_token; it stayed live in the browser, and the frontend
+    HTTP client's own 401 -> silent-refresh-via-POST-/api/v1/auth/refresh
+    flow used it to transparently re-authenticate mid-test the moment any
+    guest-page auth check 401'd — so a "logged out" guest test could render
+    as a fully authenticated user instead (confirmed via a captured failure
+    screenshot from a real CI run: /signup landed on the real Login page's
+    content instead of rendering the guest form). Ported here from the
+    identical, already-diagnosed-and-fixed issue in the sibling Selenium
+    suite (e2e/selenium/conftest.py's unauthenticated_driver) rather than
+    re-derived from scratch. _COOKIE_SCOPE_PATH below is a route that
+    doesn't exist on the backend (any 404 there is fine — nothing reads the
+    response) but is still same-origin and under /api/v1/auth, which makes
+    refresh_token visible to the read+clear that follows while the browser
+    briefly sits there.
+
+    Only ONE extra navigation per test, at setup — not two. add_cookie() is
+    NOT path-restricted the way get_cookies()/delete_all_cookies() are —
+    setting a cookie for a given path works from anywhere, only *reading or
+    deleting* one requires being on a matching path — so teardown restores
+    directly via add_cookie() with no navigation at all (the sibling
+    Selenium suite's docstring documents two rejected alternatives, each
+    confirmed worse against a real CI run: a CDP-based version that avoids
+    the navigation entirely but crashed the shared session outright, and a
+    second navigation at teardown that avoided that crash but still
+    destabilized the long-lived shared session). This also can't be
+    simplified to reading+caching refresh_token once per whole run instead
+    of once per test: the backend rotates refresh_token on every use and
+    treats reuse of an already-rotated token as a theft signal that revokes
+    every session for the user — restoring a stale cached value after any
+    silent refresh happened elsewhere in the run would be actively wrong,
+    not just less correct, so the current real value has to be re-read
+    fresh at each test's own setup.
     """
-    # Land on a known page/origin before touching cookies, rather than
-    # clearing whatever context the previous test happened to leave the
-    # browser in — real runs of this suite showed GuestGuard-protected
-    # pages (signup, forgot-password) intermittently still landing
-    # authenticated (redirected to /login mid-app-error rather than
-    # rendering the guest form) after this fixture's clear, which points at
-    # get_cookies()/delete_all_cookies() being called against an
-    # inconsistent prior context rather than a clean single-origin state.
-    driver.get(base_url)
+    _COOKIE_SCOPE_PATH = "/api/v1/auth/__appium_cookie_scope__"
+    driver.get(f"{base_url}{_COOKIE_SCOPE_PATH}")
     saved_cookies = driver.get_cookies()
     driver.delete_all_cookies()
     yield driver
-    # No driver.get() before restoring: the whole app is single-origin, so
-    # add_cookie() works from wherever the test left the browser without an
-    # extra navigation first. That extra navigation used to be here
-    # defensively and turned out to be exactly what caused real, confirmed
-    # ElementNotInteractable/StaleElement/Timeout failures (found on the
-    # sibling Selenium suite) in whichever authenticated_driver-using test
-    # ran right after it — two full-page navigations landing back to back
-    # (this teardown's, then the next fixture's own driver.get()) raced
-    # each other.
     driver.delete_all_cookies()
     for cookie in saved_cookies:
         try:
