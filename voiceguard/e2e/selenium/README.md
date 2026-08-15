@@ -116,8 +116,15 @@ intentional signal, not a number assigned after the fact.
 
 Bring up the Docker Compose stack → wait for health → run this suite
 (`--reruns 2` retry) → parse results → build the HTML report → build the
-Excel reports → upload everything as the `selenium-report` artifact. This
-job has **no** `continue-on-error` — it gates the pipeline normally.
+Excel reports → **apply a real pass-rate threshold gate**
+(`check_pass_threshold.py`, `SELENIUM_MIN_PASS_RATE`, default 90) → upload
+everything as the `selenium-report` artifact. This job has no job-level
+`continue-on-error` — its result reflects the real outcome. Only the
+pytest-run step itself tolerates a non-zero exit (step-level
+`continue-on-error`, so a handful of failures among 400+ tests don't abort
+the run before the threshold check and report/artifact steps get to run);
+`check_pass_threshold.py` is what actually decides pass/fail, and a genuine
+infra failure (no report produced at all) still fails the job.
 
 **On flakiness (verified 2026-08-12, when the suite grew from ~139 to 400+
 tests):** real, repeated full-suite runs against a live stack showed an

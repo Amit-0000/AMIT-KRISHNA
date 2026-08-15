@@ -8,6 +8,7 @@ place that logic lives.
 from __future__ import annotations
 
 import hashlib
+import re
 
 # ext4 (the GitHub Actions runner's filesystem, and most local Linux/macOS
 # setups) caps a filename component at 255 bytes. Confirmed live: a
@@ -22,7 +23,17 @@ MAX_STEM_BYTES = 150
 
 
 def screenshot_stem(nodeid: str) -> str:
-    safe_name = nodeid.replace("/", "_").replace("::", "__").replace(" ", "_")
+    # An allowlist regex, not the previous three literal .replace() calls:
+    # this suite's own security tests (test_error_handling.py) parametrize
+    # with real XSS/injection payloads like "<img src=x onerror=alert(1)>"
+    # as part of their nodeid -- confirmed live, a 2026-08-15 CI run's
+    # "Upload Selenium report" step hard-failed with "The path for one of
+    # the files in artifact is not valid ... Contains the following
+    # character: Less than <" for exactly such a case. Replacing only "/",
+    # "::", and spaces left every other artifact-upload-invalid character
+    # (<, >, ", :, |, *, ?, control chars, ...) to pass straight through
+    # whenever a parametrize id happened to contain one.
+    safe_name = re.sub(r"[^A-Za-z0-9_.-]", "_", nodeid)
     encoded = safe_name.encode("utf-8")
     if len(encoded) <= MAX_STEM_BYTES:
         return safe_name

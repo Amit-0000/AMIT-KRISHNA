@@ -150,8 +150,12 @@ def test_uploaded_scan_result_page_reaches_a_real_state(authenticated_driver, ba
     # Inference timing/availability isn't something this suite controls
     # (CPU-bound model, see project memory on LCNN CPU inference) — accept
     # either real terminal outcome: a rendered verdict, or the page routing
-    # back to /scan/processing because it isn't complete yet.
-    WebDriverWait(authenticated_driver, 20).until(
+    # back to /scan/processing because it isn't complete yet. 45s, not the
+    # previous 20s: a real CI run timed out on this wait 3/3 times (initial
+    # attempt + 2 reruns) under the qa-suite runner's shared CPU budget —
+    # the assertion itself already accepts both legitimate terminal states,
+    # this only widens the time budget for reaching either one.
+    WebDriverWait(authenticated_driver, 45).until(
         lambda d: "/scan/processing" in d.current_url or page.is_visible(*page.VERDICT_HEADING, timeout=1)
     )
 
