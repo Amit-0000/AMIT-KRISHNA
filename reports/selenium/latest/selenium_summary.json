@@ -1,15 +1,15 @@
 {
-  "generated_at": "2026-08-15T09:17:36.166480+00:00",
+  "generated_at": "2026-08-15T10:30:32.810922+00:00",
   "status": "OK",
   "totals": {
     "total": 409,
-    "executed": 403,
-    "passed": 399,
-    "failed": 4,
+    "executed": 405,
+    "passed": 404,
+    "failed": 1,
     "skipped": 3,
-    "pass_pct": 99.01
+    "pass_pct": 99.75
   },
-  "duration_s": 683.95,
+  "duration_s": 447.9,
   "environment": {
     "BROWSER": "Chrome (headless)",
     "WINDOW_SIZE": "1440x900",
@@ -43,10 +43,10 @@
     {
       "module": "error_handling",
       "total": 52,
-      "passed": 50,
-      "failed": 2,
+      "passed": 52,
+      "failed": 0,
       "skipped": 0,
-      "pass_pct": 96.15
+      "pass_pct": 100.0
     },
     {
       "module": "help_feedback",
@@ -67,10 +67,10 @@
     {
       "module": "keyboard_navigation",
       "total": 13,
-      "passed": 12,
-      "failed": 1,
+      "passed": 13,
+      "failed": 0,
       "skipped": 0,
-      "pass_pct": 92.31
+      "pass_pct": 100.0
     },
     {
       "module": "navigation",
@@ -147,18 +147,18 @@
     {
       "module": "session_guards",
       "total": 29,
-      "passed": 28,
-      "failed": 1,
+      "passed": 29,
+      "failed": 0,
       "skipped": 0,
-      "pass_pct": 96.55
+      "pass_pct": 100.0
     },
     {
       "module": "settings",
       "total": 26,
-      "passed": 25,
-      "failed": 1,
+      "passed": 26,
+      "failed": 0,
       "skipped": 0,
-      "pass_pct": 96.15
+      "pass_pct": 100.0
     },
     {
       "module": "shared_result",
@@ -177,7 +177,7 @@
       "test_name": "test_authenticated_route_has_main_landmark[/dashboard]",
       "status": "passed",
       "priority": "medium",
-      "duration_s": 0.35
+      "duration_s": 0.37
     },
     {
       "test_id": "SEL-0002",
@@ -186,7 +186,7 @@
       "test_name": "test_authenticated_route_has_main_landmark[/history]",
       "status": "passed",
       "priority": "medium",
-      "duration_s": 0.349
+      "duration_s": 0.317
     },
     {
       "test_id": "SEL-0003",
@@ -195,7 +195,7 @@
       "test_name": "test_authenticated_route_has_main_landmark[/notifications]",
       "status": "passed",
       "priority": "medium",
-      "duration_s": 0.327
+      "duration_s": 0.311
     },
     {
       "test_id": "SEL-0004",
@@ -204,7 +204,7 @@
       "test_name": "test_authenticated_route_has_main_landmark[/help]",
       "status": "passed",
       "priority": "medium",
-      "duration_s": 0.399
+      "duration_s": 0.363
     },
     {
       "test_id": "SEL-0005",
@@ -213,7 +213,7 @@
       "test_name": "test_authenticated_route_has_main_landmark[/feedback]",
       "status": "passed",
       "priority": "medium",
-      "duration_s": 0.353
+      "duration_s": 0.303
     },
     {
       "test_id": "SEL-0006",
@@ -222,7 +222,7 @@
       "test_name": "test_authenticated_route_has_main_landmark[/scan/new]",
       "status": "passed",
       "priority": "medium",
-      "duration_s": 0.446
+      "duration_s": 0.302
     },
     {
       "test_id": "SEL-0007",
@@ -231,7 +231,7 @@
       "test_name": "test_authenticated_route_has_main_landmark[/settings/profile]",
       "status": "passed",
       "priority": "medium",
-      "duration_s": 0.35
+      "duration_s": 0.304
     },
     {
       "test_id": "SEL-0008",
@@ -240,7 +240,7 @@
       "test_name": "test_authenticated_route_has_main_landmark[/settings/account]",
       "status": "passed",
       "priority": "medium",
-      "duration_s": 0.336
+      "duration_s": 0.299
     },
     {
       "test_id": "SEL-0009",
@@ -249,7 +249,7 @@
       "test_name": "test_authenticated_route_has_main_landmark[/settings/appearance]",
       "status": "passed",
       "priority": "medium",
-      "duration_s": 0.333
+      "duration_s": 0.296
     },
     {
       "test_id": "SEL-0010",
@@ -258,7 +258,7 @@
       "test_name": "test_authenticated_route_has_skip_to_content_link[/dashboard]",
       "status": "passed",
       "priority": "medium",
-      "duration_s": 0.347
+      "duration_s": 0.312
     },
     {
       "test_id": "SEL-0011",
@@ -267,7 +267,7 @@
       "test_name": "test_authenticated_route_has_skip_to_content_link[/history]",
       "status": "passed",
       "priority": "medium",
-      "duration_s": 0.351
+      "duration_s": 0.306
     },
     {
       "test_id": "SEL-0012",
@@ -276,7 +276,7 @@
       "test_name": "test_authenticated_route_has_skip_to_content_link[/notifications]",
       "status": "passed",
       "priority": "medium",
-      "duration_s": 0.372
+      "duration_s": 0.286
     },
     {
       "test_id": "SEL-0013",
@@ -285,7 +285,7 @@
       "test_name": "test_authenticated_route_has_skip_to_content_link[/help]",
       "status": "passed",
       "priority": "medium",
-      "duration_s": 0.345
+      "duration_s": 0.325
     },
     {
       "test_id": "SEL-0014",
@@ -294,7 +294,7 @@
       "test_name": "test_authenticated_route_has_skip_to_content_link[/feedback]",
       "status": "passed",
       "priority": "medium",
-      "duration_s": 0.342
+      "duration_s": 0.298
     },
     {
       "test_id": "SEL-0015",
@@ -303,7 +303,7 @@
       "test_name": "test_authenticated_route_has_skip_to_content_link[/scan/new]",
       "status": "passed",
       "priority": "medium",
-      "duration_s": 0.395
+      "duration_s": 0.316
     },
     {
       "test_id": "SEL-0016",
@@ -312,7 +312,7 @@
       "test_name": "test_authenticated_route_has_skip_to_content_link[/settings/profile]",
       "status": "passed",
       "priority": "medium",
-      "duration_s": 0.386
+      "duration_s": 0.333
     },
     {
       "test_id": "SEL-0017",
@@ -321,7 +321,7 @@
       "test_name": "test_authenticated_route_has_skip_to_content_link[/settings/account]",
       "status": "passed",
       "priority": "medium",
-      "duration_s": 0.408
+      "duration_s": 0.312
     },
     {
       "test_id": "SEL-0018",
@@ -330,7 +330,7 @@
       "test_name": "test_authenticated_route_has_skip_to_content_link[/settings/appearance]",
       "status": "passed",
       "priority": "medium",
-      "duration_s": 0.508
+      "duration_s": 0.29
     },
     {
       "test_id": "SEL-0019",
@@ -339,7 +339,7 @@
       "test_name": "test_landing_page_has_main_landmark",
       "status": "passed",
       "priority": "medium",
-      "duration_s": 0.657
+      "duration_s": 0.402
     },
     {
       "test_id": "SEL-0020",
@@ -348,7 +348,7 @@
       "test_name": "test_shared_result_page_has_main_landmark",
       "status": "passed",
       "priority": "medium",
-      "duration_s": 0.508
+      "duration_s": 0.369
     },
     {
       "test_id": "SEL-0021",
@@ -357,7 +357,7 @@
       "test_name": "test_hamburger_button_has_aria_label",
       "status": "passed",
       "priority": "medium",
-      "duration_s": 0.54
+      "duration_s": 0.489
     },
     {
       "test_id": "SEL-0022",
@@ -366,7 +366,7 @@
       "test_name": "test_search_trigger_has_aria_label",
       "status": "passed",
       "priority": "medium",
-      "duration_s": 0.401
+      "duration_s": 0.377
     },
     {
       "test_id": "SEL-0023",
@@ -375,7 +375,7 @@
       "test_name": "test_notification_bell_has_aria_label",
       "status": "passed",
       "priority": "medium",
-      "duration_s": 0.464
+      "duration_s": 0.398
     },
     {
       "test_id": "SEL-0024",
@@ -384,7 +384,7 @@
       "test_name": "test_theme_toggle_has_aria_label",
       "status": "passed",
       "priority": "medium",
-      "duration_s": 0.404
+      "duration_s": 0.376
     },
     {
       "test_id": "SEL-0025",
@@ -393,7 +393,7 @@
       "test_name": "test_sidebar_collapse_toggle_has_aria_label",
       "status": "passed",
       "priority": "medium",
-      "duration_s": 0.44
+      "duration_s": 0.4
     },
     {
       "test_id": "SEL-0026",
@@ -402,7 +402,7 @@
       "test_name": "test_sidebar_aside_has_aria_label",
       "status": "passed",
       "priority": "medium",
-      "duration_s": 0.412
+      "duration_s": 0.38
     },
     {
       "test_id": "SEL-0027",
@@ -411,7 +411,7 @@
       "test_name": "test_sidebar_nav_has_aria_label",
       "status": "passed",
       "priority": "medium",
-      "duration_s": 0.443
+      "duration_s": 0.426
     },
     {
       "test_id": "SEL-0028",
@@ -420,7 +420,7 @@
       "test_name": "test_login_email_input_has_associated_label",
       "status": "passed",
       "priority": "medium",
-      "duration_s": 0.343
+      "duration_s": 0.388
     },
     {
       "test_id": "SEL-0029",
@@ -429,7 +429,7 @@
       "test_name": "test_login_password_input_has_associated_label",
       "status": "passed",
       "priority": "medium",
-      "duration_s": 0.319
+      "duration_s": 0.402
     },
     {
       "test_id": "SEL-0030",
@@ -438,7 +438,7 @@
       "test_name": "test_signup_display_name_input_has_associated_label",
       "status": "passed",
       "priority": "medium",
-      "duration_s": 0.336
+      "duration_s": 0.37
     },
     {
       "test_id": "SEL-0031",
@@ -447,7 +447,7 @@
       "test_name": "test_signup_confirm_password_input_has_associated_label",
       "status": "passed",
       "priority": "medium",
-      "duration_s": 0.336
+      "duration_s": 0.313
     },
     {
       "test_id": "SEL-0032",
@@ -456,7 +456,7 @@
       "test_name": "test_global_search_dialog_has_aria_label",
       "status": "passed",
       "priority": "medium",
-      "duration_s": 3.162
+      "duration_s": 3.148
     },
     {
       "test_id": "SEL-0033",
@@ -465,7 +465,7 @@
       "test_name": "test_global_search_input_has_aria_label",
       "status": "passed",
       "priority": "medium",
-      "duration_s": 3.072
+      "duration_s": 3.172
     },
     {
       "test_id": "SEL-0034",
@@ -474,7 +474,7 @@
       "test_name": "test_notification_panel_has_aria_label",
       "status": "passed",
       "priority": "medium",
-      "duration_s": 4.405
+      "duration_s": 3.806
     },
     {
       "test_id": "SEL-0035",
@@ -483,7 +483,7 @@
       "test_name": "test_history_table_has_aria_label",
       "status": "skipped",
       "priority": "medium",
-      "duration_s": 7.342
+      "duration_s": 7.088
     },
     {
       "test_id": "SEL-0036",
@@ -492,7 +492,7 @@
       "test_name": "test_notifications_tablist_has_aria_label",
       "status": "passed",
       "priority": "medium",
-      "duration_s": 0.428
+      "duration_s": 0.363
     },
     {
       "test_id": "SEL-0037",
@@ -501,7 +501,7 @@
       "test_name": "test_breadcrumb_nav_has_aria_label",
       "status": "passed",
       "priority": "medium",
-      "duration_s": 0.414
+      "duration_s": 0.372
     },
     {
       "test_id": "SEL-0038",
@@ -510,7 +510,7 @@
       "test_name": "test_appearance_theme_radiogroup_has_aria_label",
       "status": "passed",
       "priority": "medium",
-      "duration_s": 0.356
+      "duration_s": 0.392
     },
     {
       "test_id": "SEL-0039",
@@ -519,7 +519,7 @@
       "test_name": "test_feedback_category_radiogroup_has_aria_label",
       "status": "passed",
       "priority": "medium",
-      "duration_s": 0.365
+      "duration_s": 0.35
     },
     {
       "test_id": "SEL-0040",
@@ -528,7 +528,7 @@
       "test_name": "test_new_scan_dropzone_has_button_role",
       "status": "passed",
       "priority": "medium",
-      "duration_s": 0.335
+      "duration_s": 0.346
     },
     {
       "test_id": "SEL-0041",
@@ -537,7 +537,7 @@
       "test_name": "test_help_search_input_has_aria_label",
       "status": "passed",
       "priority": "medium",
-      "duration_s": 0.36
+      "duration_s": 0.32
     },
     {
       "test_id": "SEL-0042",
@@ -546,7 +546,7 @@
       "test_name": "test_history_status_filter_has_associated_label",
       "status": "skipped",
       "priority": "medium",
-      "duration_s": 7.315
+      "duration_s": 7.36
     },
     {
       "test_id": "SEL-0043",
@@ -555,7 +555,7 @@
       "test_name": "test_user_menu_has_menu_role",
       "status": "passed",
       "priority": "medium",
-      "duration_s": 1.01
+      "duration_s": 1.063
     },
     {
       "test_id": "SEL-0044",
@@ -564,7 +564,7 @@
       "test_name": "test_user_menu_items_have_menuitem_role",
       "status": "passed",
       "priority": "medium",
-      "duration_s": 0.499
+      "duration_s": 0.514
     },
     {
       "test_id": "SEL-0045",
@@ -573,7 +573,7 @@
       "test_name": "test_forgot_password_email_input_has_associated_label",
       "status": "passed",
       "priority": "medium",
-      "duration_s": 0.261
+      "duration_s": 0.24
     },
     {
       "test_id": "SEL-0046",
@@ -582,7 +582,7 @@
       "test_name": "test_reset_password_input_has_associated_label",
       "status": "passed",
       "priority": "medium",
-      "duration_s": 0.271
+      "duration_s": 0.273
     },
     {
       "test_id": "SEL-0047",
@@ -591,7 +591,7 @@
       "test_name": "test_profile_display_name_input_has_associated_label",
       "status": "passed",
       "priority": "medium",
-      "duration_s": 0.359
+      "duration_s": 0.324
     },
     {
       "test_id": "SEL-0048",
@@ -600,7 +600,7 @@
       "test_name": "test_feedback_message_textarea_has_associated_label",
       "status": "passed",
       "priority": "medium",
-      "duration_s": 0.335
+      "duration_s": 0.308
     },
     {
       "test_id": "SEL-0049",
@@ -609,7 +609,7 @@
       "test_name": "test_settings_tabs_nav_has_aria_label",
       "status": "passed",
       "priority": "medium",
-      "duration_s": 0.367
+      "duration_s": 0.343
     },
     {
       "test_id": "SEL-0050",
@@ -618,7 +618,7 @@
       "test_name": "test_scan_history_new_scan_link_is_a_real_anchor",
       "status": "passed",
       "priority": "medium",
-      "duration_s": 0.358
+      "duration_s": 0.323
     },
     {
       "test_id": "SEL-0051",
@@ -627,7 +627,7 @@
       "test_name": "test_login_page_renders",
       "status": "passed",
       "priority": "critical",
-      "duration_s": 0.284
+      "duration_s": 0.258
     },
     {
       "test_id": "SEL-0052",
@@ -636,7 +636,7 @@
       "test_name": "test_login_empty_submit_blocked",
       "status": "passed",
       "priority": "critical",
-      "duration_s": 0.344
+      "duration_s": 0.294
     },
     {
       "test_id": "SEL-0053",
@@ -645,7 +645,7 @@
       "test_name": "test_login_rejects_bad_credentials",
       "status": "passed",
       "priority": "critical",
-      "duration_s": 0.803
+      "duration_s": 0.713
     },
     {
       "test_id": "SEL-0054",
@@ -654,7 +654,7 @@
       "test_name": "test_forgot_password_link_navigates_from_login",
       "status": "passed",
       "priority": "critical",
-      "duration_s": 0.294
+      "duration_s": 0.269
     },
     {
       "test_id": "SEL-0055",
@@ -663,7 +663,7 @@
       "test_name": "test_login_with_valid_credentials_reaches_dashboard",
       "status": "passed",
       "priority": "critical",
-      "duration_s": 0.342
+      "duration_s": 0.309
     },
     {
       "test_id": "SEL-0056",
@@ -672,7 +672,7 @@
       "test_name": "test_login_session_persists_after_reload",
       "status": "passed",
       "priority": "critical",
-      "duration_s": 0.672
+      "duration_s": 0.608
     },
     {
       "test_id": "SEL-0057",
@@ -681,7 +681,7 @@
       "test_name": "test_verify_email_missing_token_shows_message",
       "status": "passed",
       "priority": "critical",
-      "duration_s": 0.268
+      "duration_s": 0.237
     },
     {
       "test_id": "SEL-0058",
@@ -690,7 +690,7 @@
       "test_name": "test_verify_email_invalid_token_shows_error",
       "status": "passed",
       "priority": "critical",
-      "duration_s": 0.289
+      "duration_s": 0.262
     },
     {
       "test_id": "SEL-0059",
@@ -699,7 +699,7 @@
       "test_name": "test_verify_email_resend_shows_confirmation",
       "status": "passed",
       "priority": "critical",
-      "duration_s": 0.468
+      "duration_s": 0.448
     },
     {
       "test_id": "SEL-0060",
@@ -708,7 +708,7 @@
       "test_name": "test_login_password_field_uses_password_input_type",
       "status": "passed",
       "priority": "critical",
-      "duration_s": 0.266
+      "duration_s": 0.236
     },
     {
       "test_id": "SEL-0061",
@@ -717,7 +717,7 @@
       "test_name": "test_login_email_field_uses_email_input_type",
       "status": "passed",
       "priority": "critical",
-      "duration_s": 0.283
+      "duration_s": 0.248
     },
     {
       "test_id": "SEL-0062",
@@ -726,7 +726,7 @@
       "test_name": "test_login_rejects_malformed_email_without_calling_backend[not-an-email]",
       "status": "passed",
       "priority": "critical",
-      "duration_s": 0.457
+      "duration_s": 0.406
     },
     {
       "test_id": "SEL-0063",
@@ -735,7 +735,7 @@
       "test_name": "test_login_rejects_malformed_email_without_calling_backend[missing-domain@]",
       "status": "passed",
       "priority": "critical",
-      "duration_s": 0.512
+      "duration_s": 0.422
     },
     {
       "test_id": "SEL-0064",
@@ -744,7 +744,7 @@
       "test_name": "test_login_rejects_malformed_email_without_calling_backend[@missing-local.com]",
       "status": "passed",
       "priority": "critical",
-      "duration_s": 0.487
+      "duration_s": 0.411
     },
     {
       "test_id": "SEL-0065",
@@ -753,7 +753,7 @@
       "test_name": "test_login_email_field_retains_value_after_failed_submit",
       "status": "passed",
       "priority": "critical",
-      "duration_s": 0.83
+      "duration_s": 0.725
     },
     {
       "test_id": "SEL-0066",
@@ -762,7 +762,7 @@
       "test_name": "test_login_error_message_has_alert_role_for_assistive_tech",
       "status": "passed",
       "priority": "critical",
-      "duration_s": 0.807
+      "duration_s": 0.697
     },
     {
       "test_id": "SEL-0067",
@@ -771,7 +771,7 @@
       "test_name": "test_login_submit_button_present_and_enabled_on_load",
       "status": "passed",
       "priority": "critical",
-      "duration_s": 0.293
+      "duration_s": 0.25
     },
     {
       "test_id": "SEL-0068",
@@ -780,16 +780,16 @@
       "test_name": "test_authenticated_session_cookie_present_after_login",
       "status": "passed",
       "priority": "critical",
-      "duration_s": 0.073
+      "duration_s": 0.305
     },
     {
       "test_id": "SEL-0069",
       "nodeid": "tests/test_auth.py::test_dashboard_reload_does_not_re_trigger_login_redirect",
       "module": "auth",
       "test_name": "test_dashboard_reload_does_not_re_trigger_login_redirect",
-      "status": "rerun",
+      "status": "passed",
       "priority": "critical",
-      "duration_s": 0.986
+      "duration_s": 0.95
     },
     {
       "test_id": "SEL-0070",
@@ -798,7 +798,7 @@
       "test_name": "test_login_page_has_a_document_title",
       "status": "passed",
       "priority": "critical",
-      "duration_s": 0.255
+      "duration_s": 0.24
     },
     {
       "test_id": "SEL-0071",
@@ -807,16 +807,16 @@
       "test_name": "test_login_form_uses_post_semantics_not_get",
       "status": "passed",
       "priority": "critical",
-      "duration_s": 0.787
+      "duration_s": 0.727
     },
     {
       "test_id": "SEL-0072",
       "nodeid": "tests/test_auth.py::test_verify_email_page_survives_direct_reload",
       "module": "auth",
       "test_name": "test_verify_email_page_survives_direct_reload",
-      "status": "passed",
+      "status": "rerun",
       "priority": "critical",
-      "duration_s": 0.513
+      "duration_s": 0.542
     },
     {
       "test_id": "SEL-0073",
@@ -825,7 +825,7 @@
       "test_name": "test_login_rejects_bad_credentials_shows_error_only_after_real_backend_round_trip",
       "status": "passed",
       "priority": "critical",
-      "duration_s": 0.756
+      "duration_s": 0.716
     },
     {
       "test_id": "SEL-0074",
@@ -834,7 +834,7 @@
       "test_name": "test_dashboard_renders_greeting_header",
       "status": "passed",
       "priority": "high",
-      "duration_s": 0.362
+      "duration_s": 0.365
     },
     {
       "test_id": "SEL-0075",
@@ -843,7 +843,7 @@
       "test_name": "test_dashboard_greeting_includes_first_name",
       "status": "passed",
       "priority": "high",
-      "duration_s": 0.392
+      "duration_s": 0.356
     },
     {
       "test_id": "SEL-0076",
@@ -852,7 +852,7 @@
       "test_name": "test_dashboard_shows_a_reachable_state",
       "status": "passed",
       "priority": "high",
-      "duration_s": 0.355
+      "duration_s": 0.344
     },
     {
       "test_id": "SEL-0077",
@@ -861,7 +861,7 @@
       "test_name": "test_dashboard_analyze_audio_header_link_navigates_to_new_scan",
       "status": "passed",
       "priority": "high",
-      "duration_s": 0.473
+      "duration_s": 0.449
     },
     {
       "test_id": "SEL-0078",
@@ -870,7 +870,7 @@
       "test_name": "test_dashboard_view_history_quick_action_navigates_when_populated",
       "status": "skipped",
       "priority": "high",
-      "duration_s": 2.396
+      "duration_s": 2.381
     },
     {
       "test_id": "SEL-0079",
@@ -879,7 +879,7 @@
       "test_name": "test_dashboard_page_title_is_set",
       "status": "passed",
       "priority": "high",
-      "duration_s": 0.35
+      "duration_s": 0.374
     },
     {
       "test_id": "SEL-0080",
@@ -888,7 +888,7 @@
       "test_name": "test_dashboard_greeting_is_an_h1_heading",
       "status": "passed",
       "priority": "high",
-      "duration_s": 0.378
+      "duration_s": 0.345
     },
     {
       "test_id": "SEL-0081",
@@ -897,7 +897,7 @@
       "test_name": "test_dashboard_reachable_directly_via_url_when_authenticated",
       "status": "passed",
       "priority": "high",
-      "duration_s": 0.354
+      "duration_s": 0.856
     },
     {
       "test_id": "SEL-0082",
@@ -906,7 +906,7 @@
       "test_name": "test_dashboard_analyze_audio_link_has_href_to_scan_new",
       "status": "passed",
       "priority": "high",
-      "duration_s": 0.394
+      "duration_s": 0.348
     },
     {
       "test_id": "SEL-0083",
@@ -915,7 +915,7 @@
       "test_name": "test_dashboard_title_bar_reflects_app_name",
       "status": "passed",
       "priority": "high",
-      "duration_s": 0.356
+      "duration_s": 0.337
     },
     {
       "test_id": "SEL-0084",
@@ -924,7 +924,7 @@
       "test_name": "test_dashboard_empty_and_populated_states_are_mutually_exclusive",
       "status": "passed",
       "priority": "high",
-      "duration_s": 2.391
+      "duration_s": 2.449
     },
     {
       "test_id": "SEL-0085",
@@ -933,7 +933,7 @@
       "test_name": "test_scan_result_malformed_id_shows_not_found[not-a-uuid]",
       "status": "passed",
       "priority": "medium",
-      "duration_s": 0.363
+      "duration_s": 0.369
     },
     {
       "test_id": "SEL-0086",
@@ -942,7 +942,7 @@
       "test_name": "test_scan_result_malformed_id_shows_not_found[0]",
       "status": "passed",
       "priority": "medium",
-      "duration_s": 0.359
+      "duration_s": 0.385
     },
     {
       "test_id": "SEL-0087",
@@ -951,7 +951,7 @@
       "test_name": "test_scan_result_malformed_id_shows_not_found[' OR '1'='1]",
       "status": "passed",
       "priority": "medium",
-      "duration_s": 0.377
+      "duration_s": 0.367
     },
     {
       "test_id": "SEL-0088",
@@ -960,7 +960,7 @@
       "test_name": "test_scan_result_malformed_id_shows_not_found[aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa]",
       "status": "passed",
       "priority": "medium",
-      "duration_s": 0.366
+      "duration_s": 0.344
     },
     {
       "test_id": "SEL-0089",
@@ -969,7 +969,7 @@
       "test_name": "test_scan_result_malformed_id_shows_not_found[\\u65e5\\u672c\\u8a9e-scan-id-\\U0001f3a7]",
       "status": "passed",
       "priority": "medium",
-      "duration_s": 0.364
+      "duration_s": 0.357
     },
     {
       "test_id": "SEL-0090",
@@ -978,7 +978,7 @@
       "test_name": "test_scan_result_malformed_id_shows_not_found[<img src=x onerror=alert(1)>]",
       "status": "passed",
       "priority": "medium",
-      "duration_s": 0.364
+      "duration_s": 0.339
     },
     {
       "test_id": "SEL-0091",
@@ -987,7 +987,7 @@
       "test_name": "test_scan_detail_malformed_id_shows_not_found[not-a-uuid]",
       "status": "passed",
       "priority": "medium",
-      "duration_s": 0.339
+      "duration_s": 0.307
     },
     {
       "test_id": "SEL-0092",
@@ -996,7 +996,7 @@
       "test_name": "test_scan_detail_malformed_id_shows_not_found[0]",
       "status": "passed",
       "priority": "medium",
-      "duration_s": 0.361
+      "duration_s": 0.292
     },
     {
       "test_id": "SEL-0093",
@@ -1005,7 +1005,7 @@
       "test_name": "test_scan_detail_malformed_id_shows_not_found[' OR '1'='1]",
       "status": "passed",
       "priority": "medium",
-      "duration_s": 0.342
+      "duration_s": 0.304
     },
     {
       "test_id": "SEL-0094",
@@ -1014,7 +1014,7 @@
       "test_name": "test_scan_detail_malformed_id_shows_not_found[aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa]",
       "status": "passed",
       "priority": "medium",
-      "duration_s": 0.372
+      "duration_s": 0.289
     },
     {
       "test_id": "SEL-0095",
@@ -1023,7 +1023,7 @@
       "test_name": "test_scan_detail_malformed_id_shows_not_found[\\u65e5\\u672c\\u8a9e-scan-id-\\U0001f3a7]",
       "status": "passed",
       "priority": "medium",
-      "duration_s": 0.353
+      "duration_s": 0.309
     },
     {
       "test_id": "SEL-0096",
@@ -1032,16 +1032,16 @@
       "test_name": "test_scan_detail_malformed_id_shows_not_found[<img src=x onerror=alert(1)>]",
       "status": "passed",
       "priority": "medium",
-      "duration_s": 0.337
+      "duration_s": 0.289
     },
     {
       "test_id": "SEL-0097",
       "nodeid": "tests/test_error_handling.py::test_shared_result_malformed_id_shows_unavailable[not-a-uuid]",
       "module": "error_handling",
       "test_name": "test_shared_result_malformed_id_shows_unavailable[not-a-uuid]",
-      "status": "rerun",
+      "status": "passed",
       "priority": "medium",
-      "duration_s": 3.259
+      "duration_s": 0.333
     },
     {
       "test_id": "SEL-0098",
@@ -1050,7 +1050,7 @@
       "test_name": "test_shared_result_malformed_id_shows_unavailable[0]",
       "status": "passed",
       "priority": "medium",
-      "duration_s": 0.458
+      "duration_s": 0.384
     },
     {
       "test_id": "SEL-0099",
@@ -1059,7 +1059,7 @@
       "test_name": "test_shared_result_malformed_id_shows_unavailable[' OR '1'='1]",
       "status": "passed",
       "priority": "medium",
-      "duration_s": 0.435
+      "duration_s": 0.346
     },
     {
       "test_id": "SEL-0100",
@@ -1068,7 +1068,7 @@
       "test_name": "test_shared_result_malformed_id_shows_unavailable[aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa]",
       "status": "passed",
       "priority": "medium",
-      "duration_s": 0.509
+      "duration_s": 0.407
     },
     {
       "test_id": "SEL-0101",
@@ -1077,7 +1077,7 @@
       "test_name": "test_shared_result_malformed_id_shows_unavailable[\\u65e5\\u672c\\u8a9e-scan-id-\\U0001f3a7]",
       "status": "passed",
       "priority": "medium",
-      "duration_s": 0.401
+      "duration_s": 0.456
     },
     {
       "test_id": "SEL-0102",
@@ -1086,7 +1086,7 @@
       "test_name": "test_shared_result_malformed_id_shows_unavailable[<img src=x onerror=alert(1)>]",
       "status": "passed",
       "priority": "medium",
-      "duration_s": 0.404
+      "duration_s": 0.407
     },
     {
       "test_id": "SEL-0103",
@@ -1095,7 +1095,7 @@
       "test_name": "test_scan_result_empty_id_falls_through_to_generic_404",
       "status": "passed",
       "priority": "medium",
-      "duration_s": 0.27
+      "duration_s": 0.241
     },
     {
       "test_id": "SEL-0104",
@@ -1104,7 +1104,7 @@
       "test_name": "test_shared_result_path_traversal_id_never_reaches_the_app",
       "status": "passed",
       "priority": "medium",
-      "duration_s": 0.266
+      "duration_s": 0.256
     },
     {
       "test_id": "SEL-0105",
@@ -1113,7 +1113,7 @@
       "test_name": "test_unknown_route_variant_shows_404_or_a_real_route[/this-route-does-not-exist]",
       "status": "passed",
       "priority": "medium",
-      "duration_s": 0.253
+      "duration_s": 0.23
     },
     {
       "test_id": "SEL-0106",
@@ -1122,7 +1122,7 @@
       "test_name": "test_unknown_route_variant_shows_404_or_a_real_route[/DASHBOARD]",
       "status": "passed",
       "priority": "medium",
-      "duration_s": 0.39
+      "duration_s": 0.369
     },
     {
       "test_id": "SEL-0107",
@@ -1131,7 +1131,7 @@
       "test_name": "test_unknown_route_variant_shows_404_or_a_real_route[/dashboard/]",
       "status": "passed",
       "priority": "medium",
-      "duration_s": 0.379
+      "duration_s": 0.382
     },
     {
       "test_id": "SEL-0108",
@@ -1140,7 +1140,7 @@
       "test_name": "test_unknown_route_variant_shows_404_or_a_real_route[/scan]",
       "status": "passed",
       "priority": "medium",
-      "duration_s": 0.269
+      "duration_s": 0.243
     },
     {
       "test_id": "SEL-0109",
@@ -1149,7 +1149,7 @@
       "test_name": "test_unknown_route_variant_shows_404_or_a_real_route[//]",
       "status": "passed",
       "priority": "medium",
-      "duration_s": 0.457
+      "duration_s": 0.582
     },
     {
       "test_id": "SEL-0110",
@@ -1158,7 +1158,7 @@
       "test_name": "test_unknown_route_variant_shows_404_or_a_real_route[/settings/nonexistent-tab]",
       "status": "passed",
       "priority": "medium",
-      "duration_s": 0.254
+      "duration_s": 0.522
     },
     {
       "test_id": "SEL-0111",
@@ -1167,7 +1167,7 @@
       "test_name": "test_unknown_route_variant_shows_404_or_a_real_route[/history/]",
       "status": "passed",
       "priority": "medium",
-      "duration_s": 0.351
+      "duration_s": 0.407
     },
     {
       "test_id": "SEL-0112",
@@ -1176,7 +1176,7 @@
       "test_name": "test_unknown_route_variant_shows_404_or_a_real_route[/help/../../dashboard]",
       "status": "passed",
       "priority": "medium",
-      "duration_s": 0.394
+      "duration_s": 0.373
     },
     {
       "test_id": "SEL-0113",
@@ -1185,7 +1185,7 @@
       "test_name": "test_deeply_nested_unknown_route_shows_404",
       "status": "passed",
       "priority": "medium",
-      "duration_s": 0.262
+      "duration_s": 0.242
     },
     {
       "test_id": "SEL-0114",
@@ -1194,7 +1194,7 @@
       "test_name": "test_unknown_route_with_query_string_shows_404",
       "status": "passed",
       "priority": "medium",
-      "duration_s": 0.263
+      "duration_s": 0.252
     },
     {
       "test_id": "SEL-0115",
@@ -1203,7 +1203,7 @@
       "test_name": "test_help_article_empty_slug_falls_back_to_help_index_or_not_found",
       "status": "passed",
       "priority": "medium",
-      "duration_s": 0.352
+      "duration_s": 0.358
     },
     {
       "test_id": "SEL-0116",
@@ -1212,7 +1212,7 @@
       "test_name": "test_help_article_injection_style_slug_shows_not_found_without_executing[<img src=x onerror=alert(1)>]",
       "status": "passed",
       "priority": "medium",
-      "duration_s": 2.341
+      "duration_s": 2.333
     },
     {
       "test_id": "SEL-0117",
@@ -1221,7 +1221,7 @@
       "test_name": "test_help_article_injection_style_slug_shows_not_found_without_executing[' OR '1'='1]",
       "status": "passed",
       "priority": "medium",
-      "duration_s": 2.354
+      "duration_s": 2.316
     },
     {
       "test_id": "SEL-0118",
@@ -1230,7 +1230,7 @@
       "test_name": "test_help_article_path_traversal_slug_never_reaches_the_app",
       "status": "passed",
       "priority": "medium",
-      "duration_s": 0.266
+      "duration_s": 0.238
     },
     {
       "test_id": "SEL-0119",
@@ -1239,7 +1239,7 @@
       "test_name": "test_verify_email_empty_token_param_treated_as_missing",
       "status": "passed",
       "priority": "medium",
-      "duration_s": 0.263
+      "duration_s": 0.254
     },
     {
       "test_id": "SEL-0120",
@@ -1248,7 +1248,7 @@
       "test_name": "test_verify_email_very_long_token_rejected_by_backend",
       "status": "passed",
       "priority": "medium",
-      "duration_s": 0.295
+      "duration_s": 0.261
     },
     {
       "test_id": "SEL-0121",
@@ -1257,7 +1257,7 @@
       "test_name": "test_reset_password_empty_token_param_shows_invalid_link",
       "status": "passed",
       "priority": "medium",
-      "duration_s": 0.264
+      "duration_s": 0.229
     },
     {
       "test_id": "SEL-0122",
@@ -1266,7 +1266,7 @@
       "test_name": "test_reset_password_very_long_token_treated_as_present",
       "status": "passed",
       "priority": "medium",
-      "duration_s": 0.264
+      "duration_s": 0.265
     },
     {
       "test_id": "SEL-0123",
@@ -1275,7 +1275,7 @@
       "test_name": "test_scan_processing_malformed_id_param_redirects_or_stays",
       "status": "passed",
       "priority": "medium",
-      "duration_s": 0.352
+      "duration_s": 0.309
     },
     {
       "test_id": "SEL-0124",
@@ -1284,7 +1284,7 @@
       "test_name": "test_notifications_page_survives_direct_reload",
       "status": "passed",
       "priority": "medium",
-      "duration_s": 0.632
+      "duration_s": 0.598
     },
     {
       "test_id": "SEL-0125",
@@ -1293,16 +1293,16 @@
       "test_name": "test_history_page_survives_direct_reload",
       "status": "passed",
       "priority": "medium",
-      "duration_s": 1.174
+      "duration_s": 0.648
     },
     {
       "test_id": "SEL-0126",
       "nodeid": "tests/test_error_handling.py::test_dashboard_survives_rapid_repeated_navigation",
       "module": "error_handling",
       "test_name": "test_dashboard_survives_rapid_repeated_navigation",
-      "status": "rerun",
+      "status": "passed",
       "priority": "medium",
-      "duration_s": 1.417
+      "duration_s": 1.257
     },
     {
       "test_id": "SEL-0127",
@@ -1311,7 +1311,7 @@
       "test_name": "test_scan_processing_malformed_id_query_param_does_not_crash[not-a-uuid]",
       "status": "passed",
       "priority": "medium",
-      "duration_s": 0.477
+      "duration_s": 0.521
     },
     {
       "test_id": "SEL-0128",
@@ -1320,7 +1320,7 @@
       "test_name": "test_scan_processing_malformed_id_query_param_does_not_crash[]",
       "status": "passed",
       "priority": "medium",
-      "duration_s": 0.412
+      "duration_s": 0.565
     },
     {
       "test_id": "SEL-0129",
@@ -1329,7 +1329,7 @@
       "test_name": "test_scan_processing_malformed_id_query_param_does_not_crash[0]",
       "status": "passed",
       "priority": "medium",
-      "duration_s": 0.437
+      "duration_s": 0.697
     },
     {
       "test_id": "SEL-0130",
@@ -1338,7 +1338,7 @@
       "test_name": "test_scan_processing_malformed_id_query_param_does_not_crash[../../etc/passwd]",
       "status": "passed",
       "priority": "medium",
-      "duration_s": 0.39
+      "duration_s": 0.571
     },
     {
       "test_id": "SEL-0131",
@@ -1347,7 +1347,7 @@
       "test_name": "test_scan_processing_malformed_id_query_param_does_not_crash[<script>alert(1)</script>]",
       "status": "passed",
       "priority": "medium",
-      "duration_s": 0.373
+      "duration_s": 0.369
     },
     {
       "test_id": "SEL-0132",
@@ -1356,7 +1356,7 @@
       "test_name": "test_scan_processing_malformed_id_query_param_does_not_crash[' OR '1'='1]",
       "status": "passed",
       "priority": "medium",
-      "duration_s": 0.383
+      "duration_s": 0.467
     },
     {
       "test_id": "SEL-0133",
@@ -1365,7 +1365,7 @@
       "test_name": "test_scan_processing_malformed_id_query_param_does_not_crash[aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa]",
       "status": "passed",
       "priority": "medium",
-      "duration_s": 0.392
+      "duration_s": 0.39
     },
     {
       "test_id": "SEL-0134",
@@ -1374,7 +1374,7 @@
       "test_name": "test_scan_processing_malformed_id_query_param_does_not_crash[\\u65e5\\u672c\\u8a9e-scan-id-\\U0001f3a7]",
       "status": "passed",
       "priority": "medium",
-      "duration_s": 0.374
+      "duration_s": 0.358
     },
     {
       "test_id": "SEL-0135",
@@ -1383,7 +1383,7 @@
       "test_name": "test_signup_extremely_long_email_rejected",
       "status": "passed",
       "priority": "medium",
-      "duration_s": 0.656
+      "duration_s": 0.631
     },
     {
       "test_id": "SEL-0136",
@@ -1392,7 +1392,7 @@
       "test_name": "test_login_extremely_long_password_does_not_crash_the_app",
       "status": "passed",
       "priority": "medium",
-      "duration_s": 0.468
+      "duration_s": 0.453
     },
     {
       "test_id": "SEL-0137",
@@ -1401,7 +1401,7 @@
       "test_name": "test_help_center_renders_article_cards",
       "status": "passed",
       "priority": "low",
-      "duration_s": 0.458
+      "duration_s": 0.504
     },
     {
       "test_id": "SEL-0138",
@@ -1410,7 +1410,7 @@
       "test_name": "test_help_center_search_filters_articles",
       "status": "passed",
       "priority": "low",
-      "duration_s": 0.513
+      "duration_s": 0.531
     },
     {
       "test_id": "SEL-0139",
@@ -1419,7 +1419,7 @@
       "test_name": "test_help_center_search_with_no_matches_shows_empty_state",
       "status": "passed",
       "priority": "low",
-      "duration_s": 0.524
+      "duration_s": 0.52
     },
     {
       "test_id": "SEL-0140",
@@ -1428,7 +1428,7 @@
       "test_name": "test_help_article_page_renders_real_article",
       "status": "passed",
       "priority": "low",
-      "duration_s": 0.328
+      "duration_s": 0.323
     },
     {
       "test_id": "SEL-0141",
@@ -1437,7 +1437,7 @@
       "test_name": "test_help_article_page_shows_not_found_for_unknown_slug",
       "status": "passed",
       "priority": "low",
-      "duration_s": 0.328
+      "duration_s": 0.311
     },
     {
       "test_id": "SEL-0142",
@@ -1446,7 +1446,7 @@
       "test_name": "test_feedback_form_rejects_message_below_minimum_length",
       "status": "passed",
       "priority": "low",
-      "duration_s": 0.491
+      "duration_s": 0.486
     },
     {
       "test_id": "SEL-0143",
@@ -1455,7 +1455,7 @@
       "test_name": "test_feedback_form_rejects_message_one_char_below_minimum",
       "status": "passed",
       "priority": "low",
-      "duration_s": 0.492
+      "duration_s": 0.504
     },
     {
       "test_id": "SEL-0144",
@@ -1464,7 +1464,7 @@
       "test_name": "test_feedback_form_rejects_message_over_maximum_length",
       "status": "passed",
       "priority": "low",
-      "duration_s": 8.501
+      "duration_s": 8.354
     },
     {
       "test_id": "SEL-0145",
@@ -1473,7 +1473,7 @@
       "test_name": "test_feedback_form_accepts_message_at_exact_minimum_length",
       "status": "passed",
       "priority": "low",
-      "duration_s": 0.646
+      "duration_s": 0.585
     },
     {
       "test_id": "SEL-0146",
@@ -1482,7 +1482,7 @@
       "test_name": "test_feedback_scanid_query_param_preselects_incorrect_result_category",
       "status": "passed",
       "priority": "low",
-      "duration_s": 0.443
+      "duration_s": 0.372
     },
     {
       "test_id": "SEL-0147",
@@ -1491,7 +1491,7 @@
       "test_name": "test_feedback_without_scanid_query_param_defaults_to_general_category",
       "status": "passed",
       "priority": "low",
-      "duration_s": 0.407
+      "duration_s": 0.382
     },
     {
       "test_id": "SEL-0148",
@@ -1500,7 +1500,7 @@
       "test_name": "test_feedback_form_submit_reaches_the_real_success_state",
       "status": "passed",
       "priority": "low",
-      "duration_s": 0.652
+      "duration_s": 0.561
     },
     {
       "test_id": "SEL-0149",
@@ -1509,7 +1509,7 @@
       "test_name": "test_feedback_category_radiogroup_shows_all_categories",
       "status": "passed",
       "priority": "low",
-      "duration_s": 0.391
+      "duration_s": 0.37
     },
     {
       "test_id": "SEL-0150",
@@ -1518,7 +1518,7 @@
       "test_name": "test_feedback_message_textarea_reachable_directly_via_url",
       "status": "passed",
       "priority": "low",
-      "duration_s": 0.347
+      "duration_s": 0.323
     },
     {
       "test_id": "SEL-0151",
@@ -1527,7 +1527,7 @@
       "test_name": "test_help_center_search_is_case_insensitive",
       "status": "passed",
       "priority": "low",
-      "duration_s": 0.509
+      "duration_s": 0.489
     },
     {
       "test_id": "SEL-0152",
@@ -1536,7 +1536,7 @@
       "test_name": "test_help_center_category_filter_narrows_results",
       "status": "passed",
       "priority": "low",
-      "duration_s": 1.571
+      "duration_s": 1.597
     },
     {
       "test_id": "SEL-0153",
@@ -1545,7 +1545,7 @@
       "test_name": "test_help_center_all_topics_button_resets_category_filter",
       "status": "passed",
       "priority": "low",
-      "duration_s": 1.9
+      "duration_s": 1.901
     },
     {
       "test_id": "SEL-0154",
@@ -1554,7 +1554,7 @@
       "test_name": "test_help_article_page_has_back_to_help_link",
       "status": "passed",
       "priority": "low",
-      "duration_s": 0.329
+      "duration_s": 0.301
     },
     {
       "test_id": "SEL-0155",
@@ -1563,7 +1563,7 @@
       "test_name": "test_help_article_not_found_has_back_to_help_link",
       "status": "passed",
       "priority": "low",
-      "duration_s": 0.305
+      "duration_s": 0.278
     },
     {
       "test_id": "SEL-0156",
@@ -1572,7 +1572,7 @@
       "test_name": "test_help_center_give_feedback_link_navigates_to_feedback",
       "status": "passed",
       "priority": "low",
-      "duration_s": 0.463
+      "duration_s": 0.434
     },
     {
       "test_id": "SEL-0157",
@@ -1581,7 +1581,7 @@
       "test_name": "test_history_page_title_renders",
       "status": "passed",
       "priority": "medium",
-      "duration_s": 0.338
+      "duration_s": 0.301
     },
     {
       "test_id": "SEL-0158",
@@ -1590,7 +1590,7 @@
       "test_name": "test_history_shows_empty_state_or_table",
       "status": "passed",
       "priority": "medium",
-      "duration_s": 0.367
+      "duration_s": 0.819
     },
     {
       "test_id": "SEL-0159",
@@ -1599,7 +1599,7 @@
       "test_name": "test_history_new_scan_link_navigates_to_scan_new",
       "status": "passed",
       "priority": "medium",
-      "duration_s": 0.42
+      "duration_s": 0.383
     },
     {
       "test_id": "SEL-0160",
@@ -1608,7 +1608,7 @@
       "test_name": "test_history_status_filter_defaults_to_all",
       "status": "passed",
       "priority": "medium",
-      "duration_s": 7.046
+      "duration_s": 5.393
     },
     {
       "test_id": "SEL-0161",
@@ -1617,7 +1617,7 @@
       "test_name": "test_history_status_filter_can_be_changed",
       "status": "passed",
       "priority": "medium",
-      "duration_s": 7.325
+      "duration_s": 7.352
     },
     {
       "test_id": "SEL-0162",
@@ -1626,7 +1626,7 @@
       "test_name": "test_history_table_rows_have_accessible_row_role",
       "status": "passed",
       "priority": "medium",
-      "duration_s": 7.51
+      "duration_s": 5.377
     },
     {
       "test_id": "SEL-0163",
@@ -1635,7 +1635,7 @@
       "test_name": "test_history_reachable_directly_via_url",
       "status": "passed",
       "priority": "medium",
-      "duration_s": 0.363
+      "duration_s": 0.28
     },
     {
       "test_id": "SEL-0164",
@@ -1644,7 +1644,7 @@
       "test_name": "test_history_status_filter_has_all_documented_options",
       "status": "passed",
       "priority": "medium",
-      "duration_s": 7.403
+      "duration_s": 7.304
     },
     {
       "test_id": "SEL-0165",
@@ -1662,7 +1662,7 @@
       "test_name": "test_history_selecting_processing_filter_does_not_error",
       "status": "passed",
       "priority": "medium",
-      "duration_s": 5.372
+      "duration_s": 7.483
     },
     {
       "test_id": "SEL-0167",
@@ -1671,7 +1671,7 @@
       "test_name": "test_history_selecting_queued_filter_does_not_error",
       "status": "passed",
       "priority": "medium",
-      "duration_s": 7.391
+      "duration_s": 7.354
     },
     {
       "test_id": "SEL-0168",
@@ -1680,7 +1680,7 @@
       "test_name": "test_history_selecting_validation_failed_filter_does_not_error",
       "status": "passed",
       "priority": "medium",
-      "duration_s": 7.416
+      "duration_s": 5.388
     },
     {
       "test_id": "SEL-0169",
@@ -1689,7 +1689,7 @@
       "test_name": "test_history_selecting_failed_filter_does_not_error",
       "status": "passed",
       "priority": "medium",
-      "duration_s": 7.362
+      "duration_s": 7.331
     },
     {
       "test_id": "SEL-0170",
@@ -1698,7 +1698,7 @@
       "test_name": "test_login_form_real_fields_reachable_via_tab",
       "status": "passed",
       "priority": "medium",
-      "duration_s": 0.603
+      "duration_s": 0.548
     },
     {
       "test_id": "SEL-0171",
@@ -1707,7 +1707,7 @@
       "test_name": "test_signup_form_real_fields_reachable_via_tab",
       "status": "passed",
       "priority": "medium",
-      "duration_s": 0.627
+      "duration_s": 0.564
     },
     {
       "test_id": "SEL-0172",
@@ -1716,16 +1716,16 @@
       "test_name": "test_password_field_uses_type_password_for_assistive_tech",
       "status": "passed",
       "priority": "medium",
-      "duration_s": 0.271
+      "duration_s": 0.261
     },
     {
       "test_id": "SEL-0173",
       "nodeid": "tests/test_keyboard_navigation.py::test_login_keyboard_only_fill_and_enter_submits",
       "module": "keyboard_navigation",
       "test_name": "test_login_keyboard_only_fill_and_enter_submits",
-      "status": "failed",
+      "status": "passed",
       "priority": "medium",
-      "duration_s": 15.649
+      "duration_s": 0.904
     },
     {
       "test_id": "SEL-0174",
@@ -1734,7 +1734,7 @@
       "test_name": "test_global_search_opens_via_keyboard_shortcut",
       "status": "passed",
       "priority": "medium",
-      "duration_s": 0.565
+      "duration_s": 0.453
     },
     {
       "test_id": "SEL-0175",
@@ -1743,7 +1743,7 @@
       "test_name": "test_global_search_escape_key_closes_dialog",
       "status": "passed",
       "priority": "medium",
-      "duration_s": 3.105
+      "duration_s": 3.023
     },
     {
       "test_id": "SEL-0176",
@@ -1752,7 +1752,7 @@
       "test_name": "test_notifications_tabs_reachable_and_activatable_via_keyboard",
       "status": "passed",
       "priority": "medium",
-      "duration_s": 0.558
+      "duration_s": 0.403
     },
     {
       "test_id": "SEL-0177",
@@ -1761,7 +1761,7 @@
       "test_name": "test_sidebar_nav_link_reachable_via_tab_on_desktop_viewport",
       "status": "passed",
       "priority": "medium",
-      "duration_s": 0.43
+      "duration_s": 0.381
     },
     {
       "test_id": "SEL-0178",
@@ -1770,7 +1770,7 @@
       "test_name": "test_forgot_password_form_reachable_via_tab",
       "status": "passed",
       "priority": "medium",
-      "duration_s": 0.37
+      "duration_s": 0.295
     },
     {
       "test_id": "SEL-0179",
@@ -1779,7 +1779,7 @@
       "test_name": "test_notification_bell_reachable_via_tab_and_activatable_via_enter",
       "status": "passed",
       "priority": "medium",
-      "duration_s": 0.538
+      "duration_s": 0.482
     },
     {
       "test_id": "SEL-0180",
@@ -1788,7 +1788,7 @@
       "test_name": "test_theme_toggle_reachable_and_activatable_via_keyboard",
       "status": "passed",
       "priority": "medium",
-      "duration_s": 0.458
+      "duration_s": 0.401
     },
     {
       "test_id": "SEL-0181",
@@ -1797,7 +1797,7 @@
       "test_name": "test_global_search_result_options_reachable_via_arrow_keys",
       "status": "passed",
       "priority": "medium",
-      "duration_s": 0.529
+      "duration_s": 0.469
     },
     {
       "test_id": "SEL-0182",
@@ -1806,7 +1806,7 @@
       "test_name": "test_signup_keyboard_only_tab_order_reaches_submit_button",
       "status": "passed",
       "priority": "medium",
-      "duration_s": 0.498
+      "duration_s": 0.449
     },
     {
       "test_id": "SEL-0183",
@@ -1815,7 +1815,7 @@
       "test_name": "test_sidebar_visible_on_desktop_viewport",
       "status": "passed",
       "priority": "medium",
-      "duration_s": 0.015
+      "duration_s": 0.012
     },
     {
       "test_id": "SEL-0184",
@@ -1824,7 +1824,7 @@
       "test_name": "test_hamburger_hidden_on_desktop_viewport",
       "status": "passed",
       "priority": "medium",
-      "duration_s": 3.082
+      "duration_s": 3.083
     },
     {
       "test_id": "SEL-0185",
@@ -1842,7 +1842,7 @@
       "test_name": "test_breadcrumb_shows_dashboard_root_and_current_page",
       "status": "passed",
       "priority": "medium",
-      "duration_s": 0.363
+      "duration_s": 0.349
     },
     {
       "test_id": "SEL-0187",
@@ -1851,7 +1851,7 @@
       "test_name": "test_sidebar_dashboard_link_active_on_dashboard",
       "status": "passed",
       "priority": "medium",
-      "duration_s": 0.021
+      "duration_s": 0.014
     },
     {
       "test_id": "SEL-0188",
@@ -1860,7 +1860,7 @@
       "test_name": "test_sidebar_history_link_navigates",
       "status": "passed",
       "priority": "medium",
-      "duration_s": 0.119
+      "duration_s": 0.104
     },
     {
       "test_id": "SEL-0189",
@@ -1869,7 +1869,7 @@
       "test_name": "test_sidebar_new_scan_link_navigates",
       "status": "passed",
       "priority": "medium",
-      "duration_s": 0.105
+      "duration_s": 0.067
     },
     {
       "test_id": "SEL-0190",
@@ -1878,7 +1878,7 @@
       "test_name": "test_sidebar_help_center_link_navigates",
       "status": "passed",
       "priority": "medium",
-      "duration_s": 0.111
+      "duration_s": 0.115
     },
     {
       "test_id": "SEL-0191",
@@ -1887,7 +1887,7 @@
       "test_name": "test_sidebar_give_feedback_link_navigates",
       "status": "passed",
       "priority": "medium",
-      "duration_s": 0.109
+      "duration_s": 0.26
     },
     {
       "test_id": "SEL-0192",
@@ -1896,7 +1896,7 @@
       "test_name": "test_sidebar_settings_link_navigates",
       "status": "passed",
       "priority": "medium",
-      "duration_s": 0.137
+      "duration_s": 0.108
     },
     {
       "test_id": "SEL-0193",
@@ -1905,7 +1905,7 @@
       "test_name": "test_sidebar_collapse_toggle_collapses_and_expands",
       "status": "passed",
       "priority": "medium",
-      "duration_s": 0.312
+      "duration_s": 0.398
     },
     {
       "test_id": "SEL-0194",
@@ -1914,7 +1914,7 @@
       "test_name": "test_user_menu_opens_from_sidebar_and_shows_account_links",
       "status": "passed",
       "priority": "medium",
-      "duration_s": 0.929
+      "duration_s": 0.66
     },
     {
       "test_id": "SEL-0195",
@@ -1923,7 +1923,7 @@
       "test_name": "test_user_menu_profile_link_navigates_to_settings_profile",
       "status": "passed",
       "priority": "medium",
-      "duration_s": 0.731
+      "duration_s": 0.258
     },
     {
       "test_id": "SEL-0196",
@@ -1932,7 +1932,7 @@
       "test_name": "test_global_search_opens_via_desktop_trigger",
       "status": "passed",
       "priority": "medium",
-      "duration_s": 0.111
+      "duration_s": 0.081
     },
     {
       "test_id": "SEL-0197",
@@ -1941,7 +1941,7 @@
       "test_name": "test_global_search_shows_quick_actions_by_default",
       "status": "passed",
       "priority": "medium",
-      "duration_s": 0.187
+      "duration_s": 0.183
     },
     {
       "test_id": "SEL-0198",
@@ -1950,7 +1950,7 @@
       "test_name": "test_global_search_filters_results_by_query",
       "status": "passed",
       "priority": "medium",
-      "duration_s": 0.233
+      "duration_s": 0.211
     },
     {
       "test_id": "SEL-0199",
@@ -1959,7 +1959,7 @@
       "test_name": "test_global_search_no_results_for_gibberish_query",
       "status": "passed",
       "priority": "medium",
-      "duration_s": 0.258
+      "duration_s": 0.291
     },
     {
       "test_id": "SEL-0200",
@@ -1968,7 +1968,7 @@
       "test_name": "test_global_search_select_result_navigates_and_closes",
       "status": "passed",
       "priority": "medium",
-      "duration_s": 2.788
+      "duration_s": 2.803
     },
     {
       "test_id": "SEL-0201",
@@ -1977,7 +1977,7 @@
       "test_name": "test_global_search_close_button_closes_without_navigating",
       "status": "passed",
       "priority": "medium",
-      "duration_s": 9.769
+      "duration_s": 9.79
     },
     {
       "test_id": "SEL-0202",
@@ -1986,7 +1986,7 @@
       "test_name": "test_notification_center_opens_via_bell",
       "status": "passed",
       "priority": "medium",
-      "duration_s": 0.165
+      "duration_s": 0.18
     },
     {
       "test_id": "SEL-0203",
@@ -1995,7 +1995,7 @@
       "test_name": "test_notification_center_closes_via_close_button",
       "status": "passed",
       "priority": "medium",
-      "duration_s": 9.826
+      "duration_s": 9.951
     },
     {
       "test_id": "SEL-0204",
@@ -2004,7 +2004,7 @@
       "test_name": "test_notification_center_view_all_navigates_to_notifications_page",
       "status": "passed",
       "priority": "medium",
-      "duration_s": 0.286
+      "duration_s": 0.277
     },
     {
       "test_id": "SEL-0205",
@@ -2013,7 +2013,7 @@
       "test_name": "test_theme_toggle_cycles_theme",
       "status": "passed",
       "priority": "medium",
-      "duration_s": 0.104
+      "duration_s": 0.103
     },
     {
       "test_id": "SEL-0206",
@@ -2022,7 +2022,7 @@
       "test_name": "test_sidebar_collapse_state_persists_across_navigation",
       "status": "passed",
       "priority": "medium",
-      "duration_s": 0.542
+      "duration_s": 0.52
     },
     {
       "test_id": "SEL-0207",
@@ -2031,7 +2031,7 @@
       "test_name": "test_sidebar_notifications_link_navigates",
       "status": "passed",
       "priority": "medium",
-      "duration_s": 0.11
+      "duration_s": 0.135
     },
     {
       "test_id": "SEL-0208",
@@ -2058,7 +2058,7 @@
       "test_name": "test_breadcrumb_shows_settings_section_on_settings_pages",
       "status": "passed",
       "priority": "medium",
-      "duration_s": 0.404
+      "duration_s": 0.365
     },
     {
       "test_id": "SEL-0211",
@@ -2067,7 +2067,7 @@
       "test_name": "test_user_menu_appearance_link_navigates_to_settings_appearance",
       "status": "passed",
       "priority": "medium",
-      "duration_s": 0.25
+      "duration_s": 0.258
     },
     {
       "test_id": "SEL-0212",
@@ -2076,7 +2076,7 @@
       "test_name": "test_user_menu_account_link_navigates_to_settings_account",
       "status": "passed",
       "priority": "medium",
-      "duration_s": 0.224
+      "duration_s": 0.252
     },
     {
       "test_id": "SEL-0213",
@@ -2085,7 +2085,7 @@
       "test_name": "test_global_search_result_labels_include_settings",
       "status": "passed",
       "priority": "medium",
-      "duration_s": 2.815
+      "duration_s": 2.836
     },
     {
       "test_id": "SEL-0214",
@@ -2094,7 +2094,7 @@
       "test_name": "test_global_search_input_clears_between_openings",
       "status": "passed",
       "priority": "medium",
-      "duration_s": 5.452
+      "duration_s": 5.491
     },
     {
       "test_id": "SEL-0215",
@@ -2103,7 +2103,7 @@
       "test_name": "test_notification_center_panel_has_dialog_role_for_assistive_tech",
       "status": "passed",
       "priority": "medium",
-      "duration_s": 2.74
+      "duration_s": 2.761
     },
     {
       "test_id": "SEL-0216",
@@ -2112,7 +2112,7 @@
       "test_name": "test_notifications_page_shows_filter_tabs",
       "status": "passed",
       "priority": "medium",
-      "duration_s": 0.372
+      "duration_s": 0.331
     },
     {
       "test_id": "SEL-0217",
@@ -2121,7 +2121,7 @@
       "test_name": "test_notifications_all_tab_selected_by_default",
       "status": "passed",
       "priority": "medium",
-      "duration_s": 0.365
+      "duration_s": 0.319
     },
     {
       "test_id": "SEL-0218",
@@ -2130,7 +2130,7 @@
       "test_name": "test_notifications_can_switch_to_unread_tab",
       "status": "passed",
       "priority": "medium",
-      "duration_s": 0.452
+      "duration_s": 0.424
     },
     {
       "test_id": "SEL-0219",
@@ -2139,7 +2139,7 @@
       "test_name": "test_notifications_can_switch_to_read_tab",
       "status": "passed",
       "priority": "medium",
-      "duration_s": 0.513
+      "duration_s": 0.475
     },
     {
       "test_id": "SEL-0220",
@@ -2148,7 +2148,7 @@
       "test_name": "test_notifications_tabs_have_tab_role_for_assistive_tech",
       "status": "passed",
       "priority": "medium",
-      "duration_s": 0.401
+      "duration_s": 0.356
     },
     {
       "test_id": "SEL-0221",
@@ -2157,7 +2157,7 @@
       "test_name": "test_notifications_tablist_has_tablist_role",
       "status": "passed",
       "priority": "medium",
-      "duration_s": 0.375
+      "duration_s": 0.34
     },
     {
       "test_id": "SEL-0222",
@@ -2166,7 +2166,7 @@
       "test_name": "test_notifications_page_reachable_directly_via_url",
       "status": "passed",
       "priority": "medium",
-      "duration_s": 0.38
+      "duration_s": 0.359
     },
     {
       "test_id": "SEL-0223",
@@ -2175,7 +2175,7 @@
       "test_name": "test_notifications_switching_tabs_does_not_change_url",
       "status": "passed",
       "priority": "medium",
-      "duration_s": 0.482
+      "duration_s": 0.459
     },
     {
       "test_id": "SEL-0224",
@@ -2184,7 +2184,7 @@
       "test_name": "test_notifications_unread_tab_label_starts_with_unread",
       "status": "passed",
       "priority": "medium",
-      "duration_s": 0.372
+      "duration_s": 0.373
     },
     {
       "test_id": "SEL-0225",
@@ -2193,7 +2193,7 @@
       "test_name": "test_notifications_page_survives_switching_tabs_twice",
       "status": "passed",
       "priority": "medium",
-      "duration_s": 0.562
+      "duration_s": 0.933
     },
     {
       "test_id": "SEL-0226",
@@ -2202,7 +2202,7 @@
       "test_name": "test_notifications_only_one_tab_selected_at_a_time",
       "status": "passed",
       "priority": "medium",
-      "duration_s": 0.539
+      "duration_s": 0.487
     },
     {
       "test_id": "SEL-0227",
@@ -2211,7 +2211,7 @@
       "test_name": "test_onboarding_welcome_step_shown",
       "status": "passed",
       "priority": "medium",
-      "duration_s": 0.309
+      "duration_s": 0.25
     },
     {
       "test_id": "SEL-0228",
@@ -2220,7 +2220,7 @@
       "test_name": "test_onboarding_advances_to_use_case_step",
       "status": "passed",
       "priority": "medium",
-      "duration_s": 1.407
+      "duration_s": 1.017
     },
     {
       "test_id": "SEL-0229",
@@ -2229,7 +2229,7 @@
       "test_name": "test_onboarding_advances_to_privacy_step",
       "status": "passed",
       "priority": "medium",
-      "duration_s": 1.39
+      "duration_s": 1.343
     },
     {
       "test_id": "SEL-0230",
@@ -2238,7 +2238,7 @@
       "test_name": "test_onboarding_finish_navigates_to_dashboard",
       "status": "passed",
       "priority": "medium",
-      "duration_s": 1.014
+      "duration_s": 1.45
     },
     {
       "test_id": "SEL-0231",
@@ -2247,7 +2247,7 @@
       "test_name": "test_onboarding_reachable_directly_via_url_when_authenticated",
       "status": "passed",
       "priority": "medium",
-      "duration_s": 0.297
+      "duration_s": 0.236
     },
     {
       "test_id": "SEL-0232",
@@ -2256,7 +2256,7 @@
       "test_name": "test_onboarding_use_case_step_shows_curiosity_option",
       "status": "passed",
       "priority": "medium",
-      "duration_s": 1.068
+      "duration_s": 0.512
     },
     {
       "test_id": "SEL-0233",
@@ -2265,7 +2265,7 @@
       "test_name": "test_onboarding_privacy_step_shows_a_real_list",
       "status": "passed",
       "priority": "medium",
-      "duration_s": 1.375
+      "duration_s": 1.328
     },
     {
       "test_id": "SEL-0234",
@@ -2274,7 +2274,7 @@
       "test_name": "test_forgot_password_page_renders",
       "status": "passed",
       "priority": "high",
-      "duration_s": 0.277
+      "duration_s": 0.239
     },
     {
       "test_id": "SEL-0235",
@@ -2283,7 +2283,7 @@
       "test_name": "test_forgot_password_empty_submit_blocked",
       "status": "passed",
       "priority": "high",
-      "duration_s": 0.318
+      "duration_s": 0.279
     },
     {
       "test_id": "SEL-0236",
@@ -2292,7 +2292,7 @@
       "test_name": "test_forgot_password_invalid_email_blocked[not-an-email]",
       "status": "passed",
       "priority": "high",
-      "duration_s": 0.385
+      "duration_s": 0.334
     },
     {
       "test_id": "SEL-0237",
@@ -2301,7 +2301,7 @@
       "test_name": "test_forgot_password_invalid_email_blocked[missing-domain@]",
       "status": "passed",
       "priority": "high",
-      "duration_s": 0.377
+      "duration_s": 0.349
     },
     {
       "test_id": "SEL-0238",
@@ -2310,7 +2310,7 @@
       "test_name": "test_forgot_password_invalid_email_blocked[@missing-local.com]",
       "status": "passed",
       "priority": "high",
-      "duration_s": 0.385
+      "duration_s": 0.344
     },
     {
       "test_id": "SEL-0239",
@@ -2319,7 +2319,7 @@
       "test_name": "test_forgot_password_submit_shows_check_email",
       "status": "passed",
       "priority": "high",
-      "duration_s": 0.419
+      "duration_s": 0.37
     },
     {
       "test_id": "SEL-0240",
@@ -2328,7 +2328,7 @@
       "test_name": "test_reset_password_no_token_shows_invalid_link",
       "status": "passed",
       "priority": "high",
-      "duration_s": 0.256
+      "duration_s": 0.223
     },
     {
       "test_id": "SEL-0241",
@@ -2337,7 +2337,7 @@
       "test_name": "test_reset_password_form_shown_when_token_present",
       "status": "passed",
       "priority": "high",
-      "duration_s": 0.294
+      "duration_s": 0.23
     },
     {
       "test_id": "SEL-0242",
@@ -2346,7 +2346,7 @@
       "test_name": "test_reset_password_rejects_mismatched_passwords",
       "status": "passed",
       "priority": "high",
-      "duration_s": 0.572
+      "duration_s": 0.512
     },
     {
       "test_id": "SEL-0243",
@@ -2355,7 +2355,7 @@
       "test_name": "test_reset_password_rejects_weak_password[no_digit]",
       "status": "passed",
       "priority": "high",
-      "duration_s": 0.529
+      "duration_s": 0.489
     },
     {
       "test_id": "SEL-0244",
@@ -2364,7 +2364,7 @@
       "test_name": "test_reset_password_rejects_weak_password[no_lowercase]",
       "status": "passed",
       "priority": "high",
-      "duration_s": 1.336
+      "duration_s": 0.949
     },
     {
       "test_id": "SEL-0245",
@@ -2373,7 +2373,7 @@
       "test_name": "test_reset_password_rejects_weak_password[no_special]",
       "status": "passed",
       "priority": "high",
-      "duration_s": 0.545
+      "duration_s": 0.484
     },
     {
       "test_id": "SEL-0246",
@@ -2382,7 +2382,7 @@
       "test_name": "test_reset_password_rejects_weak_password[no_uppercase]",
       "status": "passed",
       "priority": "high",
-      "duration_s": 0.743
+      "duration_s": 0.482
     },
     {
       "test_id": "SEL-0247",
@@ -2391,7 +2391,7 @@
       "test_name": "test_reset_password_rejects_weak_password[too_short]",
       "status": "passed",
       "priority": "high",
-      "duration_s": 0.495
+      "duration_s": 0.444
     },
     {
       "test_id": "SEL-0248",
@@ -2400,7 +2400,7 @@
       "test_name": "test_reset_password_garbage_token_rejected_by_backend",
       "status": "passed",
       "priority": "high",
-      "duration_s": 0.707
+      "duration_s": 0.493
     },
     {
       "test_id": "SEL-0249",
@@ -2409,7 +2409,7 @@
       "test_name": "test_reset_password_field_uses_password_input_type",
       "status": "passed",
       "priority": "high",
-      "duration_s": 0.308
+      "duration_s": 0.251
     },
     {
       "test_id": "SEL-0250",
@@ -2418,7 +2418,7 @@
       "test_name": "test_forgot_password_email_field_uses_email_input_type",
       "status": "passed",
       "priority": "high",
-      "duration_s": 0.291
+      "duration_s": 0.234
     },
     {
       "test_id": "SEL-0251",
@@ -2427,7 +2427,7 @@
       "test_name": "test_reset_password_empty_submit_blocked",
       "status": "passed",
       "priority": "high",
-      "duration_s": 0.36
+      "duration_s": 0.303
     },
     {
       "test_id": "SEL-0252",
@@ -2436,7 +2436,7 @@
       "test_name": "test_landing_page_navigation_timing_api_is_available",
       "status": "passed",
       "priority": "low",
-      "duration_s": 0.422
+      "duration_s": 0.377
     },
     {
       "test_id": "SEL-0253",
@@ -2445,7 +2445,7 @@
       "test_name": "test_landing_page_dom_content_loaded_within_ceiling",
       "status": "passed",
       "priority": "low",
-      "duration_s": 0.4
+      "duration_s": 0.356
     },
     {
       "test_id": "SEL-0254",
@@ -2454,7 +2454,7 @@
       "test_name": "test_landing_page_full_load_within_ceiling",
       "status": "passed",
       "priority": "low",
-      "duration_s": 0.405
+      "duration_s": 0.349
     },
     {
       "test_id": "SEL-0255",
@@ -2463,7 +2463,7 @@
       "test_name": "test_login_page_dom_content_loaded_within_ceiling",
       "status": "passed",
       "priority": "low",
-      "duration_s": 0.26
+      "duration_s": 0.231
     },
     {
       "test_id": "SEL-0256",
@@ -2472,7 +2472,7 @@
       "test_name": "test_dashboard_dom_content_loaded_within_ceiling",
       "status": "passed",
       "priority": "low",
-      "duration_s": 0.364
+      "duration_s": 0.306
     },
     {
       "test_id": "SEL-0257",
@@ -2481,7 +2481,7 @@
       "test_name": "test_backend_first_byte_within_ceiling_on_dashboard",
       "status": "passed",
       "priority": "low",
-      "duration_s": 0.333
+      "duration_s": 0.315
     },
     {
       "test_id": "SEL-0258",
@@ -2490,7 +2490,7 @@
       "test_name": "test_authenticated_route_dom_content_loaded_within_ceiling[/history]",
       "status": "passed",
       "priority": "low",
-      "duration_s": 0.346
+      "duration_s": 0.299
     },
     {
       "test_id": "SEL-0259",
@@ -2499,7 +2499,7 @@
       "test_name": "test_authenticated_route_dom_content_loaded_within_ceiling[/notifications]",
       "status": "passed",
       "priority": "low",
-      "duration_s": 0.362
+      "duration_s": 0.33
     },
     {
       "test_id": "SEL-0260",
@@ -2508,7 +2508,7 @@
       "test_name": "test_authenticated_route_dom_content_loaded_within_ceiling[/help]",
       "status": "passed",
       "priority": "low",
-      "duration_s": 0.336
+      "duration_s": 0.29
     },
     {
       "test_id": "SEL-0261",
@@ -2517,7 +2517,7 @@
       "test_name": "test_authenticated_route_dom_content_loaded_within_ceiling[/feedback]",
       "status": "passed",
       "priority": "low",
-      "duration_s": 0.348
+      "duration_s": 0.306
     },
     {
       "test_id": "SEL-0262",
@@ -2526,7 +2526,7 @@
       "test_name": "test_authenticated_route_dom_content_loaded_within_ceiling[/scan/new]",
       "status": "passed",
       "priority": "low",
-      "duration_s": 0.342
+      "duration_s": 0.287
     },
     {
       "test_id": "SEL-0263",
@@ -2535,7 +2535,7 @@
       "test_name": "test_authenticated_route_dom_content_loaded_within_ceiling[/settings/profile]",
       "status": "passed",
       "priority": "low",
-      "duration_s": 0.345
+      "duration_s": 0.341
     },
     {
       "test_id": "SEL-0264",
@@ -2544,7 +2544,7 @@
       "test_name": "test_signup_page_dom_content_loaded_within_ceiling",
       "status": "passed",
       "priority": "low",
-      "duration_s": 0.281
+      "duration_s": 0.24
     },
     {
       "test_id": "SEL-0265",
@@ -2553,7 +2553,7 @@
       "test_name": "test_history_backend_first_byte_within_ceiling",
       "status": "passed",
       "priority": "low",
-      "duration_s": 0.328
+      "duration_s": 0.299
     },
     {
       "test_id": "SEL-0266",
@@ -2562,7 +2562,7 @@
       "test_name": "test_landing_page_response_start_within_ceiling",
       "status": "passed",
       "priority": "low",
-      "duration_s": 0.412
+      "duration_s": 0.369
     },
     {
       "test_id": "SEL-0267",
@@ -2571,7 +2571,7 @@
       "test_name": "test_landing_page_loads",
       "status": "passed",
       "priority": "medium",
-      "duration_s": 0.412
+      "duration_s": 0.36
     },
     {
       "test_id": "SEL-0268",
@@ -2580,7 +2580,7 @@
       "test_name": "test_landing_page_main_content_visible",
       "status": "passed",
       "priority": "medium",
-      "duration_s": 0.39
+      "duration_s": 0.368
     },
     {
       "test_id": "SEL-0269",
@@ -2589,7 +2589,7 @@
       "test_name": "test_unknown_route_shows_404",
       "status": "passed",
       "priority": "medium",
-      "duration_s": 0.276
+      "duration_s": 0.228
     },
     {
       "test_id": "SEL-0270",
@@ -2598,7 +2598,7 @@
       "test_name": "test_404_page_has_return_home_link",
       "status": "passed",
       "priority": "medium",
-      "duration_s": 0.251
+      "duration_s": 0.216
     },
     {
       "test_id": "SEL-0271",
@@ -2607,7 +2607,7 @@
       "test_name": "test_404_page_return_home_link_navigates_to_landing_page",
       "status": "passed",
       "priority": "medium",
-      "duration_s": 0.701
+      "duration_s": 0.618
     },
     {
       "test_id": "SEL-0272",
@@ -2616,7 +2616,7 @@
       "test_name": "test_404_page_shown_for_a_nested_unknown_route",
       "status": "passed",
       "priority": "medium",
-      "duration_s": 0.263
+      "duration_s": 0.25
     },
     {
       "test_id": "SEL-0273",
@@ -2625,7 +2625,7 @@
       "test_name": "test_landing_page_analyze_audio_cta_navigates_to_signup",
       "status": "passed",
       "priority": "medium",
-      "duration_s": 0.449
+      "duration_s": 0.416
     },
     {
       "test_id": "SEL-0274",
@@ -2634,7 +2634,7 @@
       "test_name": "test_landing_page_sign_in_link_navigates_to_login",
       "status": "passed",
       "priority": "medium",
-      "duration_s": 0.465
+      "duration_s": 0.479
     },
     {
       "test_id": "SEL-0275",
@@ -2643,7 +2643,7 @@
       "test_name": "test_landing_page_has_skip_to_content_link",
       "status": "passed",
       "priority": "medium",
-      "duration_s": 0.418
+      "duration_s": 0.49
     },
     {
       "test_id": "SEL-0276",
@@ -2652,7 +2652,7 @@
       "test_name": "test_landing_page_has_a_document_title",
       "status": "passed",
       "priority": "medium",
-      "duration_s": 0.414
+      "duration_s": 0.451
     },
     {
       "test_id": "SEL-0277",
@@ -2661,7 +2661,7 @@
       "test_name": "test_landing_page_reachable_via_trailing_slash",
       "status": "passed",
       "priority": "medium",
-      "duration_s": 0.713
+      "duration_s": 0.882
     },
     {
       "test_id": "SEL-0278",
@@ -2670,7 +2670,7 @@
       "test_name": "test_404_page_body_does_not_leak_stack_trace",
       "status": "passed",
       "priority": "medium",
-      "duration_s": 0.535
+      "duration_s": 0.229
     },
     {
       "test_id": "SEL-0279",
@@ -2679,7 +2679,7 @@
       "test_name": "test_unknown_route_with_hash_fragment_shows_404",
       "status": "passed",
       "priority": "medium",
-      "duration_s": 0.652
+      "duration_s": 0.233
     },
     {
       "test_id": "SEL-0280",
@@ -2688,7 +2688,7 @@
       "test_name": "test_signup_page_renders_required_fields",
       "status": "passed",
       "priority": "high",
-      "duration_s": 0.3
+      "duration_s": 0.271
     },
     {
       "test_id": "SEL-0281",
@@ -2697,7 +2697,7 @@
       "test_name": "test_signup_form_accepts_input",
       "status": "passed",
       "priority": "high",
-      "duration_s": 0.347
+      "duration_s": 0.309
     },
     {
       "test_id": "SEL-0282",
@@ -2706,7 +2706,7 @@
       "test_name": "test_signup_empty_submit_blocked",
       "status": "passed",
       "priority": "high",
-      "duration_s": 0.352
+      "duration_s": 0.312
     },
     {
       "test_id": "SEL-0283",
@@ -2715,7 +2715,7 @@
       "test_name": "test_signup_rejects_mismatched_passwords",
       "status": "passed",
       "priority": "high",
-      "duration_s": 0.727
+      "duration_s": 0.663
     },
     {
       "test_id": "SEL-0284",
@@ -2724,7 +2724,7 @@
       "test_name": "test_signup_rejects_weak_password[no_digit]",
       "status": "passed",
       "priority": "high",
-      "duration_s": 1.121
+      "duration_s": 0.633
     },
     {
       "test_id": "SEL-0285",
@@ -2733,7 +2733,7 @@
       "test_name": "test_signup_rejects_weak_password[no_lowercase]",
       "status": "passed",
       "priority": "high",
-      "duration_s": 0.764
+      "duration_s": 0.621
     },
     {
       "test_id": "SEL-0286",
@@ -2742,7 +2742,7 @@
       "test_name": "test_signup_rejects_weak_password[no_special]",
       "status": "passed",
       "priority": "high",
-      "duration_s": 0.735
+      "duration_s": 0.641
     },
     {
       "test_id": "SEL-0287",
@@ -2751,7 +2751,7 @@
       "test_name": "test_signup_rejects_weak_password[no_uppercase]",
       "status": "passed",
       "priority": "high",
-      "duration_s": 0.688
+      "duration_s": 0.937
     },
     {
       "test_id": "SEL-0288",
@@ -2760,7 +2760,7 @@
       "test_name": "test_signup_rejects_weak_password[too_short]",
       "status": "passed",
       "priority": "high",
-      "duration_s": 0.635
+      "duration_s": 0.584
     },
     {
       "test_id": "SEL-0289",
@@ -2769,7 +2769,7 @@
       "test_name": "test_signup_rejects_invalid_email[not-an-email]",
       "status": "passed",
       "priority": "high",
-      "duration_s": 0.696
+      "duration_s": 0.658
     },
     {
       "test_id": "SEL-0290",
@@ -2778,7 +2778,7 @@
       "test_name": "test_signup_rejects_invalid_email[missing-domain@]",
       "status": "passed",
       "priority": "high",
-      "duration_s": 0.716
+      "duration_s": 0.646
     },
     {
       "test_id": "SEL-0291",
@@ -2787,7 +2787,7 @@
       "test_name": "test_signup_rejects_invalid_email[@missing-local.com]",
       "status": "passed",
       "priority": "high",
-      "duration_s": 0.708
+      "duration_s": 0.642
     },
     {
       "test_id": "SEL-0292",
@@ -2796,7 +2796,7 @@
       "test_name": "test_signup_rejects_invalid_display_names[disallowed_chars]",
       "status": "passed",
       "priority": "high",
-      "duration_s": 0.719
+      "duration_s": 0.817
     },
     {
       "test_id": "SEL-0293",
@@ -2805,7 +2805,7 @@
       "test_name": "test_signup_rejects_invalid_display_names[too_long]",
       "status": "passed",
       "priority": "high",
-      "duration_s": 0.756
+      "duration_s": 0.783
     },
     {
       "test_id": "SEL-0294",
@@ -2814,7 +2814,7 @@
       "test_name": "test_signup_duplicate_email_rejected",
       "status": "passed",
       "priority": "high",
-      "duration_s": 0.725
+      "duration_s": 0.744
     },
     {
       "test_id": "SEL-0295",
@@ -2823,7 +2823,7 @@
       "test_name": "test_signup_success_shows_check_email",
       "status": "passed",
       "priority": "high",
-      "duration_s": 1.681
+      "duration_s": 1.209
     },
     {
       "test_id": "SEL-0296",
@@ -2832,7 +2832,7 @@
       "test_name": "test_signup_password_field_uses_password_input_type",
       "status": "passed",
       "priority": "high",
-      "duration_s": 0.333
+      "duration_s": 0.269
     },
     {
       "test_id": "SEL-0297",
@@ -2841,7 +2841,7 @@
       "test_name": "test_signup_confirm_password_field_uses_password_input_type",
       "status": "passed",
       "priority": "high",
-      "duration_s": 0.306
+      "duration_s": 0.27
     },
     {
       "test_id": "SEL-0298",
@@ -2850,7 +2850,7 @@
       "test_name": "test_signup_email_field_uses_email_input_type",
       "status": "passed",
       "priority": "high",
-      "duration_s": 0.307
+      "duration_s": 0.244
     },
     {
       "test_id": "SEL-0299",
@@ -2859,7 +2859,7 @@
       "test_name": "test_signup_whitespace_only_display_name_rejected",
       "status": "passed",
       "priority": "high",
-      "duration_s": 0.72
+      "duration_s": 0.637
     },
     {
       "test_id": "SEL-0300",
@@ -2868,7 +2868,7 @@
       "test_name": "test_signup_form_retains_entered_email_after_client_side_rejection",
       "status": "passed",
       "priority": "high",
-      "duration_s": 0.963
+      "duration_s": 0.655
     },
     {
       "test_id": "SEL-0301",
@@ -2877,7 +2877,7 @@
       "test_name": "test_signup_login_link_navigates_to_login",
       "status": "passed",
       "priority": "high",
-      "duration_s": 0.347
+      "duration_s": 0.282
     },
     {
       "test_id": "SEL-0302",
@@ -2886,7 +2886,7 @@
       "test_name": "test_sidebar_visible_at_lg_breakpoint",
       "status": "passed",
       "priority": "medium",
-      "duration_s": 0.415
+      "duration_s": 0.341
     },
     {
       "test_id": "SEL-0303",
@@ -2895,7 +2895,7 @@
       "test_name": "test_sidebar_hidden_below_lg_breakpoint",
       "status": "passed",
       "priority": "medium",
-      "duration_s": 0.404
+      "duration_s": 0.363
     },
     {
       "test_id": "SEL-0304",
@@ -2904,7 +2904,7 @@
       "test_name": "test_mobile_hamburger_visible_below_lg_breakpoint",
       "status": "passed",
       "priority": "medium",
-      "duration_s": 0.443
+      "duration_s": 0.368
     },
     {
       "test_id": "SEL-0305",
@@ -2913,7 +2913,7 @@
       "test_name": "test_mobile_hamburger_hidden_at_lg_breakpoint",
       "status": "passed",
       "priority": "medium",
-      "duration_s": 0.391
+      "duration_s": 0.327
     },
     {
       "test_id": "SEL-0306",
@@ -2922,7 +2922,7 @@
       "test_name": "test_desktop_search_trigger_visible_at_sm_breakpoint",
       "status": "passed",
       "priority": "medium",
-      "duration_s": 0.432
+      "duration_s": 0.359
     },
     {
       "test_id": "SEL-0307",
@@ -2931,7 +2931,7 @@
       "test_name": "test_mobile_search_icon_visible_below_sm_breakpoint",
       "status": "passed",
       "priority": "medium",
-      "duration_s": 0.421
+      "duration_s": 0.354
     },
     {
       "test_id": "SEL-0308",
@@ -2940,7 +2940,7 @@
       "test_name": "test_landing_page_no_horizontal_overflow_at_narrow_width",
       "status": "passed",
       "priority": "medium",
-      "duration_s": 0.438
+      "duration_s": 0.411
     },
     {
       "test_id": "SEL-0309",
@@ -2949,7 +2949,7 @@
       "test_name": "test_dashboard_no_horizontal_overflow_at_narrow_width",
       "status": "passed",
       "priority": "medium",
-      "duration_s": 0.476
+      "duration_s": 0.451
     },
     {
       "test_id": "SEL-0310",
@@ -2958,7 +2958,7 @@
       "test_name": "test_no_horizontal_overflow_at_narrow_width[/history]",
       "status": "passed",
       "priority": "medium",
-      "duration_s": 0.39
+      "duration_s": 0.355
     },
     {
       "test_id": "SEL-0311",
@@ -2967,7 +2967,7 @@
       "test_name": "test_no_horizontal_overflow_at_narrow_width[/notifications]",
       "status": "passed",
       "priority": "medium",
-      "duration_s": 0.453
+      "duration_s": 0.372
     },
     {
       "test_id": "SEL-0312",
@@ -2976,7 +2976,7 @@
       "test_name": "test_no_horizontal_overflow_at_narrow_width[/help]",
       "status": "passed",
       "priority": "medium",
-      "duration_s": 0.364
+      "duration_s": 0.347
     },
     {
       "test_id": "SEL-0313",
@@ -2985,7 +2985,7 @@
       "test_name": "test_no_horizontal_overflow_at_narrow_width[/feedback]",
       "status": "passed",
       "priority": "medium",
-      "duration_s": 0.389
+      "duration_s": 0.375
     },
     {
       "test_id": "SEL-0314",
@@ -2994,7 +2994,7 @@
       "test_name": "test_no_horizontal_overflow_at_narrow_width[/scan/new]",
       "status": "passed",
       "priority": "medium",
-      "duration_s": 0.391
+      "duration_s": 0.373
     },
     {
       "test_id": "SEL-0315",
@@ -3003,7 +3003,7 @@
       "test_name": "test_no_horizontal_overflow_at_narrow_width[/settings/profile]",
       "status": "passed",
       "priority": "medium",
-      "duration_s": 0.401
+      "duration_s": 0.593
     },
     {
       "test_id": "SEL-0316",
@@ -3012,7 +3012,7 @@
       "test_name": "test_no_horizontal_overflow_at_narrow_width[/settings/account]",
       "status": "passed",
       "priority": "medium",
-      "duration_s": 0.403
+      "duration_s": 0.49
     },
     {
       "test_id": "SEL-0317",
@@ -3021,7 +3021,7 @@
       "test_name": "test_no_horizontal_overflow_at_narrow_width[/settings/appearance]",
       "status": "passed",
       "priority": "medium",
-      "duration_s": 0.409
+      "duration_s": 0.431
     },
     {
       "test_id": "SEL-0318",
@@ -3030,7 +3030,7 @@
       "test_name": "test_guest_route_no_horizontal_overflow_at_narrow_width[/login]",
       "status": "passed",
       "priority": "medium",
-      "duration_s": 0.303
+      "duration_s": 0.276
     },
     {
       "test_id": "SEL-0319",
@@ -3039,7 +3039,7 @@
       "test_name": "test_guest_route_no_horizontal_overflow_at_narrow_width[/signup]",
       "status": "passed",
       "priority": "medium",
-      "duration_s": 0.297
+      "duration_s": 0.285
     },
     {
       "test_id": "SEL-0320",
@@ -3048,7 +3048,7 @@
       "test_name": "test_guest_route_no_horizontal_overflow_at_narrow_width[/forgot-password]",
       "status": "passed",
       "priority": "medium",
-      "duration_s": 0.3
+      "duration_s": 0.258
     },
     {
       "test_id": "SEL-0321",
@@ -3057,7 +3057,7 @@
       "test_name": "test_breadcrumb_hidden_below_sm_breakpoint",
       "status": "passed",
       "priority": "medium",
-      "duration_s": 0.408
+      "duration_s": 0.391
     },
     {
       "test_id": "SEL-0322",
@@ -3066,7 +3066,7 @@
       "test_name": "test_breadcrumb_visible_at_sm_breakpoint",
       "status": "passed",
       "priority": "medium",
-      "duration_s": 0.412
+      "duration_s": 0.387
     },
     {
       "test_id": "SEL-0323",
@@ -3075,7 +3075,7 @@
       "test_name": "test_history_no_horizontal_overflow_at_sm_breakpoint",
       "status": "passed",
       "priority": "medium",
-      "duration_s": 0.392
+      "duration_s": 0.341
     },
     {
       "test_id": "SEL-0324",
@@ -3084,7 +3084,7 @@
       "test_name": "test_sidebar_still_hidden_at_md_breakpoint",
       "status": "passed",
       "priority": "medium",
-      "duration_s": 0.614
+      "duration_s": 0.386
     },
     {
       "test_id": "SEL-0325",
@@ -3093,7 +3093,7 @@
       "test_name": "test_hamburger_still_visible_at_md_breakpoint",
       "status": "passed",
       "priority": "medium",
-      "duration_s": 1.072
+      "duration_s": 0.383
     },
     {
       "test_id": "SEL-0326",
@@ -3102,7 +3102,7 @@
       "test_name": "test_desktop_search_trigger_visible_at_md_breakpoint",
       "status": "passed",
       "priority": "medium",
-      "duration_s": 0.479
+      "duration_s": 0.38
     },
     {
       "test_id": "SEL-0327",
@@ -3111,7 +3111,7 @@
       "test_name": "test_breadcrumb_visible_at_md_breakpoint",
       "status": "passed",
       "priority": "medium",
-      "duration_s": 0.457
+      "duration_s": 0.367
     },
     {
       "test_id": "SEL-0328",
@@ -3120,7 +3120,7 @@
       "test_name": "test_settings_no_horizontal_overflow_at_narrow_width",
       "status": "passed",
       "priority": "medium",
-      "duration_s": 0.402
+      "duration_s": 0.343
     },
     {
       "test_id": "SEL-0329",
@@ -3129,7 +3129,7 @@
       "test_name": "test_notifications_no_horizontal_overflow_at_md_breakpoint",
       "status": "passed",
       "priority": "medium",
-      "duration_s": 0.41
+      "duration_s": 0.381
     },
     {
       "test_id": "SEL-0330",
@@ -3138,7 +3138,7 @@
       "test_name": "test_new_scan_page_shows_upload_dropzone",
       "status": "passed",
       "priority": "high",
-      "duration_s": 0.353
+      "duration_s": 0.311
     },
     {
       "test_id": "SEL-0331",
@@ -3147,7 +3147,7 @@
       "test_name": "test_scan_processing_without_id_redirects_to_new_scan",
       "status": "passed",
       "priority": "high",
-      "duration_s": 0.329
+      "duration_s": 0.286
     },
     {
       "test_id": "SEL-0332",
@@ -3156,7 +3156,7 @@
       "test_name": "test_scan_result_unknown_id_shows_not_found",
       "status": "passed",
       "priority": "high",
-      "duration_s": 0.4
+      "duration_s": 0.353
     },
     {
       "test_id": "SEL-0333",
@@ -3165,7 +3165,7 @@
       "test_name": "test_scan_detail_unknown_id_shows_not_found",
       "status": "passed",
       "priority": "high",
-      "duration_s": 0.354
+      "duration_s": 0.33
     },
     {
       "test_id": "SEL-0334",
@@ -3174,7 +3174,7 @@
       "test_name": "test_upload_valid_audio_file_shows_file_card_and_starts_analysis",
       "status": "passed",
       "priority": "high",
-      "duration_s": 1.599
+      "duration_s": 1.565
     },
     {
       "test_id": "SEL-0335",
@@ -3183,7 +3183,7 @@
       "test_name": "test_uploading_duplicate_active_scan_is_rejected",
       "status": "passed",
       "priority": "high",
-      "duration_s": 1.082
+      "duration_s": 1.194
     },
     {
       "test_id": "SEL-0336",
@@ -3192,7 +3192,7 @@
       "test_name": "test_uploaded_scan_appears_in_history",
       "status": "passed",
       "priority": "high",
-      "duration_s": 0.412
+      "duration_s": 0.367
     },
     {
       "test_id": "SEL-0337",
@@ -3201,7 +3201,7 @@
       "test_name": "test_uploaded_scan_result_page_reaches_a_real_state",
       "status": "failed",
       "priority": "high",
-      "duration_s": 22.55
+      "duration_s": 22.69
     },
     {
       "test_id": "SEL-0338",
@@ -3210,7 +3210,7 @@
       "test_name": "test_uploaded_scan_detail_page_reaches_a_real_state",
       "status": "passed",
       "priority": "high",
-      "duration_s": 7.363
+      "duration_s": 7.408
     },
     {
       "test_id": "SEL-0339",
@@ -3219,7 +3219,7 @@
       "test_name": "test_new_scan_page_reachable_directly_via_url",
       "status": "passed",
       "priority": "high",
-      "duration_s": 0.375
+      "duration_s": 0.323
     },
     {
       "test_id": "SEL-0340",
@@ -3228,7 +3228,7 @@
       "test_name": "test_new_scan_analyze_button_absent_before_file_selected",
       "status": "passed",
       "priority": "high",
-      "duration_s": 2.353
+      "duration_s": 2.329
     },
     {
       "test_id": "SEL-0341",
@@ -3237,7 +3237,7 @@
       "test_name": "test_new_scan_remove_or_cancel_control_absent_before_file_selected",
       "status": "passed",
       "priority": "high",
-      "duration_s": 17.476
+      "duration_s": 17.498
     },
     {
       "test_id": "SEL-0342",
@@ -3246,7 +3246,7 @@
       "test_name": "test_scan_processing_with_id_stays_on_processing_page",
       "status": "passed",
       "priority": "high",
-      "duration_s": 0.357
+      "duration_s": 0.31
     },
     {
       "test_id": "SEL-0343",
@@ -3255,7 +3255,7 @@
       "test_name": "test_scan_result_page_has_start_new_scan_link_when_not_found",
       "status": "passed",
       "priority": "high",
-      "duration_s": 0.408
+      "duration_s": 0.376
     },
     {
       "test_id": "SEL-0344",
@@ -3264,7 +3264,7 @@
       "test_name": "test_scan_result_not_found_state_has_no_view_history_link",
       "status": "passed",
       "priority": "high",
-      "duration_s": 2.391
+      "duration_s": 2.366
     },
     {
       "test_id": "SEL-0345",
@@ -3273,7 +3273,7 @@
       "test_name": "test_scan_result_start_new_scan_link_navigates",
       "status": "passed",
       "priority": "high",
-      "duration_s": 0.51
+      "duration_s": 0.487
     },
     {
       "test_id": "SEL-0346",
@@ -3282,7 +3282,7 @@
       "test_name": "test_scan_detail_back_to_history_link_navigates",
       "status": "passed",
       "priority": "high",
-      "duration_s": 0.503
+      "duration_s": 0.442
     },
     {
       "test_id": "SEL-0347",
@@ -3291,7 +3291,7 @@
       "test_name": "test_new_scan_rejects_non_audio_file_client_side",
       "status": "passed",
       "priority": "high",
-      "duration_s": 0.41
+      "duration_s": 0.392
     },
     {
       "test_id": "SEL-0348",
@@ -3300,7 +3300,7 @@
       "test_name": "test_duplicate_upload_rejection_can_be_triggered_more_than_once",
       "status": "passed",
       "priority": "high",
-      "duration_s": 1.115
+      "duration_s": 1.034
     },
     {
       "test_id": "SEL-0349",
@@ -3309,7 +3309,7 @@
       "test_name": "test_authguard_redirects_unauthenticated_user_to_login[/dashboard]",
       "status": "passed",
       "priority": "critical",
-      "duration_s": 0.274
+      "duration_s": 0.234
     },
     {
       "test_id": "SEL-0350",
@@ -3318,7 +3318,7 @@
       "test_name": "test_authguard_redirects_unauthenticated_user_to_login[/history]",
       "status": "passed",
       "priority": "critical",
-      "duration_s": 0.274
+      "duration_s": 0.241
     },
     {
       "test_id": "SEL-0351",
@@ -3327,7 +3327,7 @@
       "test_name": "test_authguard_redirects_unauthenticated_user_to_login[/settings/profile]",
       "status": "passed",
       "priority": "critical",
-      "duration_s": 0.278
+      "duration_s": 0.245
     },
     {
       "test_id": "SEL-0352",
@@ -3336,7 +3336,7 @@
       "test_name": "test_authguard_redirects_unauthenticated_user_to_login[/feedback]",
       "status": "passed",
       "priority": "critical",
-      "duration_s": 0.279
+      "duration_s": 0.238
     },
     {
       "test_id": "SEL-0353",
@@ -3345,7 +3345,7 @@
       "test_name": "test_authguard_redirects_unauthenticated_user_to_login[/scan/new]",
       "status": "passed",
       "priority": "critical",
-      "duration_s": 0.287
+      "duration_s": 0.237
     },
     {
       "test_id": "SEL-0354",
@@ -3354,7 +3354,7 @@
       "test_name": "test_authguard_redirects_unauthenticated_user_to_login[/scan/processing]",
       "status": "passed",
       "priority": "critical",
-      "duration_s": 0.27
+      "duration_s": 0.255
     },
     {
       "test_id": "SEL-0355",
@@ -3363,7 +3363,7 @@
       "test_name": "test_authguard_redirects_unauthenticated_user_to_login[/notifications]",
       "status": "passed",
       "priority": "critical",
-      "duration_s": 0.269
+      "duration_s": 0.239
     },
     {
       "test_id": "SEL-0356",
@@ -3372,7 +3372,7 @@
       "test_name": "test_authguard_redirects_unauthenticated_user_to_login[/help]",
       "status": "passed",
       "priority": "critical",
-      "duration_s": 0.296
+      "duration_s": 0.254
     },
     {
       "test_id": "SEL-0357",
@@ -3381,7 +3381,7 @@
       "test_name": "test_authguard_redirects_unauthenticated_user_to_login[/settings/account]",
       "status": "passed",
       "priority": "critical",
-      "duration_s": 0.291
+      "duration_s": 0.246
     },
     {
       "test_id": "SEL-0358",
@@ -3390,7 +3390,7 @@
       "test_name": "test_authguard_redirects_unauthenticated_user_to_login[/settings/appearance]",
       "status": "passed",
       "priority": "critical",
-      "duration_s": 0.279
+      "duration_s": 0.248
     },
     {
       "test_id": "SEL-0359",
@@ -3399,7 +3399,7 @@
       "test_name": "test_guestguard_redirects_authenticated_user_away[/login]",
       "status": "passed",
       "priority": "critical",
-      "duration_s": 0.834
+      "duration_s": 0.755
     },
     {
       "test_id": "SEL-0360",
@@ -3408,7 +3408,7 @@
       "test_name": "test_guestguard_redirects_authenticated_user_away[/signup]",
       "status": "passed",
       "priority": "critical",
-      "duration_s": 0.91
+      "duration_s": 0.654
     },
     {
       "test_id": "SEL-0361",
@@ -3417,7 +3417,7 @@
       "test_name": "test_guestguard_redirects_authenticated_user_away[/forgot-password]",
       "status": "passed",
       "priority": "critical",
-      "duration_s": 1.052
+      "duration_s": 0.805
     },
     {
       "test_id": "SEL-0362",
@@ -3426,7 +3426,7 @@
       "test_name": "test_guestguard_redirects_authenticated_user_away[/reset-password]",
       "status": "passed",
       "priority": "critical",
-      "duration_s": 1.141
+      "duration_s": 0.647
     },
     {
       "test_id": "SEL-0363",
@@ -3435,7 +3435,7 @@
       "test_name": "test_authguard_allows_authenticated_user_through[/dashboard]",
       "status": "passed",
       "priority": "critical",
-      "duration_s": 0.655
+      "duration_s": 0.591
     },
     {
       "test_id": "SEL-0364",
@@ -3444,7 +3444,7 @@
       "test_name": "test_authguard_allows_authenticated_user_through[/history]",
       "status": "passed",
       "priority": "critical",
-      "duration_s": 0.367
+      "duration_s": 0.525
     },
     {
       "test_id": "SEL-0365",
@@ -3453,7 +3453,7 @@
       "test_name": "test_authguard_allows_authenticated_user_through[/settings/profile]",
       "status": "passed",
       "priority": "critical",
-      "duration_s": 0.362
+      "duration_s": 0.357
     },
     {
       "test_id": "SEL-0366",
@@ -3462,7 +3462,7 @@
       "test_name": "test_authguard_allows_authenticated_user_through[/feedback]",
       "status": "passed",
       "priority": "critical",
-      "duration_s": 0.323
+      "duration_s": 0.288
     },
     {
       "test_id": "SEL-0367",
@@ -3471,7 +3471,7 @@
       "test_name": "test_authguard_allows_authenticated_user_through[/scan/new]",
       "status": "passed",
       "priority": "critical",
-      "duration_s": 0.342
+      "duration_s": 0.304
     },
     {
       "test_id": "SEL-0368",
@@ -3480,7 +3480,7 @@
       "test_name": "test_authguard_allows_authenticated_user_through[/scan/processing]",
       "status": "passed",
       "priority": "critical",
-      "duration_s": 0.329
+      "duration_s": 0.283
     },
     {
       "test_id": "SEL-0369",
@@ -3489,7 +3489,7 @@
       "test_name": "test_authguard_allows_authenticated_user_through[/notifications]",
       "status": "passed",
       "priority": "critical",
-      "duration_s": 0.385
+      "duration_s": 0.341
     },
     {
       "test_id": "SEL-0370",
@@ -3498,7 +3498,7 @@
       "test_name": "test_authguard_allows_authenticated_user_through[/help]",
       "status": "passed",
       "priority": "critical",
-      "duration_s": 0.331
+      "duration_s": 0.29
     },
     {
       "test_id": "SEL-0371",
@@ -3507,7 +3507,7 @@
       "test_name": "test_authguard_allows_authenticated_user_through[/settings/account]",
       "status": "passed",
       "priority": "critical",
-      "duration_s": 0.351
+      "duration_s": 0.318
     },
     {
       "test_id": "SEL-0372",
@@ -3516,7 +3516,7 @@
       "test_name": "test_authguard_allows_authenticated_user_through[/settings/appearance]",
       "status": "passed",
       "priority": "critical",
-      "duration_s": 0.327
+      "duration_s": 0.284
     },
     {
       "test_id": "SEL-0373",
@@ -3525,7 +3525,7 @@
       "test_name": "test_unguarded_route_reachable_without_login[/]",
       "status": "passed",
       "priority": "critical",
-      "duration_s": 0.386
+      "duration_s": 0.335
     },
     {
       "test_id": "SEL-0374",
@@ -3534,7 +3534,7 @@
       "test_name": "test_unguarded_route_reachable_without_login[/verify-email]",
       "status": "passed",
       "priority": "critical",
-      "duration_s": 0.253
+      "duration_s": 0.221
     },
     {
       "test_id": "SEL-0375",
@@ -3543,7 +3543,7 @@
       "test_name": "test_unguarded_route_reachable_while_authenticated[/]",
       "status": "passed",
       "priority": "critical",
-      "duration_s": 0.397
+      "duration_s": 0.344
     },
     {
       "test_id": "SEL-0376",
@@ -3552,16 +3552,16 @@
       "test_name": "test_unguarded_route_reachable_while_authenticated[/verify-email]",
       "status": "passed",
       "priority": "critical",
-      "duration_s": 0.259
+      "duration_s": 0.228
     },
     {
       "test_id": "SEL-0377",
       "nodeid": "tests/test_session_guards.py::test_sign_out_clears_session_and_blocks_protected_routes",
       "module": "session_guards",
       "test_name": "test_sign_out_clears_session_and_blocks_protected_routes",
-      "status": "failed",
+      "status": "passed",
       "priority": "critical",
-      "duration_s": 16.67
+      "duration_s": 3.53
     },
     {
       "test_id": "SEL-0378",
@@ -3570,7 +3570,7 @@
       "test_name": "test_profile_page_prefills_current_display_name",
       "status": "passed",
       "priority": "medium",
-      "duration_s": 0.437
+      "duration_s": 0.346
     },
     {
       "test_id": "SEL-0379",
@@ -3579,7 +3579,7 @@
       "test_name": "test_profile_save_button_disabled_until_dirty",
       "status": "passed",
       "priority": "medium",
-      "duration_s": 0.426
+      "duration_s": 0.328
     },
     {
       "test_id": "SEL-0380",
@@ -3588,7 +3588,7 @@
       "test_name": "test_profile_rejects_disallowed_display_name_characters",
       "status": "passed",
       "priority": "medium",
-      "duration_s": 0.628
+      "duration_s": 0.572
     },
     {
       "test_id": "SEL-0381",
@@ -3597,7 +3597,7 @@
       "test_name": "test_profile_rejects_display_name_too_long",
       "status": "passed",
       "priority": "medium",
-      "duration_s": 0.812
+      "duration_s": 0.605
     },
     {
       "test_id": "SEL-0382",
@@ -3606,7 +3606,7 @@
       "test_name": "test_account_page_shows_current_email",
       "status": "passed",
       "priority": "medium",
-      "duration_s": 0.391
+      "duration_s": 0.33
     },
     {
       "test_id": "SEL-0383",
@@ -3615,7 +3615,7 @@
       "test_name": "test_account_change_password_rejects_mismatched_confirmation",
       "status": "passed",
       "priority": "medium",
-      "duration_s": 0.782
+      "duration_s": 1.277
     },
     {
       "test_id": "SEL-0384",
@@ -3624,7 +3624,7 @@
       "test_name": "test_account_change_password_rejects_weak_new_password[no_digit]",
       "status": "passed",
       "priority": "medium",
-      "duration_s": 0.762
+      "duration_s": 0.785
     },
     {
       "test_id": "SEL-0385",
@@ -3633,7 +3633,7 @@
       "test_name": "test_account_change_password_rejects_weak_new_password[no_lowercase]",
       "status": "passed",
       "priority": "medium",
-      "duration_s": 0.767
+      "duration_s": 0.78
     },
     {
       "test_id": "SEL-0386",
@@ -3642,7 +3642,7 @@
       "test_name": "test_account_change_password_rejects_weak_new_password[no_special]",
       "status": "passed",
       "priority": "medium",
-      "duration_s": 0.747
+      "duration_s": 0.768
     },
     {
       "test_id": "SEL-0387",
@@ -3651,7 +3651,7 @@
       "test_name": "test_account_change_password_rejects_weak_new_password[no_uppercase]",
       "status": "passed",
       "priority": "medium",
-      "duration_s": 0.751
+      "duration_s": 0.771
     },
     {
       "test_id": "SEL-0388",
@@ -3660,7 +3660,7 @@
       "test_name": "test_account_change_password_rejects_weak_new_password[too_short]",
       "status": "passed",
       "priority": "medium",
-      "duration_s": 1.056
+      "duration_s": 0.715
     },
     {
       "test_id": "SEL-0389",
@@ -3669,7 +3669,7 @@
       "test_name": "test_appearance_page_renders_theme_options",
       "status": "passed",
       "priority": "medium",
-      "duration_s": 0.419
+      "duration_s": 0.384
     },
     {
       "test_id": "SEL-0390",
@@ -3678,7 +3678,7 @@
       "test_name": "test_appearance_theme_selection_updates_active_state",
       "status": "passed",
       "priority": "medium",
-      "duration_s": 0.443
+      "duration_s": 0.401
     },
     {
       "test_id": "SEL-0391",
@@ -3687,7 +3687,7 @@
       "test_name": "test_appearance_nav_density_toggle_is_idempotent",
       "status": "passed",
       "priority": "medium",
-      "duration_s": 0.622
+      "duration_s": 0.578
     },
     {
       "test_id": "SEL-0392",
@@ -3696,7 +3696,7 @@
       "test_name": "test_settings_default_route_redirects_to_profile",
       "status": "passed",
       "priority": "medium",
-      "duration_s": 0.365
+      "duration_s": 0.324
     },
     {
       "test_id": "SEL-0393",
@@ -3705,7 +3705,7 @@
       "test_name": "test_settings_tabs_nav_visible_on_profile_page",
       "status": "passed",
       "priority": "medium",
-      "duration_s": 0.383
+      "duration_s": 0.338
     },
     {
       "test_id": "SEL-0394",
@@ -3714,7 +3714,7 @@
       "test_name": "test_settings_tabs_nav_visible_on_account_page",
       "status": "passed",
       "priority": "medium",
-      "duration_s": 0.377
+      "duration_s": 0.323
     },
     {
       "test_id": "SEL-0395",
@@ -3723,16 +3723,16 @@
       "test_name": "test_settings_tabs_nav_visible_on_appearance_page",
       "status": "passed",
       "priority": "medium",
-      "duration_s": 0.363
+      "duration_s": 0.32
     },
     {
       "test_id": "SEL-0396",
       "nodeid": "tests/test_settings.py::test_account_change_password_wrong_current_password_returns_401_and_logs_out",
       "module": "settings",
       "test_name": "test_account_change_password_wrong_current_password_returns_401_and_logs_out",
-      "status": "failed",
+      "status": "passed",
       "priority": "medium",
-      "duration_s": 16.664
+      "duration_s": 3.72
     },
     {
       "test_id": "SEL-0397",
@@ -3741,7 +3741,7 @@
       "test_name": "test_profile_display_name_input_has_real_value_attribute",
       "status": "passed",
       "priority": "medium",
-      "duration_s": 0.424
+      "duration_s": 0.327
     },
     {
       "test_id": "SEL-0398",
@@ -3750,7 +3750,7 @@
       "test_name": "test_appearance_light_theme_selection_updates_active_state",
       "status": "passed",
       "priority": "medium",
-      "duration_s": 0.596
+      "duration_s": 0.488
     },
     {
       "test_id": "SEL-0399",
@@ -3759,7 +3759,7 @@
       "test_name": "test_appearance_system_theme_selection_updates_active_state",
       "status": "passed",
       "priority": "medium",
-      "duration_s": 0.506
+      "duration_s": 0.38
     },
     {
       "test_id": "SEL-0400",
@@ -3768,7 +3768,7 @@
       "test_name": "test_account_new_password_and_confirm_fields_use_password_input_type",
       "status": "passed",
       "priority": "medium",
-      "duration_s": 0.405
+      "duration_s": 0.349
     },
     {
       "test_id": "SEL-0401",
@@ -3777,7 +3777,7 @@
       "test_name": "test_settings_tab_nav_link_from_profile_to_account",
       "status": "passed",
       "priority": "medium",
-      "duration_s": 0.485
+      "duration_s": 0.443
     },
     {
       "test_id": "SEL-0402",
@@ -3786,7 +3786,7 @@
       "test_name": "test_settings_tab_nav_link_from_account_to_appearance",
       "status": "passed",
       "priority": "medium",
-      "duration_s": 0.425
+      "duration_s": 0.423
     },
     {
       "test_id": "SEL-0403",
@@ -3795,7 +3795,7 @@
       "test_name": "test_settings_tab_nav_link_from_appearance_to_profile",
       "status": "passed",
       "priority": "medium",
-      "duration_s": 0.457
+      "duration_s": 0.398
     },
     {
       "test_id": "SEL-0404",
@@ -3804,7 +3804,7 @@
       "test_name": "test_shared_result_unknown_scan_shows_unavailable",
       "status": "passed",
       "priority": "medium",
-      "duration_s": 0.382
+      "duration_s": 0.398
     },
     {
       "test_id": "SEL-0405",
@@ -3813,7 +3813,7 @@
       "test_name": "test_shared_result_go_to_voiceguard_link_navigates_home",
       "status": "passed",
       "priority": "medium",
-      "duration_s": 0.607
+      "duration_s": 0.451
     },
     {
       "test_id": "SEL-0406",
@@ -3822,7 +3822,7 @@
       "test_name": "test_shared_result_page_requires_no_login",
       "status": "passed",
       "priority": "medium",
-      "duration_s": 0.324
+      "duration_s": 0.31
     },
     {
       "test_id": "SEL-0407",
@@ -3831,7 +3831,7 @@
       "test_name": "test_shared_result_reachable_while_authenticated_too",
       "status": "passed",
       "priority": "medium",
-      "duration_s": 0.471
+      "duration_s": 0.326
     },
     {
       "test_id": "SEL-0408",
@@ -3840,7 +3840,7 @@
       "test_name": "test_shared_result_malformed_scan_id_still_shows_unavailable",
       "status": "passed",
       "priority": "medium",
-      "duration_s": 0.348
+      "duration_s": 0.34
     },
     {
       "test_id": "SEL-0409",
@@ -3849,51 +3849,21 @@
       "test_name": "test_shared_result_go_to_voiceguard_link_has_href_to_root",
       "status": "passed",
       "priority": "medium",
-      "duration_s": 0.47
+      "duration_s": 0.45
     }
   ],
   "failed_tests": [
     {
-      "nodeid": "tests/test_auth.py::test_dashboard_reload_does_not_re_trigger_login_redirect",
+      "nodeid": "tests/test_auth.py::test_verify_email_page_survives_direct_reload",
       "module": "auth",
       "reason": null,
-      "duration_s": 0.986
-    },
-    {
-      "nodeid": "tests/test_error_handling.py::test_shared_result_malformed_id_shows_unavailable[not-a-uuid]",
-      "module": "error_handling",
-      "reason": null,
-      "duration_s": 3.259
-    },
-    {
-      "nodeid": "tests/test_error_handling.py::test_dashboard_survives_rapid_repeated_navigation",
-      "module": "error_handling",
-      "reason": null,
-      "duration_s": 1.417
-    },
-    {
-      "nodeid": "tests/test_keyboard_navigation.py::test_login_keyboard_only_fill_and_enter_submits",
-      "module": "keyboard_navigation",
-      "reason": "unauthenticated_driver = <conftest.ResilientDriver object at 0x7fc38d2fa870>\nbase_url = 'http://localhost:5173'\n\n    def test_login_keyboard_only_fill_and_enter_submits(unauthenticated_driver, base_url):\n        # The one real login submission in this file (a real POST /auth/login,\n        # re-authenticating the shared session) \u2014 deliberately just this one,\n        # not per-test, given the backend's real login rate limit (see\n        # conftest.py's authenticated_driver docstring).\n        page = BasePage(unauthenticated_driver, base_url)\n        page.goto(\"/login\")\n        page.find(By.ID, \"email\").send_keys(FIXTURE_USER[\"email\"])\n        # Real tab order confirmed live: email -> \"Forgot password?\" link (it\n        # sits between the password label and the password input in the DOM,\n        # Login/index.tsx) -> password. A single Tab lands on the link, not the\n        # password field \u2014 sending Enter there navigates to /forgot-password\n        # instead of submitting. Tab until the real password field has focus\n        # (bounded, mirrors _tab_to_ids' approach) rather than assuming a fixed\n        # hop count.\n        for _ in range(4):\n            unauthenticated_driver.switch_to.active_element.send_keys(Keys.TAB)\n            if unauthenticated_driver.switch_to.active_element.get_attribute(\"id\") == \"password\":\n                break\n        else:\n            raise AssertionError(\"password field was not reached via Tab from email within 4 tabs\")\n        unauthenticated_driver.switch_to.active_element.send_keys(FIXTURE_USER[\"password\"])\n        unauthenticated_driver.switch_to.active_element.send_keys(Keys.ENTER)\n>       WebDriverWait(unauthenticated_driver, 15).until(EC.url_contains(\"/dashboard\"))\n\ntests/test_keyboard_navigation.py:106: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\nself = <selenium.webdriver.support.wait.WebDriverWait (session=\"8f335e4c5c1cdfa6c023b4ce5cbf8b97\")>\nmethod = <function url_contains.<locals>._predi\u2026 (truncated)",
-      "duration_s": 15.649
+      "duration_s": 0.542
     },
     {
       "nodeid": "tests/test_scan_flow.py::test_uploaded_scan_result_page_reaches_a_real_state",
       "module": "scan_flow",
-      "reason": "authenticated_driver = <conftest.ResilientDriver object at 0x7fc38d2fa870>\nbase_url = 'http://localhost:5173'\n\n    def test_uploaded_scan_result_page_reaches_a_real_state(authenticated_driver, base_url):\n        assert _state.get(\"scan_id\"), \"must run after test_upload_valid_audio_file_...\"\n        page = ScanResultPage(authenticated_driver, base_url)\n        page.goto_result(_state[\"scan_id\"])\n        # Inference timing/availability isn't something this suite controls\n        # (CPU-bound model, see project memory on LCNN CPU inference) \u2014 accept\n        # either real terminal outcome: a rendered verdict, or the page routing\n        # back to /scan/processing because it isn't complete yet.\n>       WebDriverWait(authenticated_driver, 20).until(\n            lambda d: \"/scan/processing\" in d.current_url or page.is_visible(*page.VERDICT_HEADING, timeout=1)\n        )\n\ntests/test_scan_flow.py:154: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\nself = <selenium.webdriver.support.wait.WebDriverWait (session=\"8f335e4c5c1cdfa6c023b4ce5cbf8b97\")>\nmethod = <function test_uploaded_scan_result_page_reaches_a_real_state.<locals>.<lambda> at 0x7fc38c1c7600>\nmessage = ''\n\n    def until(self, method: Callable[[D], Literal[False] | T], message: str = \"\") -> T:\n        \"\"\"Wait until the method returns a value that is not False.\n    \n        Calls the method provided with the driver as an argument until the\n        return value does not evaluate to ``False``.\n    \n        Args:\n            method: A callable object that takes a WebDriver instance as an\n                argument.\n            message: Optional message for TimeoutException.\n    \n        Returns:\n            The result of the last call to `method`.\n    \n        Raises:\n            TimeoutException: If 'method' does not return a truthy value within\n                the WebDriverWait object's timeout.\n    \n        Example:\n            >>> from selenium.webdriver.common.by import By\n          \u2026 (truncated)",
-      "duration_s": 22.55
-    },
-    {
-      "nodeid": "tests/test_session_guards.py::test_sign_out_clears_session_and_blocks_protected_routes",
-      "module": "session_guards",
-      "reason": "base_url = 'http://localhost:5173'\n\n    def test_sign_out_clears_session_and_blocks_protected_routes(base_url):\n        # A dedicated, isolated Chrome session (not the shared session-scoped\n        # `driver` fixture) -- this is the one real logout+re-guard round trip\n        # in the whole suite, deliberately using SECOND_FIXTURE_USER rather than\n        # FIXTURE_USER so a real logout here can never race or interfere with\n        # any other test's shared-session login state. One extra real login is\n        # well within the backend's default 10/hour/IP budget alongside the\n        # single shared authenticated_driver login (see conftest.py).\n        options = Options()\n        options.add_argument(\"--headless=new\")\n        options.add_argument(\"--window-size=1440,900\")\n        options.add_argument(\"--disable-gpu\")\n        options.add_argument(\"--no-sandbox\")\n        drv = webdriver.Chrome(options=options)\n        try:\n            page = BasePage(drv, base_url)\n            page.goto(\"/login\")\n            page.fill_id(\"email\", SECOND_FIXTURE_USER[\"email\"])\n            page.fill_id(\"password\", SECOND_FIXTURE_USER[\"password\"])\n            page.submit()\n>           page.wait_url_contains(\"/dashboard\")\n\ntests/test_session_guards.py:128: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \npages/base_page.py:38: in wait_url_contains\n    WebDriverWait(self.driver, timeout).until(EC.url_contains(fragment))\n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\nself = <selenium.webdriver.support.wait.WebDriverWait (session=\"8a021679813f374045fc251a18cf97a0\")>\nmethod = <function url_contains.<locals>._predicate at 0x7fc38c20ed40>\nmessage = ''\n\n    def until(self, method: Callable[[D], Literal[False] | T], message: str = \"\") -> T:\n        \"\"\"Wait until the method returns a value that is not False.\n    \n        Calls the method provided with the driver as an argument until the\n        return value does not evaluate to ``\u2026 (truncated)",
-      "duration_s": 16.67
-    },
-    {
-      "nodeid": "tests/test_settings.py::test_account_change_password_wrong_current_password_returns_401_and_logs_out",
-      "module": "settings",
-      "reason": "base_url = 'http://localhost:5173'\n\n    def test_account_change_password_wrong_current_password_returns_401_and_logs_out(base_url):\n        # Dedicated, isolated Chrome session (not the shared authenticated_driver\n        # fixture) -- this test's real, confirmed effect is a full session\n        # logout, which would otherwise wreck every later test's assumption that\n        # authenticated_driver stays logged in (same reasoning as\n        # test_session_guards.py's isolated sign-out test). Uses\n        # SECOND_FIXTURE_USER for the same reason.\n        #\n        # Real, confirmed current behavior -- NOT the originally-expected \"stay\n        # on the account page with a field error\": api/auth/service.py's\n        # change_password() raises InvalidCredentialsError for a wrong current\n        # password, which maps to a 401. frontend/src/services/api.ts's global\n        # response interceptor treats *every* 401 as an expired/invalid session\n        # (dispatches `vg:unauthorized`, which the auth store handles by\n        # clearing the session), not specifically a \"your current password\n        # field was wrong\" signal. The practical effect: mistyping your current\n        # password while trying to change it logs you out of your whole\n        # session instead of showing an inline field error. Documented here as\n        # a real product-behavior quirk this suite verifies rather than\n        # silently working around; not something this Selenium-suite task\n        # should unilaterally change in the backend/frontend.\n        options = Options()\n        options.add_argument(\"--headless=new\")\n        options.add_argument(\"--window-size=1440,900\")\n        options.add_argument(\"--disable-gpu\")\n        options.add_argument(\"--no-sandbox\")\n        drv = webdriver.Chrome(options=options)\n        try:\n            page = BasePage(drv, base_url)\n            page.goto(\"/login\")\n            page.fill_id(\"email\", SECOND_FIXTURE_USER[\"email\"])\n            page.fill_id(\"password\", SE\u2026 (truncated)",
-      "duration_s": 16.664
+      "reason": "authenticated_driver = <conftest.ResilientDriver object at 0x7f5f161fa300>\nbase_url = 'http://localhost:5173'\n\n    def test_uploaded_scan_result_page_reaches_a_real_state(authenticated_driver, base_url):\n        assert _state.get(\"scan_id\"), \"must run after test_upload_valid_audio_file_...\"\n        page = ScanResultPage(authenticated_driver, base_url)\n        page.goto_result(_state[\"scan_id\"])\n        # Inference timing/availability isn't something this suite controls\n        # (CPU-bound model, see project memory on LCNN CPU inference) \u2014 accept\n        # either real terminal outcome: a rendered verdict, or the page routing\n        # back to /scan/processing because it isn't complete yet.\n>       WebDriverWait(authenticated_driver, 20).until(\n            lambda d: \"/scan/processing\" in d.current_url or page.is_visible(*page.VERDICT_HEADING, timeout=1)\n        )\n\ntests/test_scan_flow.py:154: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\nself = <selenium.webdriver.support.wait.WebDriverWait (session=\"0cfad0c31b585ee687431f9f531933f9\")>\nmethod = <function test_uploaded_scan_result_page_reaches_a_real_state.<locals>.<lambda> at 0x7f5f15bde5c0>\nmessage = ''\n\n    def until(self, method: Callable[[D], Literal[False] | T], message: str = \"\") -> T:\n        \"\"\"Wait until the method returns a value that is not False.\n    \n        Calls the method provided with the driver as an argument until the\n        return value does not evaluate to ``False``.\n    \n        Args:\n            method: A callable object that takes a WebDriver instance as an\n                argument.\n            message: Optional message for TimeoutException.\n    \n        Returns:\n            The result of the last call to `method`.\n    \n        Raises:\n            TimeoutException: If 'method' does not return a truthy value within\n                the WebDriverWait object's timeout.\n    \n        Example:\n            >>> from selenium.webdriver.common.by import By\n          \u2026 (truncated)",
+      "duration_s": 22.69
     }
   ]
 }
