@@ -172,6 +172,15 @@ def unauthenticated_driver(driver, base_url):
     cookies rather than a real re-login keeps the same rate-limit
     protection authenticated_driver exists for.
     """
+    # Land on a known page/origin before touching cookies, rather than
+    # clearing whatever context the previous test happened to leave the
+    # browser in — real runs of this suite showed GuestGuard-protected
+    # pages (signup, forgot-password) intermittently still landing
+    # authenticated (redirected to /login mid-app-error rather than
+    # rendering the guest form) after this fixture's clear, which points at
+    # get_cookies()/delete_all_cookies() being called against an
+    # inconsistent prior context rather than a clean single-origin state.
+    driver.get(base_url)
     saved_cookies = driver.get_cookies()
     driver.delete_all_cookies()
     yield driver
