@@ -6,6 +6,7 @@ WebDriverWait/EC calls once instead of every page object re-writing them.
 """
 from __future__ import annotations
 
+from selenium.common.exceptions import ElementClickInterceptedException
 from selenium.webdriver.common.by import By
 from selenium.webdriver.remote.webelement import WebElement
 from selenium.webdriver.support import expected_conditions as EC
@@ -69,7 +70,17 @@ class BasePage:
         # visible viewport at click time -- scroll it there explicitly
         # first rather than relying on the click command's own scroll step.
         self.scroll_into_view(element)
-        element.click()
+        try:
+            element.click()
+        except ElementClickInterceptedException:
+            # Scrolling into view isn't always enough (a real CI failure on
+            # a segmented-control button, not a form-overflow case, showed
+            # this persisting even after the scroll above) -- a JS click
+            # dispatches directly to the element instead of doing a
+            # pointer-position hit-test, which is the standard fallback for
+            # a target that genuinely is the right element but has a
+            # benign sibling transiently occupying the same click point.
+            self.driver.execute_script("arguments[0].click();", element)
 
     def tap_id(self, element_id: str, timeout: int = DEFAULT_TIMEOUT) -> None:
         # CSS_SELECTOR, not By.ID: Appium's locator converter passes

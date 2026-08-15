@@ -27,7 +27,12 @@ def test_signup_form_is_usable_via_touch(unauthenticated_driver, base_url):
     page = SignupPage(unauthenticated_driver, base_url)
     page.open()
     page.fill_id("displayName", "Appium QA")
-    assert page.find(*page.DISPLAY_NAME).get_attribute("value") == "Appium QA"
+    # get_property, not get_attribute: React controlled inputs never write
+    # the typed value back onto the raw HTML "value" attribute, only the
+    # live DOM property -- get_attribute("value") reliably returned None
+    # here even with the text visibly present on screen (confirmed via a
+    # real CI run's failure screenshot).
+    assert page.find(*page.DISPLAY_NAME).get_property("value") == "Appium QA"
 
 
 def test_signup_empty_submit_blocked(unauthenticated_driver, base_url):

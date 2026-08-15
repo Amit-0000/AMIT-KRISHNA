@@ -33,7 +33,11 @@ class ProfilePage(BasePage):
         self.find(*self.DISPLAY_NAME_INPUT)
 
     def display_name_value(self) -> str:
-        return self.find(*self.DISPLAY_NAME_INPUT).get_attribute("value")
+        # get_property, not get_attribute: see test_registration_mobile.py's
+        # test_signup_form_is_usable_via_touch for why -- React controlled
+        # inputs never write the typed/prefilled value back onto the raw
+        # HTML "value" attribute.
+        return self.find(*self.DISPLAY_NAME_INPUT).get_property("value")
 
     def set_display_name(self, value: str) -> None:
         self.fill_id("displayName", value)

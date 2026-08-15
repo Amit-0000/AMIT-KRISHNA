@@ -42,7 +42,12 @@ class AppChrome(BasePage):
 
 
 class MobileDrawer(BasePage):
-    PANEL = (By.CSS_SELECTOR, 'div[role="dialog"][aria-label="Navigation menu"]')
+    # Attribute-only, no "div" tag qualifier: the real component
+    # (MobileDrawer.tsx) renders this as <motion.aside>, an <aside>
+    # element, not a <div> -- a "div[role=...]" selector never matches it.
+    # Confirmed via a real CI run's failure screenshot showing the drawer
+    # genuinely open while this locator still couldn't find it.
+    PANEL = (By.CSS_SELECTOR, '[role="dialog"][aria-label="Navigation menu"]')
     CLOSE_BUTTON = (By.CSS_SELECTOR, 'button[aria-label="Close navigation"]')
     NAV_LANDMARK = (By.CSS_SELECTOR, 'nav[aria-label="Mobile navigation"]')
 
@@ -89,7 +94,12 @@ class GlobalSearch(BasePage):
         self.type_text(self.find(*self.INPUT), text)
 
     def result_labels(self) -> list[str]:
-        return [el.text for el in self.find_all(*self.OPTIONS)]
+        # Just the label <p>, not el.text: each option renders a label <p>
+        # plus an optional description <p> below it
+        # (GlobalSearch.tsx), and el.text was returning both lines joined,
+        # never equal to the bare label text callers actually compare
+        # against.
+        return [el.find_element(By.CSS_SELECTOR, "p").text for el in self.find_all(*self.OPTIONS)]
 
     def select_result(self, label: str) -> None:
         option = self.find(By.XPATH, f'//div[@id="search-results"]//div[@role="option"][.//p[normalize-space()="{label}"]]')
@@ -101,7 +111,10 @@ class GlobalSearch(BasePage):
 
 
 class NotificationCenter(BasePage):
-    PANEL = (By.CSS_SELECTOR, 'div[role="dialog"][aria-label="Notifications"]')
+    # Attribute-only, no "div" tag qualifier: the real component
+    # (NotificationCenter.tsx) renders this as <motion.aside>, an <aside>
+    # element, not a <div> -- a "div[role=...]" selector never matches it.
+    PANEL = (By.CSS_SELECTOR, '[role="dialog"][aria-label="Notifications"]')
     CLOSE_BUTTON = (By.CSS_SELECTOR, 'button[aria-label="Close notifications"]')
     MARK_ALL_READ = (By.CSS_SELECTOR, 'button[aria-label="Mark all notifications as read"]')
     VIEW_ALL_LINK = (By.XPATH, '//a[normalize-space()="View all notifications"]')
