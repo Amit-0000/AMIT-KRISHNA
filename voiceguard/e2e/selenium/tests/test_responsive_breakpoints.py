@@ -21,6 +21,7 @@ import pytest
 from selenium.webdriver.common.by import By
 
 from pages.base_page import BasePage
+from pages.dashboard_page import DashboardPage
 
 pytestmark = [pytest.mark.medium]
 
@@ -93,9 +94,16 @@ def test_landing_page_no_horizontal_overflow_at_narrow_width(driver, base_url):
 
 
 def test_dashboard_no_horizontal_overflow_at_narrow_width(authenticated_driver, base_url):
-    page = BasePage(authenticated_driver, base_url)
+    # goto_dashboard(), not a bare goto("/dashboard"): a real CI run showed
+    # this genuinely racing the dashboard's async data fetch (recent scans,
+    # quick actions) — content still shifting the layout when scrollWidth
+    # was measured immediately after the hard-reload navigation returned.
+    # goto_dashboard() already waits for GREETING_HEADING (see its own
+    # docstring for why a URL-only wait isn't enough), which is exactly the
+    # "page is actually settled" signal this check needs too.
+    page = DashboardPage(authenticated_driver, base_url)
     page.resize_window(*NARROW)
-    page.goto("/dashboard")
+    page.goto_dashboard()
     assert _no_horizontal_overflow(page.driver)
     page.resize_window(*LG)  # leave the shared window at its normal size
 

@@ -36,6 +36,7 @@ import wave
 from pathlib import Path
 
 import pytest
+from selenium.common.exceptions import TimeoutException
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
 
@@ -146,18 +147,35 @@ def test_uploaded_scan_appears_in_history(authenticated_driver, base_url):
 def test_uploaded_scan_result_page_reaches_a_real_state(authenticated_driver, base_url):
     assert _state.get("scan_id"), "must run after test_upload_valid_audio_file_..."
     page = ScanResultPage(authenticated_driver, base_url)
-    page.goto_result(_state["scan_id"])
     # Inference timing/availability isn't something this suite controls
     # (CPU-bound model, see project memory on LCNN CPU inference) — accept
     # either real terminal outcome: a rendered verdict, or the page routing
-    # back to /scan/processing because it isn't complete yet. 45s, not the
-    # previous 20s: a real CI run timed out on this wait 3/3 times (initial
-    # attempt + 2 reruns) under the qa-suite runner's shared CPU budget —
-    # the assertion itself already accepts both legitimate terminal states,
-    # this only widens the time budget for reaching either one.
-    WebDriverWait(authenticated_driver, 45).until(
-        lambda d: "/scan/processing" in d.current_url or page.is_visible(*page.VERDICT_HEADING, timeout=1)
-    )
+    # back to /scan/processing because it isn't complete yet.
+    #
+    # A single longer WebDriverWait after one goto_result() isn't the right
+    # tool here, and a real CI run proved it: useScanResult
+    # (frontend/src/pages/ScanResult/hooks/useScanResult.ts) queries with
+    # retry: false, and NotReadyFallback's own "still processing -> redirect
+    # to /scan/processing" check (ScanResult/index.tsx) only runs once, on
+    # mount -- neither polls, so waiting longer on the same page load can't
+    # surface a state that a one-shot check already missed. Re-navigating on
+    # a bounded interval instead re-triggers that one-shot check fresh each
+    # time, which is the correct way to ride out a momentary inconsistency
+    # between scan-status and result-endpoint availability right after
+    # upload.
+    deadline = time.monotonic() + 45
+    reached_real_state = False
+    while time.monotonic() < deadline:
+        page.goto_result(_state["scan_id"])
+        try:
+            WebDriverWait(authenticated_driver, 5).until(
+                lambda d: "/scan/processing" in d.current_url or page.is_visible(*page.VERDICT_HEADING, timeout=1)
+            )
+            reached_real_state = True
+            break
+        except TimeoutException:
+            continue
+    assert reached_real_state, "scan result page never reached a real terminal state (verdict or processing) after repeated reloads"
 
 
 def test_uploaded_scan_detail_page_reaches_a_real_state(authenticated_driver, base_url):
