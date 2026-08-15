@@ -51,10 +51,13 @@ class HelpArticlePage(BasePage):
 
 class FeedbackPage(BasePage):
     CATEGORY_RADIOGROUP = (By.CSS_SELECTOR, 'div[role="radiogroup"][aria-label="Feedback category"]')
-    MESSAGE_TEXTAREA = (By.ID, "message")
-    SCAN_ID_INPUT = (By.ID, "scanId")
+    # CSS_SELECTOR, not By.ID: Appium's locator converter passes locators
+    # through unchanged, and chromedriver rejects a raw "id" strategy as
+    # invalid under W3C WebDriver (see pages/base_page.py's tap_id).
+    MESSAGE_TEXTAREA = (By.CSS_SELECTOR, "#message")
+    SCAN_ID_INPUT = (By.CSS_SELECTOR, "#scanId")
     SUBMIT_BUTTON = (By.CSS_SELECTOR, 'button[type=submit]')
-    MESSAGE_ERROR = (By.ID, "message-error")
+    MESSAGE_ERROR = (By.CSS_SELECTOR, "#message-error")
     # Real, current backend state: feedbackApi.submit() isn't implemented
     # server-side yet, so a validation-passing submit lands on the "failed"
     # UI state below, not "success" -- see Feedback/index.tsx's own comment.

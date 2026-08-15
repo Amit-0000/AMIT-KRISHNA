@@ -10,7 +10,10 @@ from pages.base_page import DEFAULT_TIMEOUT, BasePage
 class HistoryPage(BasePage):
     EMPTY_STATE = (By.CSS_SELECTOR, "[aria-label='No scans yet']")
     TABLE = (By.CSS_SELECTOR, "table[aria-label='Scan history']")
-    STATUS_FILTER = (By.ID, "scan-status-filter")
+    # CSS_SELECTOR, not By.ID: Appium's locator converter passes locators
+    # through unchanged, and chromedriver rejects a raw "id" strategy as
+    # invalid under W3C WebDriver (see pages/base_page.py's tap_id).
+    STATUS_FILTER = (By.CSS_SELECTOR, "#scan-status-filter")
     NEW_SCAN_LINK = (By.LINK_TEXT, "New scan")
     ROWS = (By.CSS_SELECTOR, "table[aria-label='Scan history'] tbody tr[role=row]")
 

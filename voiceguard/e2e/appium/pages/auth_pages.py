@@ -18,7 +18,10 @@ from pages.base_page import BasePage
 
 
 class LandingPage(BasePage):
-    MAIN_CONTENT = (By.ID, "main-content")
+    # CSS_SELECTOR, not By.ID: Appium's locator converter passes locators
+    # through unchanged, and chromedriver rejects a raw "id" strategy as
+    # invalid under W3C WebDriver (see pages/base_page.py's tap_id).
+    MAIN_CONTENT = (By.CSS_SELECTOR, "#main-content")
 
     def open(self) -> None:
         self.goto("/")
@@ -38,8 +41,8 @@ class NotFoundPage(BasePage):
 
 
 class LoginPage(BasePage):
-    EMAIL = (By.ID, "email")
-    PASSWORD = (By.ID, "password")
+    EMAIL = (By.CSS_SELECTOR, "#email")
+    PASSWORD = (By.CSS_SELECTOR, "#password")
     FORGOT_PASSWORD_LINK = (By.LINK_TEXT, "Forgot password?")
 
     def open(self) -> None:
@@ -55,10 +58,10 @@ class LoginPage(BasePage):
 
 
 class SignupPage(BasePage):
-    DISPLAY_NAME = (By.ID, "displayName")
-    EMAIL = (By.ID, "email")
-    PASSWORD = (By.ID, "password")
-    CONFIRM_PASSWORD = (By.ID, "confirmPassword")
+    DISPLAY_NAME = (By.CSS_SELECTOR, "#displayName")
+    EMAIL = (By.CSS_SELECTOR, "#email")
+    PASSWORD = (By.CSS_SELECTOR, "#password")
+    CONFIRM_PASSWORD = (By.CSS_SELECTOR, "#confirmPassword")
 
     def open(self) -> None:
         self.goto("/signup")
@@ -77,7 +80,7 @@ class SignupPage(BasePage):
 
 
 class ForgotPasswordPage(BasePage):
-    EMAIL = (By.ID, "email")
+    EMAIL = (By.CSS_SELECTOR, "#email")
 
     def open(self) -> None:
         self.goto("/forgot-password")
@@ -91,8 +94,8 @@ class ForgotPasswordPage(BasePage):
 
 
 class ResetPasswordPage(BasePage):
-    PASSWORD = (By.ID, "password")
-    CONFIRM_PASSWORD = (By.ID, "confirmPassword")
+    PASSWORD = (By.CSS_SELECTOR, "#password")
+    CONFIRM_PASSWORD = (By.CSS_SELECTOR, "#confirmPassword")
 
     def open(self, token: str | None = None) -> None:
         path = "/reset-password"
@@ -113,7 +116,7 @@ class ResetPasswordPage(BasePage):
 
 
 class VerifyEmailPage(BasePage):
-    RESEND_EMAIL = (By.ID, "resend-email")
+    RESEND_EMAIL = (By.CSS_SELECTOR, "#resend-email")
 
     def open(self, token: str | None = None) -> None:
         path = "/verify-email"

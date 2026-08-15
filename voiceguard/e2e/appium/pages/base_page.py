@@ -65,14 +65,19 @@ class BasePage:
         element.click()
 
     def tap_id(self, element_id: str, timeout: int = DEFAULT_TIMEOUT) -> None:
-        self.tap(self.find_clickable(By.ID, element_id, timeout=timeout))
+        # CSS_SELECTOR, not By.ID: Appium's locator converter passes
+        # locators through unchanged (unlike plain Selenium, which rewrites
+        # By.ID to a CSS selector) — chromedriver rejects a raw "id"
+        # strategy as invalid under W3C WebDriver.
+        self.tap(self.find_clickable(By.CSS_SELECTOR, f"#{element_id}", timeout=timeout))
 
     def type_text(self, element: WebElement, text: str) -> None:
         element.clear()
         element.send_keys(text)
 
     def fill_id(self, element_id: str, text: str, timeout: int = DEFAULT_TIMEOUT) -> None:
-        self.type_text(self.find(By.ID, element_id, timeout=timeout), text)
+        # See tap_id above for why CSS_SELECTOR, not By.ID.
+        self.type_text(self.find(By.CSS_SELECTOR, f"#{element_id}", timeout=timeout), text)
 
     def scroll_to_bottom(self) -> None:
         self.driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")

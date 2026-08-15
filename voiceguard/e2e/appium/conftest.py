@@ -130,13 +130,19 @@ def authenticated_driver(driver, base_url):
     # the email field — a race between that teardown's navigation settling
     # and this setup's own driver.get("/login") + immediate find_element,
     # not something the implicit wait reliably absorbs.
+    # "css selector"/"#email", not "id"/"email": unlike plain Selenium's
+    # WebDriver (which rewrites By.ID to a CSS selector before sending it
+    # over the wire), Appium's AppiumLocatorConverter passes locators
+    # through unchanged so native-app resource-id lookups keep working —
+    # which means a raw "id" strategy reaches chromedriver as-is here, and
+    # W3C-only chromedriver rejects "id" as an invalid locator strategy.
     driver.get(f"{base_url}/login")
-    WebDriverWait(driver, 15).until(EC.visibility_of_element_located(("id", "email"))).send_keys(
-        FIXTURE_USER["email"]
-    )
-    WebDriverWait(driver, 15).until(EC.visibility_of_element_located(("id", "password"))).send_keys(
-        FIXTURE_USER["password"]
-    )
+    WebDriverWait(driver, 15).until(
+        EC.visibility_of_element_located(("css selector", "#email"))
+    ).send_keys(FIXTURE_USER["email"])
+    WebDriverWait(driver, 15).until(
+        EC.visibility_of_element_located(("css selector", "#password"))
+    ).send_keys(FIXTURE_USER["password"])
     WebDriverWait(driver, 15).until(
         EC.element_to_be_clickable(("css selector", "button[type=submit]"))
     ).click()

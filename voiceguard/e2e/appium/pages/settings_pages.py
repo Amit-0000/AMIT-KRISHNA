@@ -21,7 +21,10 @@ def field_error_locator(field_id: str):
 
 
 class ProfilePage(BasePage):
-    DISPLAY_NAME_INPUT = (By.ID, "displayName")
+    # CSS_SELECTOR, not By.ID: Appium's locator converter passes locators
+    # through unchanged, and chromedriver rejects a raw "id" strategy as
+    # invalid under W3C WebDriver (see pages/base_page.py's tap_id).
+    DISPLAY_NAME_INPUT = (By.CSS_SELECTOR, "#displayName")
     SAVE_BUTTON = (By.CSS_SELECTOR, 'button[type=submit]')
     EMAIL_TEXT = (By.XPATH, '//h2[normalize-space()="Profile"]/following::*[contains(text(), "@")][1]')
 
@@ -52,9 +55,9 @@ class ProfilePage(BasePage):
 
 class AccountPage(BasePage):
     EMAIL_ROW_TEXT = (By.XPATH, '//h3[normalize-space()="Email address"]/following::*[contains(text(), "@")][1]')
-    CURRENT_PASSWORD_INPUT = (By.ID, "currentPassword")
-    NEW_PASSWORD_INPUT = (By.ID, "newPassword")
-    CONFIRM_PASSWORD_INPUT = (By.ID, "confirmPassword")
+    CURRENT_PASSWORD_INPUT = (By.CSS_SELECTOR, "#currentPassword")
+    NEW_PASSWORD_INPUT = (By.CSS_SELECTOR, "#newPassword")
+    CONFIRM_PASSWORD_INPUT = (By.CSS_SELECTOR, "#confirmPassword")
     CHANGE_PASSWORD_HEADING = (By.XPATH, '//h3[normalize-space()="Change password"]')
     SUBMIT_BUTTON = (By.CSS_SELECTOR, 'button[type=submit]')
 
