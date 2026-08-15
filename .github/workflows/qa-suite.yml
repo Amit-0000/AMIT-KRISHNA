@@ -397,6 +397,28 @@ jobs:
     steps:
       - uses: actions/checkout@v7
 
+      # This runner's default udev rules don't grant the `runner` user
+      # access to /dev/kvm ("ProbeKVM: This user doesn't have permissions to
+      # use KVM"), confirmed via a real run's raw emulator log — so every
+      # x86_64 emulator boot here has actually been running with hardware
+      # acceleration force-disabled (`-accel off`, "disable-linux-hw-accel:
+      # auto" resolving to true) this whole time: pure software CPU
+      # emulation, not KVM-backed virtualization. That's the real root cause
+      # behind every "slow/flaky under CI contention" symptom documented
+      # below and in this suite's README (cold boot minutes, session
+      # creation minutes, instrumentation timeouts) — those fixes worked
+      # around software-emulation-level slowness, not CPU contention per se.
+      # This is the standard fix documented by reactivecircus/android-
+      # emulator-runner itself for Linux runners: relax the kvm device's
+      # udev permissions so the actual hardware acceleration GitHub-hosted
+      # Linux runners provide gets used.
+      - name: Enable KVM group perms
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+          ls -la /dev/kvm
+
       # A cold KVM emulator boot (no cached snapshot) took 10+ minutes on
       # GitHub-hosted runners, racing the UiAutomator2 instrumentation
       # bring-up against CPU/RAM contention from the Docker stack below and
