@@ -369,7 +369,7 @@ jobs:
     # below still runs (if: always()) and reports it as the real infra
     # failure it is, rather than the workflow looking "still running" for
     # hours.
-    timeout-minutes: 45
+    timeout-minutes: 55
     # The app has no native mobile client — this covers the responsive/
     # mobile-viewport UI path only, via mobile Chrome under UiAutomator2.
     #
@@ -520,10 +520,15 @@ jobs:
 
       - name: Run Appium mobile-web suite on Android emulator
         # Bounded independently of the job-level timeout-minutes above so a
-        # hang here (the observed failure mode) still leaves headroom for
-        # Parse/Build/Threshold-check/Upload/Tear down to run afterward
-        # instead of the whole job timing out mid-suite with nothing salvaged.
-        timeout-minutes: 25
+        # hang here (the observed failure mode before the KVM-acceleration
+        # fix) still leaves headroom for Parse/Build/Threshold-check/Upload/
+        # Tear down to run afterward instead of the whole job timing out
+        # mid-suite with nothing salvaged. 35 min, not 25: a real post-fix
+        # run reached 83% of the suite (98/118 tests, each now taking
+        # seconds instead of minutes) inside the previous 25-minute budget
+        # before being cut off — genuinely still executing, just needed a
+        # little more headroom for reruns' extra pass, not hung.
+        timeout-minutes: 35
         uses: reactivecircus/android-emulator-runner@v2
         with:
           api-level: 33
