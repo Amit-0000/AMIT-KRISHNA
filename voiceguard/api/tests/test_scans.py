@@ -47,14 +47,14 @@ def _extract_token(url: str) -> str:
 
 @pytest.fixture
 def captured_emails(monkeypatch: pytest.MonkeyPatch) -> dict[str, str]:
-    from api.auth import service as auth_service
+    from api.core import email as email_service
 
     captured: dict[str, str] = {}
 
     async def fake_verification_email(*, to: str, verification_url: str) -> None:
         captured["verification_url"] = verification_url
 
-    monkeypatch.setattr(auth_service, "send_verification_email", fake_verification_email)
+    monkeypatch.setattr(email_service, "send_verification_email", fake_verification_email)
     return captured
 
 
@@ -295,6 +295,7 @@ async def test_malicious_upload_is_rejected_and_not_persisted_to_storage(
     assert len(scans) == 1
     assert scans[0]["status"] == "validation_failed"
     assert scans[0]["error_code"] == "MALWARE_DETECTED"
+    assert scans[0]["malware_scan_status"] == "malicious"
 
     # The flagged file must not be left behind in storage.
     from api.core.storage import get_storage_backend
@@ -330,12 +331,107 @@ async def test_scanner_unavailable_fails_upload_closed_not_clean(
     assert len(scans) == 1
     assert scans[0]["status"] == "upload_failed"
     assert scans[0]["error_code"] == "MALWARE_SCAN_UNAVAILABLE"
+    assert scans[0]["malware_scan_status"] == "unavailable"
 
     from api.core.storage import get_storage_backend
 
     storage = get_storage_backend()
     stored_key = scans[0]["id"] + scans[0]["file_extension"]
     assert await storage.exists(stored_key) is False
+
+
+# ── MALWARE_SCAN_REQUIRED=false (optional malware scanning) ─────────────────
+# api.core.config.Settings.MALWARE_SCAN_REQUIRED defaults to True (secure by
+# default, tested below); these tests exercise the opt-out that lets the AI
+# pipeline keep running when ClamAV itself is unavailable, without ever
+# treating an unscanned file as "clean" or letting a real detection through.
+
+
+async def test_malware_scan_required_defaults_to_true() -> None:
+    from api.core.config import Settings
+
+    assert Settings.model_fields["MALWARE_SCAN_REQUIRED"].default is True
+
+
+async def test_clean_scan_records_clean_malware_status(
+    client: AsyncClient, captured_emails: dict[str, str]
+) -> None:
+    """ClamAV available + clean: the default fake scanner (see conftest.py's
+    autouse _isolated_settings) already reports CLEAN for every test unless
+    overridden — this asserts that real result is recorded honestly as
+    "clean", not left null or conflated with the not_scanned case below."""
+    await _register_verify_login(client, captured_emails)
+    resp = await _upload(client)
+    assert resp.status_code == 201, resp.text
+    assert resp.json()["data"]["scan"]["status"] == "queued"
+
+    listing = await client.get("/api/v1/scans")
+    scans = listing.json()["data"]["scans"]
+    assert scans[0]["malware_scan_status"] == "clean"
+
+
+async def test_scanner_unavailable_and_not_required_continues_unscanned(
+    client: AsyncClient, captured_emails: dict[str, str], monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """ClamAV unavailable + MALWARE_SCAN_REQUIRED=false: the upload must
+    continue to QUEUED (eventually reaching the AI pipeline — see
+    test_ai_pipeline_jobs.py for the full-pipeline version of this case)
+    rather than fail closed, but the file must be recorded as NOT_SCANNED,
+    never as CLEAN."""
+    from api.scans import malware_scan as malware_scan_module
+    from api.scans.malware_scan import MalwareScanResult, MalwareScanStatus
+
+    async def _fake_unavailable(storage, storage_key):
+        return MalwareScanResult(status=MalwareScanStatus.UNAVAILABLE, engine="fake-clamav", detail="connection refused")
+
+    monkeypatch.setattr(malware_scan_module, "scan_file", _fake_unavailable)
+    monkeypatch.setenv("MALWARE_SCAN_REQUIRED", "false")
+    get_settings.cache_clear()
+
+    await _register_verify_login(client, captured_emails)
+    resp = await _upload(client)
+
+    assert resp.status_code == 201, resp.text
+    created = resp.json()["data"]["scan"]
+    assert created["status"] == "queued"
+    assert created["malware_scan_status"] == "not_scanned"
+
+    # The file itself must still be on disk — MALWARE_SCAN_REQUIRED=false
+    # means "keep processing it", not "discard it like a rejected upload".
+    from api.core.storage import get_storage_backend
+
+    storage = get_storage_backend()
+    stored_key = created["id"] + created["file_extension"]
+    assert await storage.exists(stored_key) is True
+
+
+async def test_malware_scan_required_false_still_rejects_a_real_detection(
+    client: AsyncClient, captured_emails: dict[str, str], monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """The critical safety invariant: MALWARE_SCAN_REQUIRED=false only
+    changes what happens when the scanner is UNAVAILABLE. It must never
+    weaken what happens when ClamAV *is* reachable and actually flags a
+    file — that path is unconditional, independent of this setting."""
+    from api.scans import malware_scan as malware_scan_module
+    from api.scans.malware_scan import MalwareScanResult, MalwareScanStatus
+
+    async def _fake_malicious(storage, storage_key):
+        return MalwareScanResult(status=MalwareScanStatus.MALICIOUS, engine="fake-clamav", detail="Eicar-Test-Signature")
+
+    monkeypatch.setattr(malware_scan_module, "scan_file", _fake_malicious)
+    monkeypatch.setenv("MALWARE_SCAN_REQUIRED", "false")
+    get_settings.cache_clear()
+
+    await _register_verify_login(client, captured_emails)
+    resp = await _upload(client)
+
+    assert resp.status_code == 400, resp.text
+    assert resp.json()["error"]["code"] == "MALWARE_DETECTED"
+
+    listing = await client.get("/api/v1/scans")
+    scans = listing.json()["data"]["scans"]
+    assert scans[0]["status"] == "validation_failed"
+    assert scans[0]["malware_scan_status"] == "malicious"
 
 
 # ── Authorization / ownership ─────────────────────────────────────────────────

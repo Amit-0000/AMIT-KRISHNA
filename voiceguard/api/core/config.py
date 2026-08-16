@@ -90,14 +90,31 @@ class Settings(BaseSettings):
     JWT_REFRESH_TOKEN_TTL_S: int = 2592000
 
     # ── Email ────────────────────────────────────────────────────────────────
-    EMAIL_PROVIDER: Literal["console", "smtp"] = "console"
+    # "resend" and "smtp" are both SMTP transport under the hood (Resend's own
+    # send API is SMTP) — they're kept as two distinct, non-colliding settings
+    # groups rather than one shared SMTP_* block specifically so both can be
+    # configured at once: switching EMAIL_PROVIDER between them is then just a
+    # one-variable toggle, not a credential swap, and "resend" stays available
+    # as a fallback per 2026-08-15's SMTP-provider migration.
+    EMAIL_PROVIDER: Literal["console", "resend", "smtp"] = "console"
     EMAIL_FROM_ADDRESS: str = "no-reply@voiceguard.app"
     EMAIL_FROM_NAME: str = "VoiceGuard"
+
+    # Resend (fallback provider). Host/port are Resend's documented fixed
+    # endpoints (port 2587 specifically because Railway's network blocks the
+    # standard 587 submission port — see 2026-08-15's production diagnostic);
+    # the SMTP username is always the literal string "resend" as documented
+    # by Resend, not a per-account value.
+    RESEND_API_KEY: str | None = None
+    RESEND_SMTP_HOST: str = "smtp.resend.com"
+    RESEND_SMTP_PORT: int = 2587
+
+    # Generic SMTP (primary provider going forward — any mailbox/provider).
     SMTP_HOST: str | None = None
     SMTP_PORT: int = 587
     SMTP_USERNAME: str | None = None
     SMTP_PASSWORD: str | None = None
-    SMTP_TLS: bool = True
+    SMTP_USE_TLS: bool = True
 
     # ── Rate limiting (auth routes; scan/API-key tiers belong to later slices) ─
     RATE_LIMIT_LOGIN_PER_HOUR_PER_IP: int = 10
@@ -140,6 +157,16 @@ class Settings(BaseSettings):
     CLAMD_HOST: str = "localhost"
     CLAMD_PORT: int = 3310
     CLAMD_TIMEOUT_S: float = 20.0
+    # Secure default: a scanner that can't be reached still fails the upload
+    # closed (api.scans.service.create_scan). Set to false only to let the AI
+    # pipeline keep running when ClamAV itself is known to be unavailable in
+    # a given deployment (e.g. a hosting plan too small to run clamd) — this
+    # never skips a scan that clamd *could* actually perform; scan_file() is
+    # always called first regardless of this flag, and a real MALICIOUS
+    # verdict is rejected either way. See api.scans.malware_scan.MalwareScanRecordStatus
+    # for how "clean", "malicious", "unavailable", and "not_scanned" are kept
+    # distinct all the way through to the API response and the UI.
+    MALWARE_SCAN_REQUIRED: bool = True
 
     # ── AI Processing Pipeline & Detection Engine (Slice 03) ───────────────────
     # Read from an env var with an explicit default rather than the bare
@@ -218,13 +245,17 @@ class Settings(BaseSettings):
                 [self.SMTP_HOST, self.SMTP_USERNAME, self.SMTP_PASSWORD]
             ):
                 errors.append("SMTP_HOST, SMTP_USERNAME, SMTP_PASSWORD are required when EMAIL_PROVIDER=smtp")
+            if self.EMAIL_PROVIDER == "resend" and not self.RESEND_API_KEY:
+                errors.append("RESEND_API_KEY is required when EMAIL_PROVIDER=resend")
             # security-review.md F-15: the console provider logs live, usable
             # password-reset/email-verification tokens (see api.core.email);
             # that's fine for local dev/CI but must never be reachable from a
             # real deployment, so refuse to boot rather than silently
             # defaulting to it.
             if self.EMAIL_PROVIDER == "console":
-                errors.append("EMAIL_PROVIDER must be 'smtp' in production (the 'console' provider logs live tokens)")
+                errors.append(
+                    "EMAIL_PROVIDER must be 'resend' or 'smtp' in production (the 'console' provider logs live tokens)"
+                )
             # security-review.md F-21: '*' combined with the app's hardcoded
             # allow_credentials=True CORS setting lets any origin make
             # credentialed requests, defeating SameSite cookie protection.

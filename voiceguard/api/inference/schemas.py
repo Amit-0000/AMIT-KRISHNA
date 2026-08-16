@@ -22,9 +22,18 @@ class ScanResultResponse(BaseModel):
     processing_time_ms: int
     inference_time_ms: int
     created_at: datetime
+    # "clean" | "malicious" | "unavailable" | "not_scanned" | null — carried
+    # over from Scan.malware_scan_status, deliberately separate from `verdict`
+    # (the AI's own opinion about the audio). A scan can only ever reach this
+    # endpoint with "clean" or "not_scanned" here (MALICIOUS/UNAVAILABLE+
+    # required both reject the upload before an AI result can exist) — see
+    # api.scans.service.create_scan.
+    malware_scan_status: str | None
 
     @classmethod
-    def from_result(cls, result: ScanResult, model_version: ModelVersion) -> "ScanResultResponse":
+    def from_result(
+        cls, result: ScanResult, model_version: ModelVersion, malware_scan_status: str | None
+    ) -> "ScanResultResponse":
         return cls(
             scan_id=result.scan_id,
             verdict=result.verdict,
@@ -33,6 +42,7 @@ class ScanResultResponse(BaseModel):
             processing_time_ms=result.processing_time_ms,
             inference_time_ms=result.inference_time_ms,
             created_at=result.created_at,
+            malware_scan_status=malware_scan_status,
         )
 
 

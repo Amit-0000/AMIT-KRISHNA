@@ -94,6 +94,13 @@ export type ScanRecordStatus =
   | 'postprocessing_failed'
   | 'result_persistence_failed'
 
+// "clean" | "malicious" | "unavailable" | "not_scanned" — mirrors
+// api.scans.malware_scan.MalwareScanRecordStatus. null only for a scan that
+// hasn't reached the malware-scan step yet, or predates this field.
+// Deliberately never conflated with a "safe" claim: "not_scanned" means the
+// AI pipeline ran without a malware verdict, not that the file was cleared.
+export type MalwareScanRecordStatus = 'clean' | 'malicious' | 'unavailable' | 'not_scanned'
+
 export interface ScanRecord {
   id: string
   status: ScanRecordStatus
@@ -104,6 +111,7 @@ export interface ScanRecord {
   sha256_checksum: string
   duration_seconds: number | null
   scan_metadata: Record<string, unknown> | null
+  malware_scan_status: MalwareScanRecordStatus | null
   error_code: string | null
   error_message: string | null
   retry_count: number
@@ -150,6 +158,9 @@ export interface AIScanResult {
   processing_time_ms: number
   inference_time_ms: number
   created_at: string
+  // Deliberately separate from `verdict` — the AI's opinion about the audio
+  // and whether the file was actually malware-scanned are independent facts.
+  malware_scan_status: MalwareScanRecordStatus | null
 }
 
 export interface StageTiming {

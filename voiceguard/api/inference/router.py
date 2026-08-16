@@ -49,7 +49,8 @@ async def get_scan_result(
 ):
     scan = await get_owned_scan_or_404(db, scan_id, user)
     result, model_version = await service.get_result(db, scan)
-    return success_envelope({"result": ScanResultResponse.from_result(result, model_version).model_dump(mode="json")})
+    response = ScanResultResponse.from_result(result, model_version, scan.malware_scan_status)
+    return success_envelope({"result": response.model_dump(mode="json")})
 
 
 @router.get("/{scan_id}/technical")

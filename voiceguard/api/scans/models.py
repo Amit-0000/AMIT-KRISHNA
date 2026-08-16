@@ -49,6 +49,14 @@ class Scan(Base):
         sa.JSON().with_variant(postgresql.JSONB, "postgresql"), nullable=True
     )
 
+    # NULL until the malware-scan step actually runs (still CREATED/VALIDATING/
+    # UPLOADING). One of "clean" | "malicious" | "unavailable" | "not_scanned"
+    # thereafter — see api.scans.malware_scan.MalwareScanRecordStatus. Never
+    # "clean" for a file the scanner didn't actually clear: MALWARE_SCAN_REQUIRED
+    # =false records "not_scanned" instead, kept distinct from a real CLEAN
+    # verdict at every layer.
+    malware_scan_status: Mapped[str | None] = mapped_column(sa.String(16), nullable=True)
+
     error_code: Mapped[str | None] = mapped_column(sa.String(64), nullable=True)
     error_message: Mapped[str | None] = mapped_column(sa.String(512), nullable=True)
     retry_count: Mapped[int] = mapped_column(sa.Integer, nullable=False, default=0)
@@ -77,6 +85,10 @@ class Scan(Base):
 
     __table_args__ = (
         sa.CheckConstraint("file_size_bytes >= 0", name="ck_scans_file_size_non_negative"),
+        sa.CheckConstraint(
+            "malware_scan_status IN ('clean', 'malicious', 'unavailable', 'not_scanned')",
+            name="ck_scans_malware_scan_status",
+        ),
         sa.Index("ix_scans_user_id", "user_id"),
         sa.Index("ix_scans_user_status", "user_id", "status"),
         sa.Index("ix_scans_user_created", "user_id", "created_at"),

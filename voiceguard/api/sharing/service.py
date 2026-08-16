@@ -10,6 +10,7 @@ from api.core.config import get_settings
 from api.core.exceptions import InvalidScanStateError, NotFoundError
 from api.inference import repository as inference_repository
 from api.inference.schemas import ScanResultResponse
+from api.scans import repository as scans_repository
 from api.scans.models import Scan
 from api.sharing import repository
 from api.sharing.models import ShareToken
@@ -82,4 +83,6 @@ async def get_shared_result(db: AsyncSession, token: str) -> ScanResultResponse:
     if model_version is None:
         raise ShareNotFoundError("This shared result is not available")
 
-    return ScanResultResponse.from_result(result, model_version)
+    scan = await scans_repository.get_by_id(db, share.scan_id)
+    malware_scan_status = scan.malware_scan_status if scan is not None else None
+    return ScanResultResponse.from_result(result, model_version, malware_scan_status)

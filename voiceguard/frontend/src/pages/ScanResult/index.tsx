@@ -11,6 +11,7 @@ import { VerdictCard } from './components/VerdictCard'
 import { TechnicalDetails } from './components/TechnicalDetails'
 import { ExplanationPanel } from './components/ExplanationPanel'
 import { ShareDialog } from './components/ShareDialog'
+import { MalwareScanNotice } from './components/MalwareScanNotice'
 import { useScanExplanation, useScanResult, useScanTechnical } from './hooks/useScanResult'
 
 // ─── Not-yet-complete fallback ────────────────────────────────────────────────
@@ -107,6 +108,8 @@ export function ScanResultPage() {
   return (
     <PageContainer maxWidth="sm">
       <div className="space-y-5">
+        <MalwareScanNotice status={result.malware_scan_status} />
+
         <VerdictCard verdict={result.verdict} confidence={result.confidence} />
 
         <ExplanationPanel explanation={explanation} isLoading={explanationLoading} />

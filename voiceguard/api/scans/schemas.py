@@ -22,6 +22,10 @@ class ScanResponse(BaseModel):
     sha256_checksum: str
     duration_seconds: float | None
     scan_metadata: dict[str, Any] | None
+    # "clean" | "malicious" | "unavailable" | "not_scanned" (see
+    # api.scans.malware_scan.MalwareScanRecordStatus) — null only for a scan
+    # that hasn't reached the malware-scan step yet, or predates this field.
+    malware_scan_status: str | None
     error_code: str | None
     error_message: str | None
     retry_count: int

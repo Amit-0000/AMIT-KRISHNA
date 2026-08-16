@@ -11,6 +11,7 @@ import {
   Ban,
   ExternalLink,
 } from 'lucide-react'
+import { Badge } from '@/components/ui/badge'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Tooltip, TooltipProvider } from '@/components/ui/tooltip'
 import { Button } from '@/components/ui/button'
@@ -87,7 +88,14 @@ function ScanRow({
       </td>
 
       <td className="py-3 px-3">
-        <ScanStatusBadge status={scan.status} />
+        <div className="flex items-center gap-1.5 flex-wrap">
+          <ScanStatusBadge status={scan.status} />
+          {scan.malware_scan_status === 'not_scanned' && (
+            <Badge variant="warning" className="whitespace-nowrap" title="Processed without malware scanning">
+              Unscanned
+            </Badge>
+          )}
+        </div>
         {scan.error_message && (
           <p className="mt-1 text-xs text-text-tertiary max-w-[220px] truncate" title={scan.error_message}>
             {scan.error_message}

@@ -41,14 +41,14 @@ def _extract_token(url: str) -> str:
 
 @pytest.fixture
 def captured_emails(monkeypatch: pytest.MonkeyPatch) -> dict[str, str]:
-    from api.auth import service as auth_service
+    from api.core import email as email_service
 
     captured: dict[str, str] = {}
 
     async def fake_verification_email(*, to: str, verification_url: str) -> None:
         captured["verification_url"] = verification_url
 
-    monkeypatch.setattr(auth_service, "send_verification_email", fake_verification_email)
+    monkeypatch.setattr(email_service, "send_verification_email", fake_verification_email)
     return captured
 
 
@@ -158,6 +158,56 @@ async def test_result_response_matches_persisted_result(
     result, model_version = await inference_service.get_result(db_session, scan)
     assert result.scan_id == scan.id
     assert model_version.name == get_settings().MODEL_NAME
+
+
+# ── MALWARE_SCAN_REQUIRED=false: unscanned files still reach a real result ──
+
+
+async def test_scan_unavailable_and_optional_still_reaches_completed_with_result(
+    client: AsyncClient,
+    captured_emails: dict[str, str],
+    db_session: AsyncSession,
+    ai_checkpoint,
+    monkeypatch: pytest.MonkeyPatch,
+):
+    """Case D end-to-end: ClamAV unavailable + MALWARE_SCAN_REQUIRED=false
+    must let the upload flow all the way to a real AI result (not just past
+    the upload endpoint, per test_scans.py's
+    test_scanner_unavailable_and_not_required_continues_unscanned), while the
+    scan and its result both keep reporting NOT_SCANNED — never CLEAN — so
+    nothing downstream can misread this as a verified-safe file."""
+    from api.scans import malware_scan as malware_scan_module
+    from api.scans.malware_scan import MalwareScanResult, MalwareScanStatus
+
+    async def _fake_unavailable(storage, storage_key):
+        return MalwareScanResult(status=MalwareScanStatus.UNAVAILABLE, engine="fake-clamav", detail="connection refused")
+
+    monkeypatch.setattr(malware_scan_module, "scan_file", _fake_unavailable)
+    monkeypatch.setenv("MALWARE_SCAN_REQUIRED", "false")
+    get_settings.cache_clear()
+
+    await _register_verify_login(client, captured_emails)
+    scan_id = await _upload_and_reach_ready_for_ai(client, db_session)
+
+    scan = await scans_repository.get_by_id(db_session, uuid.UUID(scan_id))
+    assert scan.malware_scan_status == "not_scanned"
+
+    scan = await _start_processing(db_session, scan_id)
+    await jobs_module.run_ai_pipeline_job(scan.id, db_session.bind)
+    await db_session.refresh(scan)
+
+    assert scan.status is ScanStatus.COMPLETED
+    assert scan.malware_scan_status == "not_scanned"
+
+    result = await inference_repository.get_result_by_scan_id(db_session, scan.id)
+    assert result is not None
+    assert result.verdict in ("human", "ai_generated", "uncertain")
+
+    response = await client.get(f"/api/v1/scans/{scan.id}/result")
+    assert response.status_code == 200, response.text
+    body = response.json()["data"]["result"]
+    assert body["malware_scan_status"] == "not_scanned"
+    assert body["verdict"] in ("human", "ai_generated", "uncertain")
 
 
 # ── No model available ───────────────────────────────────────────────────────

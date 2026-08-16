@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import hashlib
+import logging
 import uuid
 from collections.abc import AsyncIterator
 from datetime import datetime, timedelta, timezone
@@ -22,11 +23,13 @@ from api.core.exceptions import (
 )
 from api.core.storage import StorageBackend, get_storage_backend
 from api.scans import malware_scan, repository
-from api.scans.malware_scan import MalwareScanStatus
+from api.scans.malware_scan import MalwareScanRecordStatus, MalwareScanStatus
 from api.scans.models import Scan
 from api.scans.state_machine import ScanStatus, is_terminal, validate_transition
 from api.scans.validation import validate_upload_request, validate_upload_size
 from api.user.models import User
+
+logger = logging.getLogger("voiceguard.scans")
 
 UPLOAD_CHUNK_SIZE = 1024 * 1024  # 1 MiB
 
@@ -229,8 +232,13 @@ async def create_scan(db: AsyncSession, *, user: User, upload_file: UploadFile) 
         )
         raise exc
 
+    # scan_file() always actually runs, regardless of MALWARE_SCAN_REQUIRED —
+    # that setting only governs what happens when its verdict is UNAVAILABLE,
+    # never whether the scan itself is attempted. A real MALICIOUS verdict is
+    # rejected unconditionally, same as before.
     scan_result = await malware_scan.scan_file(storage, scan.storage_key)
     if scan_result.status is MalwareScanStatus.MALICIOUS:
+        scan.malware_scan_status = MalwareScanRecordStatus.MALICIOUS.value
         await storage.delete(scan.storage_key)
         exc = MalwareDetectedError("The uploaded file was flagged as malicious and cannot be processed.")
         await _fail_and_persist(
@@ -240,14 +248,30 @@ async def create_scan(db: AsyncSession, *, user: User, upload_file: UploadFile) 
         )
         raise exc
     if scan_result.status is MalwareScanStatus.UNAVAILABLE:
-        await storage.delete(scan.storage_key)
-        exc = MalwareScanUnavailableError("The malware scanner is temporarily unavailable. Please try again shortly.")
-        await _fail_and_persist(
-            db, scan, target=ScanStatus.UPLOAD_FAILED,
-            error_code=exc.code, error_message=exc.message,
-            reason=f"malware scan unavailable ({scan_result.engine}): {scan_result.detail}",
+        if settings.MALWARE_SCAN_REQUIRED:
+            scan.malware_scan_status = MalwareScanRecordStatus.UNAVAILABLE.value
+            await storage.delete(scan.storage_key)
+            exc = MalwareScanUnavailableError("The malware scanner is temporarily unavailable. Please try again shortly.")
+            await _fail_and_persist(
+                db, scan, target=ScanStatus.UPLOAD_FAILED,
+                error_code=exc.code, error_message=exc.message,
+                reason=f"malware scan unavailable ({scan_result.engine}): {scan_result.detail}",
+            )
+            raise exc
+        # MALWARE_SCAN_REQUIRED=false: proceed to the AI pipeline unscanned,
+        # recorded as NOT_SCANNED — never CLEAN — so nothing downstream can
+        # read this as "the file was verified safe".
+        scan.malware_scan_status = MalwareScanRecordStatus.NOT_SCANNED.value
+        logger.warning(
+            "malware_scan_continuing_unscanned",
+            extra={
+                "scan_id": str(scan.id),
+                "engine": scan_result.engine,
+                "malware_scan_required": False,
+            },
         )
-        raise exc
+    else:
+        scan.malware_scan_status = MalwareScanRecordStatus.CLEAN.value
 
     await transition(db, scan, ScanStatus.QUEUED, actor="system")
     await repository.create_job(
