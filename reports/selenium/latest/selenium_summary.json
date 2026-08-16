@@ -1,15 +1,15 @@
 {
-  "generated_at": "2026-08-16T12:35:42.311306+00:00",
+  "generated_at": "2026-08-16T12:50:16.346114+00:00",
   "status": "OK",
   "totals": {
-    "total": 12,
-    "executed": 12,
-    "passed": 12,
-    "failed": 0,
-    "skipped": 0,
-    "pass_pct": 100.0
+    "total": 409,
+    "executed": 403,
+    "passed": 402,
+    "failed": 1,
+    "skipped": 3,
+    "pass_pct": 99.75
   },
-  "duration_s": 47.99,
+  "duration_s": 601.63,
   "environment": {
     "BROWSER": "Chrome (headless)",
     "WINDOW_SIZE": "1440x900",
@@ -17,17 +17,153 @@
   },
   "module_breakdown": [
     {
-      "module": "authenticated_flows",
-      "total": 5,
-      "passed": 5,
+      "module": "accessibility",
+      "total": 50,
+      "passed": 48,
+      "failed": 0,
+      "skipped": 2,
+      "pass_pct": 96.0
+    },
+    {
+      "module": "auth",
+      "total": 23,
+      "passed": 22,
+      "failed": 1,
+      "skipped": 0,
+      "pass_pct": 95.65
+    },
+    {
+      "module": "dashboard",
+      "total": 11,
+      "passed": 10,
+      "failed": 0,
+      "skipped": 1,
+      "pass_pct": 90.91
+    },
+    {
+      "module": "error_handling",
+      "total": 52,
+      "passed": 50,
+      "failed": 2,
+      "skipped": 0,
+      "pass_pct": 96.15
+    },
+    {
+      "module": "help_feedback",
+      "total": 20,
+      "passed": 20,
+      "failed": 0,
+      "skipped": 0,
+      "pass_pct": 100.0
+    },
+    {
+      "module": "history",
+      "total": 13,
+      "passed": 13,
+      "failed": 0,
+      "skipped": 0,
+      "pass_pct": 100.0
+    },
+    {
+      "module": "keyboard_navigation",
+      "total": 13,
+      "passed": 13,
+      "failed": 0,
+      "skipped": 0,
+      "pass_pct": 100.0
+    },
+    {
+      "module": "navigation",
+      "total": 33,
+      "passed": 33,
+      "failed": 0,
+      "skipped": 0,
+      "pass_pct": 100.0
+    },
+    {
+      "module": "notifications",
+      "total": 11,
+      "passed": 11,
+      "failed": 0,
+      "skipped": 0,
+      "pass_pct": 100.0
+    },
+    {
+      "module": "onboarding",
+      "total": 7,
+      "passed": 7,
+      "failed": 0,
+      "skipped": 0,
+      "pass_pct": 100.0
+    },
+    {
+      "module": "password_recovery",
+      "total": 18,
+      "passed": 18,
+      "failed": 0,
+      "skipped": 0,
+      "pass_pct": 100.0
+    },
+    {
+      "module": "performance_smoke",
+      "total": 15,
+      "passed": 15,
       "failed": 0,
       "skipped": 0,
       "pass_pct": 100.0
     },
     {
       "module": "public_pages",
-      "total": 7,
-      "passed": 7,
+      "total": 13,
+      "passed": 13,
+      "failed": 0,
+      "skipped": 0,
+      "pass_pct": 100.0
+    },
+    {
+      "module": "registration",
+      "total": 22,
+      "passed": 22,
+      "failed": 0,
+      "skipped": 0,
+      "pass_pct": 100.0
+    },
+    {
+      "module": "responsive_breakpoints",
+      "total": 28,
+      "passed": 28,
+      "failed": 0,
+      "skipped": 0,
+      "pass_pct": 100.0
+    },
+    {
+      "module": "scan_flow",
+      "total": 19,
+      "passed": 18,
+      "failed": 1,
+      "skipped": 0,
+      "pass_pct": 94.74
+    },
+    {
+      "module": "session_guards",
+      "total": 29,
+      "passed": 29,
+      "failed": 0,
+      "skipped": 0,
+      "pass_pct": 100.0
+    },
+    {
+      "module": "settings",
+      "total": 26,
+      "passed": 26,
+      "failed": 0,
+      "skipped": 0,
+      "pass_pct": 100.0
+    },
+    {
+      "module": "shared_result",
+      "total": 6,
+      "passed": 6,
       "failed": 0,
       "skipped": 0,
       "pass_pct": 100.0
@@ -36,112 +172,3710 @@
   "test_rows": [
     {
       "test_id": "SEL-0001",
-      "nodeid": "test_authenticated_flows.py::test_login_with_valid_credentials_reaches_dashboard",
-      "module": "authenticated_flows",
-      "test_name": "test_login_with_valid_credentials_reaches_dashboard",
+      "nodeid": "tests/test_accessibility.py::test_authenticated_route_has_main_landmark[/dashboard]",
+      "module": "accessibility",
+      "test_name": "test_authenticated_route_has_main_landmark[/dashboard]",
       "status": "passed",
-      "priority": "unspecified",
-      "duration_s": 0.508
+      "priority": "medium",
+      "duration_s": 0.428
     },
     {
       "test_id": "SEL-0002",
-      "nodeid": "test_authenticated_flows.py::test_dashboard_renders_app_shell",
-      "module": "authenticated_flows",
-      "test_name": "test_dashboard_renders_app_shell",
+      "nodeid": "tests/test_accessibility.py::test_authenticated_route_has_main_landmark[/history]",
+      "module": "accessibility",
+      "test_name": "test_authenticated_route_has_main_landmark[/history]",
       "status": "passed",
-      "priority": "unspecified",
-      "duration_s": 0.535
-    },
-    {
-      "test_id": "SEL-0003",
-      "nodeid": "test_authenticated_flows.py::test_navigate_to_history_page",
-      "module": "authenticated_flows",
-      "test_name": "test_navigate_to_history_page",
-      "status": "passed",
-      "priority": "unspecified",
-      "duration_s": 0.758
-    },
-    {
-      "test_id": "SEL-0004",
-      "nodeid": "test_authenticated_flows.py::test_navigate_to_new_scan_page",
-      "module": "authenticated_flows",
-      "test_name": "test_navigate_to_new_scan_page",
-      "status": "passed",
-      "priority": "unspecified",
-      "duration_s": 0.732
-    },
-    {
-      "test_id": "SEL-0005",
-      "nodeid": "test_authenticated_flows.py::test_unauthenticated_user_redirected_from_dashboard",
-      "module": "authenticated_flows",
-      "test_name": "test_unauthenticated_user_redirected_from_dashboard",
-      "status": "passed",
-      "priority": "unspecified",
-      "duration_s": 0.893
-    },
-    {
-      "test_id": "SEL-0006",
-      "nodeid": "test_public_pages.py::test_landing_page_loads",
-      "module": "public_pages",
-      "test_name": "test_landing_page_loads",
-      "status": "passed",
-      "priority": "unspecified",
-      "duration_s": 0.6
-    },
-    {
-      "test_id": "SEL-0007",
-      "nodeid": "test_public_pages.py::test_signup_page_renders_required_fields",
-      "module": "public_pages",
-      "test_name": "test_signup_page_renders_required_fields",
-      "status": "passed",
-      "priority": "unspecified",
-      "duration_s": 0.595
-    },
-    {
-      "test_id": "SEL-0008",
-      "nodeid": "test_public_pages.py::test_signup_client_side_validation_blocks_empty_submit",
-      "module": "public_pages",
-      "test_name": "test_signup_client_side_validation_blocks_empty_submit",
-      "status": "passed",
-      "priority": "unspecified",
-      "duration_s": 0.642
-    },
-    {
-      "test_id": "SEL-0009",
-      "nodeid": "test_public_pages.py::test_signup_rejects_mismatched_passwords",
-      "module": "public_pages",
-      "test_name": "test_signup_rejects_mismatched_passwords",
-      "status": "passed",
-      "priority": "unspecified",
-      "duration_s": 0.676
-    },
-    {
-      "test_id": "SEL-0010",
-      "nodeid": "test_public_pages.py::test_login_page_renders",
-      "module": "public_pages",
-      "test_name": "test_login_page_renders",
-      "status": "passed",
-      "priority": "unspecified",
+      "priority": "medium",
       "duration_s": 0.389
     },
     {
-      "test_id": "SEL-0011",
-      "nodeid": "test_public_pages.py::test_login_rejects_bad_credentials",
-      "module": "public_pages",
-      "test_name": "test_login_rejects_bad_credentials",
+      "test_id": "SEL-0003",
+      "nodeid": "tests/test_accessibility.py::test_authenticated_route_has_main_landmark[/notifications]",
+      "module": "accessibility",
+      "test_name": "test_authenticated_route_has_main_landmark[/notifications]",
       "status": "passed",
-      "priority": "unspecified",
-      "duration_s": 0.914
+      "priority": "medium",
+      "duration_s": 0.367
+    },
+    {
+      "test_id": "SEL-0004",
+      "nodeid": "tests/test_accessibility.py::test_authenticated_route_has_main_landmark[/help]",
+      "module": "accessibility",
+      "test_name": "test_authenticated_route_has_main_landmark[/help]",
+      "status": "passed",
+      "priority": "medium",
+      "duration_s": 0.489
+    },
+    {
+      "test_id": "SEL-0005",
+      "nodeid": "tests/test_accessibility.py::test_authenticated_route_has_main_landmark[/feedback]",
+      "module": "accessibility",
+      "test_name": "test_authenticated_route_has_main_landmark[/feedback]",
+      "status": "passed",
+      "priority": "medium",
+      "duration_s": 0.441
+    },
+    {
+      "test_id": "SEL-0006",
+      "nodeid": "tests/test_accessibility.py::test_authenticated_route_has_main_landmark[/scan/new]",
+      "module": "accessibility",
+      "test_name": "test_authenticated_route_has_main_landmark[/scan/new]",
+      "status": "passed",
+      "priority": "medium",
+      "duration_s": 0.417
+    },
+    {
+      "test_id": "SEL-0007",
+      "nodeid": "tests/test_accessibility.py::test_authenticated_route_has_main_landmark[/settings/profile]",
+      "module": "accessibility",
+      "test_name": "test_authenticated_route_has_main_landmark[/settings/profile]",
+      "status": "passed",
+      "priority": "medium",
+      "duration_s": 0.416
+    },
+    {
+      "test_id": "SEL-0008",
+      "nodeid": "tests/test_accessibility.py::test_authenticated_route_has_main_landmark[/settings/account]",
+      "module": "accessibility",
+      "test_name": "test_authenticated_route_has_main_landmark[/settings/account]",
+      "status": "passed",
+      "priority": "medium",
+      "duration_s": 0.447
+    },
+    {
+      "test_id": "SEL-0009",
+      "nodeid": "tests/test_accessibility.py::test_authenticated_route_has_main_landmark[/settings/appearance]",
+      "module": "accessibility",
+      "test_name": "test_authenticated_route_has_main_landmark[/settings/appearance]",
+      "status": "passed",
+      "priority": "medium",
+      "duration_s": 0.401
+    },
+    {
+      "test_id": "SEL-0010",
+      "nodeid": "tests/test_accessibility.py::test_authenticated_route_has_skip_to_content_link[/dashboard]",
+      "module": "accessibility",
+      "test_name": "test_authenticated_route_has_skip_to_content_link[/dashboard]",
+      "status": "passed",
+      "priority": "medium",
+      "duration_s": 0.426
+    },
+    {
+      "test_id": "SEL-0011",
+      "nodeid": "tests/test_accessibility.py::test_authenticated_route_has_skip_to_content_link[/history]",
+      "module": "accessibility",
+      "test_name": "test_authenticated_route_has_skip_to_content_link[/history]",
+      "status": "passed",
+      "priority": "medium",
+      "duration_s": 0.385
     },
     {
       "test_id": "SEL-0012",
-      "nodeid": "test_public_pages.py::test_unknown_route_shows_404",
+      "nodeid": "tests/test_accessibility.py::test_authenticated_route_has_skip_to_content_link[/notifications]",
+      "module": "accessibility",
+      "test_name": "test_authenticated_route_has_skip_to_content_link[/notifications]",
+      "status": "passed",
+      "priority": "medium",
+      "duration_s": 0.409
+    },
+    {
+      "test_id": "SEL-0013",
+      "nodeid": "tests/test_accessibility.py::test_authenticated_route_has_skip_to_content_link[/help]",
+      "module": "accessibility",
+      "test_name": "test_authenticated_route_has_skip_to_content_link[/help]",
+      "status": "passed",
+      "priority": "medium",
+      "duration_s": 0.399
+    },
+    {
+      "test_id": "SEL-0014",
+      "nodeid": "tests/test_accessibility.py::test_authenticated_route_has_skip_to_content_link[/feedback]",
+      "module": "accessibility",
+      "test_name": "test_authenticated_route_has_skip_to_content_link[/feedback]",
+      "status": "passed",
+      "priority": "medium",
+      "duration_s": 0.551
+    },
+    {
+      "test_id": "SEL-0015",
+      "nodeid": "tests/test_accessibility.py::test_authenticated_route_has_skip_to_content_link[/scan/new]",
+      "module": "accessibility",
+      "test_name": "test_authenticated_route_has_skip_to_content_link[/scan/new]",
+      "status": "passed",
+      "priority": "medium",
+      "duration_s": 0.463
+    },
+    {
+      "test_id": "SEL-0016",
+      "nodeid": "tests/test_accessibility.py::test_authenticated_route_has_skip_to_content_link[/settings/profile]",
+      "module": "accessibility",
+      "test_name": "test_authenticated_route_has_skip_to_content_link[/settings/profile]",
+      "status": "passed",
+      "priority": "medium",
+      "duration_s": 0.504
+    },
+    {
+      "test_id": "SEL-0017",
+      "nodeid": "tests/test_accessibility.py::test_authenticated_route_has_skip_to_content_link[/settings/account]",
+      "module": "accessibility",
+      "test_name": "test_authenticated_route_has_skip_to_content_link[/settings/account]",
+      "status": "passed",
+      "priority": "medium",
+      "duration_s": 0.662
+    },
+    {
+      "test_id": "SEL-0018",
+      "nodeid": "tests/test_accessibility.py::test_authenticated_route_has_skip_to_content_link[/settings/appearance]",
+      "module": "accessibility",
+      "test_name": "test_authenticated_route_has_skip_to_content_link[/settings/appearance]",
+      "status": "passed",
+      "priority": "medium",
+      "duration_s": 0.636
+    },
+    {
+      "test_id": "SEL-0019",
+      "nodeid": "tests/test_accessibility.py::test_landing_page_has_main_landmark",
+      "module": "accessibility",
+      "test_name": "test_landing_page_has_main_landmark",
+      "status": "passed",
+      "priority": "medium",
+      "duration_s": 0.768
+    },
+    {
+      "test_id": "SEL-0020",
+      "nodeid": "tests/test_accessibility.py::test_shared_result_page_has_main_landmark",
+      "module": "accessibility",
+      "test_name": "test_shared_result_page_has_main_landmark",
+      "status": "passed",
+      "priority": "medium",
+      "duration_s": 0.626
+    },
+    {
+      "test_id": "SEL-0021",
+      "nodeid": "tests/test_accessibility.py::test_hamburger_button_has_aria_label",
+      "module": "accessibility",
+      "test_name": "test_hamburger_button_has_aria_label",
+      "status": "passed",
+      "priority": "medium",
+      "duration_s": 0.579
+    },
+    {
+      "test_id": "SEL-0022",
+      "nodeid": "tests/test_accessibility.py::test_search_trigger_has_aria_label",
+      "module": "accessibility",
+      "test_name": "test_search_trigger_has_aria_label",
+      "status": "passed",
+      "priority": "medium",
+      "duration_s": 0.717
+    },
+    {
+      "test_id": "SEL-0023",
+      "nodeid": "tests/test_accessibility.py::test_notification_bell_has_aria_label",
+      "module": "accessibility",
+      "test_name": "test_notification_bell_has_aria_label",
+      "status": "passed",
+      "priority": "medium",
+      "duration_s": 0.642
+    },
+    {
+      "test_id": "SEL-0024",
+      "nodeid": "tests/test_accessibility.py::test_theme_toggle_has_aria_label",
+      "module": "accessibility",
+      "test_name": "test_theme_toggle_has_aria_label",
+      "status": "passed",
+      "priority": "medium",
+      "duration_s": 0.571
+    },
+    {
+      "test_id": "SEL-0025",
+      "nodeid": "tests/test_accessibility.py::test_sidebar_collapse_toggle_has_aria_label",
+      "module": "accessibility",
+      "test_name": "test_sidebar_collapse_toggle_has_aria_label",
+      "status": "passed",
+      "priority": "medium",
+      "duration_s": 0.629
+    },
+    {
+      "test_id": "SEL-0026",
+      "nodeid": "tests/test_accessibility.py::test_sidebar_aside_has_aria_label",
+      "module": "accessibility",
+      "test_name": "test_sidebar_aside_has_aria_label",
+      "status": "passed",
+      "priority": "medium",
+      "duration_s": 0.542
+    },
+    {
+      "test_id": "SEL-0027",
+      "nodeid": "tests/test_accessibility.py::test_sidebar_nav_has_aria_label",
+      "module": "accessibility",
+      "test_name": "test_sidebar_nav_has_aria_label",
+      "status": "passed",
+      "priority": "medium",
+      "duration_s": 0.578
+    },
+    {
+      "test_id": "SEL-0028",
+      "nodeid": "tests/test_accessibility.py::test_login_email_input_has_associated_label",
+      "module": "accessibility",
+      "test_name": "test_login_email_input_has_associated_label",
+      "status": "passed",
+      "priority": "medium",
+      "duration_s": 0.43
+    },
+    {
+      "test_id": "SEL-0029",
+      "nodeid": "tests/test_accessibility.py::test_login_password_input_has_associated_label",
+      "module": "accessibility",
+      "test_name": "test_login_password_input_has_associated_label",
+      "status": "passed",
+      "priority": "medium",
+      "duration_s": 0.391
+    },
+    {
+      "test_id": "SEL-0030",
+      "nodeid": "tests/test_accessibility.py::test_signup_display_name_input_has_associated_label",
+      "module": "accessibility",
+      "test_name": "test_signup_display_name_input_has_associated_label",
+      "status": "passed",
+      "priority": "medium",
+      "duration_s": 0.482
+    },
+    {
+      "test_id": "SEL-0031",
+      "nodeid": "tests/test_accessibility.py::test_signup_confirm_password_input_has_associated_label",
+      "module": "accessibility",
+      "test_name": "test_signup_confirm_password_input_has_associated_label",
+      "status": "passed",
+      "priority": "medium",
+      "duration_s": 0.432
+    },
+    {
+      "test_id": "SEL-0032",
+      "nodeid": "tests/test_accessibility.py::test_global_search_dialog_has_aria_label",
+      "module": "accessibility",
+      "test_name": "test_global_search_dialog_has_aria_label",
+      "status": "passed",
+      "priority": "medium",
+      "duration_s": 3.423
+    },
+    {
+      "test_id": "SEL-0033",
+      "nodeid": "tests/test_accessibility.py::test_global_search_input_has_aria_label",
+      "module": "accessibility",
+      "test_name": "test_global_search_input_has_aria_label",
+      "status": "passed",
+      "priority": "medium",
+      "duration_s": 3.464
+    },
+    {
+      "test_id": "SEL-0034",
+      "nodeid": "tests/test_accessibility.py::test_notification_panel_has_aria_label",
+      "module": "accessibility",
+      "test_name": "test_notification_panel_has_aria_label",
+      "status": "passed",
+      "priority": "medium",
+      "duration_s": 3.102
+    },
+    {
+      "test_id": "SEL-0035",
+      "nodeid": "tests/test_accessibility.py::test_history_table_has_aria_label",
+      "module": "accessibility",
+      "test_name": "test_history_table_has_aria_label",
+      "status": "skipped",
+      "priority": "medium",
+      "duration_s": 5.411
+    },
+    {
+      "test_id": "SEL-0036",
+      "nodeid": "tests/test_accessibility.py::test_notifications_tablist_has_aria_label",
+      "module": "accessibility",
+      "test_name": "test_notifications_tablist_has_aria_label",
+      "status": "passed",
+      "priority": "medium",
+      "duration_s": 0.385
+    },
+    {
+      "test_id": "SEL-0037",
+      "nodeid": "tests/test_accessibility.py::test_breadcrumb_nav_has_aria_label",
+      "module": "accessibility",
+      "test_name": "test_breadcrumb_nav_has_aria_label",
+      "status": "passed",
+      "priority": "medium",
+      "duration_s": 0.383
+    },
+    {
+      "test_id": "SEL-0038",
+      "nodeid": "tests/test_accessibility.py::test_appearance_theme_radiogroup_has_aria_label",
+      "module": "accessibility",
+      "test_name": "test_appearance_theme_radiogroup_has_aria_label",
+      "status": "passed",
+      "priority": "medium",
+      "duration_s": 0.341
+    },
+    {
+      "test_id": "SEL-0039",
+      "nodeid": "tests/test_accessibility.py::test_feedback_category_radiogroup_has_aria_label",
+      "module": "accessibility",
+      "test_name": "test_feedback_category_radiogroup_has_aria_label",
+      "status": "passed",
+      "priority": "medium",
+      "duration_s": 0.357
+    },
+    {
+      "test_id": "SEL-0040",
+      "nodeid": "tests/test_accessibility.py::test_new_scan_dropzone_has_button_role",
+      "module": "accessibility",
+      "test_name": "test_new_scan_dropzone_has_button_role",
+      "status": "passed",
+      "priority": "medium",
+      "duration_s": 0.331
+    },
+    {
+      "test_id": "SEL-0041",
+      "nodeid": "tests/test_accessibility.py::test_help_search_input_has_aria_label",
+      "module": "accessibility",
+      "test_name": "test_help_search_input_has_aria_label",
+      "status": "passed",
+      "priority": "medium",
+      "duration_s": 0.36
+    },
+    {
+      "test_id": "SEL-0042",
+      "nodeid": "tests/test_accessibility.py::test_history_status_filter_has_associated_label",
+      "module": "accessibility",
+      "test_name": "test_history_status_filter_has_associated_label",
+      "status": "skipped",
+      "priority": "medium",
+      "duration_s": 7.349
+    },
+    {
+      "test_id": "SEL-0043",
+      "nodeid": "tests/test_accessibility.py::test_user_menu_has_menu_role",
+      "module": "accessibility",
+      "test_name": "test_user_menu_has_menu_role",
+      "status": "passed",
+      "priority": "medium",
+      "duration_s": 0.476
+    },
+    {
+      "test_id": "SEL-0044",
+      "nodeid": "tests/test_accessibility.py::test_user_menu_items_have_menuitem_role",
+      "module": "accessibility",
+      "test_name": "test_user_menu_items_have_menuitem_role",
+      "status": "passed",
+      "priority": "medium",
+      "duration_s": 1.0
+    },
+    {
+      "test_id": "SEL-0045",
+      "nodeid": "tests/test_accessibility.py::test_forgot_password_email_input_has_associated_label",
+      "module": "accessibility",
+      "test_name": "test_forgot_password_email_input_has_associated_label",
+      "status": "passed",
+      "priority": "medium",
+      "duration_s": 0.262
+    },
+    {
+      "test_id": "SEL-0046",
+      "nodeid": "tests/test_accessibility.py::test_reset_password_input_has_associated_label",
+      "module": "accessibility",
+      "test_name": "test_reset_password_input_has_associated_label",
+      "status": "passed",
+      "priority": "medium",
+      "duration_s": 0.279
+    },
+    {
+      "test_id": "SEL-0047",
+      "nodeid": "tests/test_accessibility.py::test_profile_display_name_input_has_associated_label",
+      "module": "accessibility",
+      "test_name": "test_profile_display_name_input_has_associated_label",
+      "status": "passed",
+      "priority": "medium",
+      "duration_s": 0.37
+    },
+    {
+      "test_id": "SEL-0048",
+      "nodeid": "tests/test_accessibility.py::test_feedback_message_textarea_has_associated_label",
+      "module": "accessibility",
+      "test_name": "test_feedback_message_textarea_has_associated_label",
+      "status": "passed",
+      "priority": "medium",
+      "duration_s": 0.36
+    },
+    {
+      "test_id": "SEL-0049",
+      "nodeid": "tests/test_accessibility.py::test_settings_tabs_nav_has_aria_label",
+      "module": "accessibility",
+      "test_name": "test_settings_tabs_nav_has_aria_label",
+      "status": "passed",
+      "priority": "medium",
+      "duration_s": 0.348
+    },
+    {
+      "test_id": "SEL-0050",
+      "nodeid": "tests/test_accessibility.py::test_scan_history_new_scan_link_is_a_real_anchor",
+      "module": "accessibility",
+      "test_name": "test_scan_history_new_scan_link_is_a_real_anchor",
+      "status": "passed",
+      "priority": "medium",
+      "duration_s": 0.378
+    },
+    {
+      "test_id": "SEL-0051",
+      "nodeid": "tests/test_auth.py::test_login_page_renders",
+      "module": "auth",
+      "test_name": "test_login_page_renders",
+      "status": "passed",
+      "priority": "critical",
+      "duration_s": 0.27
+    },
+    {
+      "test_id": "SEL-0052",
+      "nodeid": "tests/test_auth.py::test_login_empty_submit_blocked",
+      "module": "auth",
+      "test_name": "test_login_empty_submit_blocked",
+      "status": "passed",
+      "priority": "critical",
+      "duration_s": 0.32
+    },
+    {
+      "test_id": "SEL-0053",
+      "nodeid": "tests/test_auth.py::test_login_rejects_bad_credentials",
+      "module": "auth",
+      "test_name": "test_login_rejects_bad_credentials",
+      "status": "passed",
+      "priority": "critical",
+      "duration_s": 0.82
+    },
+    {
+      "test_id": "SEL-0054",
+      "nodeid": "tests/test_auth.py::test_forgot_password_link_navigates_from_login",
+      "module": "auth",
+      "test_name": "test_forgot_password_link_navigates_from_login",
+      "status": "passed",
+      "priority": "critical",
+      "duration_s": 0.293
+    },
+    {
+      "test_id": "SEL-0055",
+      "nodeid": "tests/test_auth.py::test_login_with_valid_credentials_reaches_dashboard",
+      "module": "auth",
+      "test_name": "test_login_with_valid_credentials_reaches_dashboard",
+      "status": "passed",
+      "priority": "critical",
+      "duration_s": 0.354
+    },
+    {
+      "test_id": "SEL-0056",
+      "nodeid": "tests/test_auth.py::test_login_session_persists_after_reload",
+      "module": "auth",
+      "test_name": "test_login_session_persists_after_reload",
+      "status": "passed",
+      "priority": "critical",
+      "duration_s": 0.677
+    },
+    {
+      "test_id": "SEL-0057",
+      "nodeid": "tests/test_auth.py::test_verify_email_missing_token_shows_message",
+      "module": "auth",
+      "test_name": "test_verify_email_missing_token_shows_message",
+      "status": "passed",
+      "priority": "critical",
+      "duration_s": 0.274
+    },
+    {
+      "test_id": "SEL-0058",
+      "nodeid": "tests/test_auth.py::test_verify_email_invalid_token_shows_error",
+      "module": "auth",
+      "test_name": "test_verify_email_invalid_token_shows_error",
+      "status": "passed",
+      "priority": "critical",
+      "duration_s": 0.292
+    },
+    {
+      "test_id": "SEL-0059",
+      "nodeid": "tests/test_auth.py::test_verify_email_resend_shows_confirmation",
+      "module": "auth",
+      "test_name": "test_verify_email_resend_shows_confirmation",
+      "status": "passed",
+      "priority": "critical",
+      "duration_s": 0.458
+    },
+    {
+      "test_id": "SEL-0060",
+      "nodeid": "tests/test_auth.py::test_login_password_field_uses_password_input_type",
+      "module": "auth",
+      "test_name": "test_login_password_field_uses_password_input_type",
+      "status": "passed",
+      "priority": "critical",
+      "duration_s": 0.282
+    },
+    {
+      "test_id": "SEL-0061",
+      "nodeid": "tests/test_auth.py::test_login_email_field_uses_email_input_type",
+      "module": "auth",
+      "test_name": "test_login_email_field_uses_email_input_type",
+      "status": "passed",
+      "priority": "critical",
+      "duration_s": 0.279
+    },
+    {
+      "test_id": "SEL-0062",
+      "nodeid": "tests/test_auth.py::test_login_rejects_malformed_email_without_calling_backend[not-an-email]",
+      "module": "auth",
+      "test_name": "test_login_rejects_malformed_email_without_calling_backend[not-an-email]",
+      "status": "passed",
+      "priority": "critical",
+      "duration_s": 0.444
+    },
+    {
+      "test_id": "SEL-0063",
+      "nodeid": "tests/test_auth.py::test_login_rejects_malformed_email_without_calling_backend[missing-domain@]",
+      "module": "auth",
+      "test_name": "test_login_rejects_malformed_email_without_calling_backend[missing-domain@]",
+      "status": "passed",
+      "priority": "critical",
+      "duration_s": 0.462
+    },
+    {
+      "test_id": "SEL-0064",
+      "nodeid": "tests/test_auth.py::test_login_rejects_malformed_email_without_calling_backend[@missing-local.com]",
+      "module": "auth",
+      "test_name": "test_login_rejects_malformed_email_without_calling_backend[@missing-local.com]",
+      "status": "passed",
+      "priority": "critical",
+      "duration_s": 0.454
+    },
+    {
+      "test_id": "SEL-0065",
+      "nodeid": "tests/test_auth.py::test_login_email_field_retains_value_after_failed_submit",
+      "module": "auth",
+      "test_name": "test_login_email_field_retains_value_after_failed_submit",
+      "status": "passed",
+      "priority": "critical",
+      "duration_s": 0.843
+    },
+    {
+      "test_id": "SEL-0066",
+      "nodeid": "tests/test_auth.py::test_login_error_message_has_alert_role_for_assistive_tech",
+      "module": "auth",
+      "test_name": "test_login_error_message_has_alert_role_for_assistive_tech",
+      "status": "rerun",
+      "priority": "critical",
+      "duration_s": 0.843
+    },
+    {
+      "test_id": "SEL-0067",
+      "nodeid": "tests/test_auth.py::test_login_submit_button_present_and_enabled_on_load",
+      "module": "auth",
+      "test_name": "test_login_submit_button_present_and_enabled_on_load",
+      "status": "passed",
+      "priority": "critical",
+      "duration_s": 0.321
+    },
+    {
+      "test_id": "SEL-0068",
+      "nodeid": "tests/test_auth.py::test_authenticated_session_cookie_present_after_login",
+      "module": "auth",
+      "test_name": "test_authenticated_session_cookie_present_after_login",
+      "status": "passed",
+      "priority": "critical",
+      "duration_s": 0.37
+    },
+    {
+      "test_id": "SEL-0069",
+      "nodeid": "tests/test_auth.py::test_dashboard_reload_does_not_re_trigger_login_redirect",
+      "module": "auth",
+      "test_name": "test_dashboard_reload_does_not_re_trigger_login_redirect",
+      "status": "passed",
+      "priority": "critical",
+      "duration_s": 0.989
+    },
+    {
+      "test_id": "SEL-0070",
+      "nodeid": "tests/test_auth.py::test_login_page_has_a_document_title",
+      "module": "auth",
+      "test_name": "test_login_page_has_a_document_title",
+      "status": "passed",
+      "priority": "critical",
+      "duration_s": 0.26
+    },
+    {
+      "test_id": "SEL-0071",
+      "nodeid": "tests/test_auth.py::test_login_form_uses_post_semantics_not_get",
+      "module": "auth",
+      "test_name": "test_login_form_uses_post_semantics_not_get",
+      "status": "passed",
+      "priority": "critical",
+      "duration_s": 0.787
+    },
+    {
+      "test_id": "SEL-0072",
+      "nodeid": "tests/test_auth.py::test_verify_email_page_survives_direct_reload",
+      "module": "auth",
+      "test_name": "test_verify_email_page_survives_direct_reload",
+      "status": "passed",
+      "priority": "critical",
+      "duration_s": 0.54
+    },
+    {
+      "test_id": "SEL-0073",
+      "nodeid": "tests/test_auth.py::test_login_rejects_bad_credentials_shows_error_only_after_real_backend_round_trip",
+      "module": "auth",
+      "test_name": "test_login_rejects_bad_credentials_shows_error_only_after_real_backend_round_trip",
+      "status": "passed",
+      "priority": "critical",
+      "duration_s": 0.794
+    },
+    {
+      "test_id": "SEL-0074",
+      "nodeid": "tests/test_dashboard.py::test_dashboard_renders_greeting_header",
+      "module": "dashboard",
+      "test_name": "test_dashboard_renders_greeting_header",
+      "status": "passed",
+      "priority": "high",
+      "duration_s": 0.375
+    },
+    {
+      "test_id": "SEL-0075",
+      "nodeid": "tests/test_dashboard.py::test_dashboard_greeting_includes_first_name",
+      "module": "dashboard",
+      "test_name": "test_dashboard_greeting_includes_first_name",
+      "status": "passed",
+      "priority": "high",
+      "duration_s": 0.388
+    },
+    {
+      "test_id": "SEL-0076",
+      "nodeid": "tests/test_dashboard.py::test_dashboard_shows_a_reachable_state",
+      "module": "dashboard",
+      "test_name": "test_dashboard_shows_a_reachable_state",
+      "status": "passed",
+      "priority": "high",
+      "duration_s": 0.37
+    },
+    {
+      "test_id": "SEL-0077",
+      "nodeid": "tests/test_dashboard.py::test_dashboard_analyze_audio_header_link_navigates_to_new_scan",
+      "module": "dashboard",
+      "test_name": "test_dashboard_analyze_audio_header_link_navigates_to_new_scan",
+      "status": "passed",
+      "priority": "high",
+      "duration_s": 0.484
+    },
+    {
+      "test_id": "SEL-0078",
+      "nodeid": "tests/test_dashboard.py::test_dashboard_view_history_quick_action_navigates_when_populated",
+      "module": "dashboard",
+      "test_name": "test_dashboard_view_history_quick_action_navigates_when_populated",
+      "status": "skipped",
+      "priority": "high",
+      "duration_s": 2.389
+    },
+    {
+      "test_id": "SEL-0079",
+      "nodeid": "tests/test_dashboard.py::test_dashboard_page_title_is_set",
+      "module": "dashboard",
+      "test_name": "test_dashboard_page_title_is_set",
+      "status": "passed",
+      "priority": "high",
+      "duration_s": 0.357
+    },
+    {
+      "test_id": "SEL-0080",
+      "nodeid": "tests/test_dashboard.py::test_dashboard_greeting_is_an_h1_heading",
+      "module": "dashboard",
+      "test_name": "test_dashboard_greeting_is_an_h1_heading",
+      "status": "passed",
+      "priority": "high",
+      "duration_s": 0.386
+    },
+    {
+      "test_id": "SEL-0081",
+      "nodeid": "tests/test_dashboard.py::test_dashboard_reachable_directly_via_url_when_authenticated",
+      "module": "dashboard",
+      "test_name": "test_dashboard_reachable_directly_via_url_when_authenticated",
+      "status": "passed",
+      "priority": "high",
+      "duration_s": 0.358
+    },
+    {
+      "test_id": "SEL-0082",
+      "nodeid": "tests/test_dashboard.py::test_dashboard_analyze_audio_link_has_href_to_scan_new",
+      "module": "dashboard",
+      "test_name": "test_dashboard_analyze_audio_link_has_href_to_scan_new",
+      "status": "passed",
+      "priority": "high",
+      "duration_s": 0.391
+    },
+    {
+      "test_id": "SEL-0083",
+      "nodeid": "tests/test_dashboard.py::test_dashboard_title_bar_reflects_app_name",
+      "module": "dashboard",
+      "test_name": "test_dashboard_title_bar_reflects_app_name",
+      "status": "passed",
+      "priority": "high",
+      "duration_s": 0.358
+    },
+    {
+      "test_id": "SEL-0084",
+      "nodeid": "tests/test_dashboard.py::test_dashboard_empty_and_populated_states_are_mutually_exclusive",
+      "module": "dashboard",
+      "test_name": "test_dashboard_empty_and_populated_states_are_mutually_exclusive",
+      "status": "passed",
+      "priority": "high",
+      "duration_s": 2.384
+    },
+    {
+      "test_id": "SEL-0085",
+      "nodeid": "tests/test_error_handling.py::test_scan_result_malformed_id_shows_not_found[not-a-uuid]",
+      "module": "error_handling",
+      "test_name": "test_scan_result_malformed_id_shows_not_found[not-a-uuid]",
+      "status": "passed",
+      "priority": "medium",
+      "duration_s": 0.382
+    },
+    {
+      "test_id": "SEL-0086",
+      "nodeid": "tests/test_error_handling.py::test_scan_result_malformed_id_shows_not_found[0]",
+      "module": "error_handling",
+      "test_name": "test_scan_result_malformed_id_shows_not_found[0]",
+      "status": "passed",
+      "priority": "medium",
+      "duration_s": 0.38
+    },
+    {
+      "test_id": "SEL-0087",
+      "nodeid": "tests/test_error_handling.py::test_scan_result_malformed_id_shows_not_found[' OR '1'='1]",
+      "module": "error_handling",
+      "test_name": "test_scan_result_malformed_id_shows_not_found[' OR '1'='1]",
+      "status": "passed",
+      "priority": "medium",
+      "duration_s": 0.386
+    },
+    {
+      "test_id": "SEL-0088",
+      "nodeid": "tests/test_error_handling.py::test_scan_result_malformed_id_shows_not_found[aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa]",
+      "module": "error_handling",
+      "test_name": "test_scan_result_malformed_id_shows_not_found[aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa]",
+      "status": "passed",
+      "priority": "medium",
+      "duration_s": 0.369
+    },
+    {
+      "test_id": "SEL-0089",
+      "nodeid": "tests/test_error_handling.py::test_scan_result_malformed_id_shows_not_found[\\u65e5\\u672c\\u8a9e-scan-id-\\U0001f3a7]",
+      "module": "error_handling",
+      "test_name": "test_scan_result_malformed_id_shows_not_found[\\u65e5\\u672c\\u8a9e-scan-id-\\U0001f3a7]",
+      "status": "passed",
+      "priority": "medium",
+      "duration_s": 0.372
+    },
+    {
+      "test_id": "SEL-0090",
+      "nodeid": "tests/test_error_handling.py::test_scan_result_malformed_id_shows_not_found[<img src=x onerror=alert(1)>]",
+      "module": "error_handling",
+      "test_name": "test_scan_result_malformed_id_shows_not_found[<img src=x onerror=alert(1)>]",
+      "status": "passed",
+      "priority": "medium",
+      "duration_s": 0.374
+    },
+    {
+      "test_id": "SEL-0091",
+      "nodeid": "tests/test_error_handling.py::test_scan_detail_malformed_id_shows_not_found[not-a-uuid]",
+      "module": "error_handling",
+      "test_name": "test_scan_detail_malformed_id_shows_not_found[not-a-uuid]",
+      "status": "passed",
+      "priority": "medium",
+      "duration_s": 0.337
+    },
+    {
+      "test_id": "SEL-0092",
+      "nodeid": "tests/test_error_handling.py::test_scan_detail_malformed_id_shows_not_found[0]",
+      "module": "error_handling",
+      "test_name": "test_scan_detail_malformed_id_shows_not_found[0]",
+      "status": "passed",
+      "priority": "medium",
+      "duration_s": 0.32
+    },
+    {
+      "test_id": "SEL-0093",
+      "nodeid": "tests/test_error_handling.py::test_scan_detail_malformed_id_shows_not_found[' OR '1'='1]",
+      "module": "error_handling",
+      "test_name": "test_scan_detail_malformed_id_shows_not_found[' OR '1'='1]",
+      "status": "passed",
+      "priority": "medium",
+      "duration_s": 0.362
+    },
+    {
+      "test_id": "SEL-0094",
+      "nodeid": "tests/test_error_handling.py::test_scan_detail_malformed_id_shows_not_found[aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa]",
+      "module": "error_handling",
+      "test_name": "test_scan_detail_malformed_id_shows_not_found[aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa]",
+      "status": "rerun",
+      "priority": "medium",
+      "duration_s": 0.369
+    },
+    {
+      "test_id": "SEL-0095",
+      "nodeid": "tests/test_error_handling.py::test_scan_detail_malformed_id_shows_not_found[\\u65e5\\u672c\\u8a9e-scan-id-\\U0001f3a7]",
+      "module": "error_handling",
+      "test_name": "test_scan_detail_malformed_id_shows_not_found[\\u65e5\\u672c\\u8a9e-scan-id-\\U0001f3a7]",
+      "status": "passed",
+      "priority": "medium",
+      "duration_s": 0.387
+    },
+    {
+      "test_id": "SEL-0096",
+      "nodeid": "tests/test_error_handling.py::test_scan_detail_malformed_id_shows_not_found[<img src=x onerror=alert(1)>]",
+      "module": "error_handling",
+      "test_name": "test_scan_detail_malformed_id_shows_not_found[<img src=x onerror=alert(1)>]",
+      "status": "passed",
+      "priority": "medium",
+      "duration_s": 0.455
+    },
+    {
+      "test_id": "SEL-0097",
+      "nodeid": "tests/test_error_handling.py::test_shared_result_malformed_id_shows_unavailable[not-a-uuid]",
+      "module": "error_handling",
+      "test_name": "test_shared_result_malformed_id_shows_unavailable[not-a-uuid]",
+      "status": "passed",
+      "priority": "medium",
+      "duration_s": 0.46
+    },
+    {
+      "test_id": "SEL-0098",
+      "nodeid": "tests/test_error_handling.py::test_shared_result_malformed_id_shows_unavailable[0]",
+      "module": "error_handling",
+      "test_name": "test_shared_result_malformed_id_shows_unavailable[0]",
+      "status": "passed",
+      "priority": "medium",
+      "duration_s": 0.433
+    },
+    {
+      "test_id": "SEL-0099",
+      "nodeid": "tests/test_error_handling.py::test_shared_result_malformed_id_shows_unavailable[' OR '1'='1]",
+      "module": "error_handling",
+      "test_name": "test_shared_result_malformed_id_shows_unavailable[' OR '1'='1]",
+      "status": "passed",
+      "priority": "medium",
+      "duration_s": 0.379
+    },
+    {
+      "test_id": "SEL-0100",
+      "nodeid": "tests/test_error_handling.py::test_shared_result_malformed_id_shows_unavailable[aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa]",
+      "module": "error_handling",
+      "test_name": "test_shared_result_malformed_id_shows_unavailable[aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa]",
+      "status": "passed",
+      "priority": "medium",
+      "duration_s": 0.4
+    },
+    {
+      "test_id": "SEL-0101",
+      "nodeid": "tests/test_error_handling.py::test_shared_result_malformed_id_shows_unavailable[\\u65e5\\u672c\\u8a9e-scan-id-\\U0001f3a7]",
+      "module": "error_handling",
+      "test_name": "test_shared_result_malformed_id_shows_unavailable[\\u65e5\\u672c\\u8a9e-scan-id-\\U0001f3a7]",
+      "status": "passed",
+      "priority": "medium",
+      "duration_s": 0.4
+    },
+    {
+      "test_id": "SEL-0102",
+      "nodeid": "tests/test_error_handling.py::test_shared_result_malformed_id_shows_unavailable[<img src=x onerror=alert(1)>]",
+      "module": "error_handling",
+      "test_name": "test_shared_result_malformed_id_shows_unavailable[<img src=x onerror=alert(1)>]",
+      "status": "passed",
+      "priority": "medium",
+      "duration_s": 0.4
+    },
+    {
+      "test_id": "SEL-0103",
+      "nodeid": "tests/test_error_handling.py::test_scan_result_empty_id_falls_through_to_generic_404",
+      "module": "error_handling",
+      "test_name": "test_scan_result_empty_id_falls_through_to_generic_404",
+      "status": "passed",
+      "priority": "medium",
+      "duration_s": 0.326
+    },
+    {
+      "test_id": "SEL-0104",
+      "nodeid": "tests/test_error_handling.py::test_shared_result_path_traversal_id_never_reaches_the_app",
+      "module": "error_handling",
+      "test_name": "test_shared_result_path_traversal_id_never_reaches_the_app",
+      "status": "passed",
+      "priority": "medium",
+      "duration_s": 0.256
+    },
+    {
+      "test_id": "SEL-0105",
+      "nodeid": "tests/test_error_handling.py::test_unknown_route_variant_shows_404_or_a_real_route[/this-route-does-not-exist]",
+      "module": "error_handling",
+      "test_name": "test_unknown_route_variant_shows_404_or_a_real_route[/this-route-does-not-exist]",
+      "status": "passed",
+      "priority": "medium",
+      "duration_s": 0.277
+    },
+    {
+      "test_id": "SEL-0106",
+      "nodeid": "tests/test_error_handling.py::test_unknown_route_variant_shows_404_or_a_real_route[/DASHBOARD]",
+      "module": "error_handling",
+      "test_name": "test_unknown_route_variant_shows_404_or_a_real_route[/DASHBOARD]",
+      "status": "passed",
+      "priority": "medium",
+      "duration_s": 0.371
+    },
+    {
+      "test_id": "SEL-0107",
+      "nodeid": "tests/test_error_handling.py::test_unknown_route_variant_shows_404_or_a_real_route[/dashboard/]",
+      "module": "error_handling",
+      "test_name": "test_unknown_route_variant_shows_404_or_a_real_route[/dashboard/]",
+      "status": "passed",
+      "priority": "medium",
+      "duration_s": 0.39
+    },
+    {
+      "test_id": "SEL-0108",
+      "nodeid": "tests/test_error_handling.py::test_unknown_route_variant_shows_404_or_a_real_route[/scan]",
+      "module": "error_handling",
+      "test_name": "test_unknown_route_variant_shows_404_or_a_real_route[/scan]",
+      "status": "passed",
+      "priority": "medium",
+      "duration_s": 0.264
+    },
+    {
+      "test_id": "SEL-0109",
+      "nodeid": "tests/test_error_handling.py::test_unknown_route_variant_shows_404_or_a_real_route[//]",
+      "module": "error_handling",
+      "test_name": "test_unknown_route_variant_shows_404_or_a_real_route[//]",
+      "status": "passed",
+      "priority": "medium",
+      "duration_s": 0.547
+    },
+    {
+      "test_id": "SEL-0110",
+      "nodeid": "tests/test_error_handling.py::test_unknown_route_variant_shows_404_or_a_real_route[/settings/nonexistent-tab]",
+      "module": "error_handling",
+      "test_name": "test_unknown_route_variant_shows_404_or_a_real_route[/settings/nonexistent-tab]",
+      "status": "passed",
+      "priority": "medium",
+      "duration_s": 0.264
+    },
+    {
+      "test_id": "SEL-0111",
+      "nodeid": "tests/test_error_handling.py::test_unknown_route_variant_shows_404_or_a_real_route[/history/]",
+      "module": "error_handling",
+      "test_name": "test_unknown_route_variant_shows_404_or_a_real_route[/history/]",
+      "status": "passed",
+      "priority": "medium",
+      "duration_s": 0.363
+    },
+    {
+      "test_id": "SEL-0112",
+      "nodeid": "tests/test_error_handling.py::test_unknown_route_variant_shows_404_or_a_real_route[/help/../../dashboard]",
+      "module": "error_handling",
+      "test_name": "test_unknown_route_variant_shows_404_or_a_real_route[/help/../../dashboard]",
+      "status": "passed",
+      "priority": "medium",
+      "duration_s": 0.381
+    },
+    {
+      "test_id": "SEL-0113",
+      "nodeid": "tests/test_error_handling.py::test_deeply_nested_unknown_route_shows_404",
+      "module": "error_handling",
+      "test_name": "test_deeply_nested_unknown_route_shows_404",
+      "status": "passed",
+      "priority": "medium",
+      "duration_s": 0.293
+    },
+    {
+      "test_id": "SEL-0114",
+      "nodeid": "tests/test_error_handling.py::test_unknown_route_with_query_string_shows_404",
+      "module": "error_handling",
+      "test_name": "test_unknown_route_with_query_string_shows_404",
+      "status": "passed",
+      "priority": "medium",
+      "duration_s": 0.26
+    },
+    {
+      "test_id": "SEL-0115",
+      "nodeid": "tests/test_error_handling.py::test_help_article_empty_slug_falls_back_to_help_index_or_not_found",
+      "module": "error_handling",
+      "test_name": "test_help_article_empty_slug_falls_back_to_help_index_or_not_found",
+      "status": "passed",
+      "priority": "medium",
+      "duration_s": 0.362
+    },
+    {
+      "test_id": "SEL-0116",
+      "nodeid": "tests/test_error_handling.py::test_help_article_injection_style_slug_shows_not_found_without_executing[<img src=x onerror=alert(1)>]",
+      "module": "error_handling",
+      "test_name": "test_help_article_injection_style_slug_shows_not_found_without_executing[<img src=x onerror=alert(1)>]",
+      "status": "passed",
+      "priority": "medium",
+      "duration_s": 2.33
+    },
+    {
+      "test_id": "SEL-0117",
+      "nodeid": "tests/test_error_handling.py::test_help_article_injection_style_slug_shows_not_found_without_executing[' OR '1'='1]",
+      "module": "error_handling",
+      "test_name": "test_help_article_injection_style_slug_shows_not_found_without_executing[' OR '1'='1]",
+      "status": "passed",
+      "priority": "medium",
+      "duration_s": 2.338
+    },
+    {
+      "test_id": "SEL-0118",
+      "nodeid": "tests/test_error_handling.py::test_help_article_path_traversal_slug_never_reaches_the_app",
+      "module": "error_handling",
+      "test_name": "test_help_article_path_traversal_slug_never_reaches_the_app",
+      "status": "passed",
+      "priority": "medium",
+      "duration_s": 0.26
+    },
+    {
+      "test_id": "SEL-0119",
+      "nodeid": "tests/test_error_handling.py::test_verify_email_empty_token_param_treated_as_missing",
+      "module": "error_handling",
+      "test_name": "test_verify_email_empty_token_param_treated_as_missing",
+      "status": "passed",
+      "priority": "medium",
+      "duration_s": 0.265
+    },
+    {
+      "test_id": "SEL-0120",
+      "nodeid": "tests/test_error_handling.py::test_verify_email_very_long_token_rejected_by_backend",
+      "module": "error_handling",
+      "test_name": "test_verify_email_very_long_token_rejected_by_backend",
+      "status": "passed",
+      "priority": "medium",
+      "duration_s": 0.313
+    },
+    {
+      "test_id": "SEL-0121",
+      "nodeid": "tests/test_error_handling.py::test_reset_password_empty_token_param_shows_invalid_link",
+      "module": "error_handling",
+      "test_name": "test_reset_password_empty_token_param_shows_invalid_link",
+      "status": "passed",
+      "priority": "medium",
+      "duration_s": 0.259
+    },
+    {
+      "test_id": "SEL-0122",
+      "nodeid": "tests/test_error_handling.py::test_reset_password_very_long_token_treated_as_present",
+      "module": "error_handling",
+      "test_name": "test_reset_password_very_long_token_treated_as_present",
+      "status": "passed",
+      "priority": "medium",
+      "duration_s": 0.27
+    },
+    {
+      "test_id": "SEL-0123",
+      "nodeid": "tests/test_error_handling.py::test_scan_processing_malformed_id_param_redirects_or_stays",
+      "module": "error_handling",
+      "test_name": "test_scan_processing_malformed_id_param_redirects_or_stays",
+      "status": "passed",
+      "priority": "medium",
+      "duration_s": 0.386
+    },
+    {
+      "test_id": "SEL-0124",
+      "nodeid": "tests/test_error_handling.py::test_notifications_page_survives_direct_reload",
+      "module": "error_handling",
+      "test_name": "test_notifications_page_survives_direct_reload",
+      "status": "passed",
+      "priority": "medium",
+      "duration_s": 0.661
+    },
+    {
+      "test_id": "SEL-0125",
+      "nodeid": "tests/test_error_handling.py::test_history_page_survives_direct_reload",
+      "module": "error_handling",
+      "test_name": "test_history_page_survives_direct_reload",
+      "status": "rerun",
+      "priority": "medium",
+      "duration_s": 0.766
+    },
+    {
+      "test_id": "SEL-0126",
+      "nodeid": "tests/test_error_handling.py::test_dashboard_survives_rapid_repeated_navigation",
+      "module": "error_handling",
+      "test_name": "test_dashboard_survives_rapid_repeated_navigation",
+      "status": "passed",
+      "priority": "medium",
+      "duration_s": 1.479
+    },
+    {
+      "test_id": "SEL-0127",
+      "nodeid": "tests/test_error_handling.py::test_scan_processing_malformed_id_query_param_does_not_crash[not-a-uuid]",
+      "module": "error_handling",
+      "test_name": "test_scan_processing_malformed_id_query_param_does_not_crash[not-a-uuid]",
+      "status": "passed",
+      "priority": "medium",
+      "duration_s": 0.391
+    },
+    {
+      "test_id": "SEL-0128",
+      "nodeid": "tests/test_error_handling.py::test_scan_processing_malformed_id_query_param_does_not_crash[]",
+      "module": "error_handling",
+      "test_name": "test_scan_processing_malformed_id_query_param_does_not_crash[]",
+      "status": "passed",
+      "priority": "medium",
+      "duration_s": 0.393
+    },
+    {
+      "test_id": "SEL-0129",
+      "nodeid": "tests/test_error_handling.py::test_scan_processing_malformed_id_query_param_does_not_crash[0]",
+      "module": "error_handling",
+      "test_name": "test_scan_processing_malformed_id_query_param_does_not_crash[0]",
+      "status": "passed",
+      "priority": "medium",
+      "duration_s": 0.407
+    },
+    {
+      "test_id": "SEL-0130",
+      "nodeid": "tests/test_error_handling.py::test_scan_processing_malformed_id_query_param_does_not_crash[../../etc/passwd]",
+      "module": "error_handling",
+      "test_name": "test_scan_processing_malformed_id_query_param_does_not_crash[../../etc/passwd]",
+      "status": "passed",
+      "priority": "medium",
+      "duration_s": 0.379
+    },
+    {
+      "test_id": "SEL-0131",
+      "nodeid": "tests/test_error_handling.py::test_scan_processing_malformed_id_query_param_does_not_crash[<script>alert(1)</script>]",
+      "module": "error_handling",
+      "test_name": "test_scan_processing_malformed_id_query_param_does_not_crash[<script>alert(1)</script>]",
+      "status": "passed",
+      "priority": "medium",
+      "duration_s": 0.4
+    },
+    {
+      "test_id": "SEL-0132",
+      "nodeid": "tests/test_error_handling.py::test_scan_processing_malformed_id_query_param_does_not_crash[' OR '1'='1]",
+      "module": "error_handling",
+      "test_name": "test_scan_processing_malformed_id_query_param_does_not_crash[' OR '1'='1]",
+      "status": "passed",
+      "priority": "medium",
+      "duration_s": 0.43
+    },
+    {
+      "test_id": "SEL-0133",
+      "nodeid": "tests/test_error_handling.py::test_scan_processing_malformed_id_query_param_does_not_crash[aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa]",
+      "module": "error_handling",
+      "test_name": "test_scan_processing_malformed_id_query_param_does_not_crash[aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa]",
+      "status": "passed",
+      "priority": "medium",
+      "duration_s": 0.394
+    },
+    {
+      "test_id": "SEL-0134",
+      "nodeid": "tests/test_error_handling.py::test_scan_processing_malformed_id_query_param_does_not_crash[\\u65e5\\u672c\\u8a9e-scan-id-\\U0001f3a7]",
+      "module": "error_handling",
+      "test_name": "test_scan_processing_malformed_id_query_param_does_not_crash[\\u65e5\\u672c\\u8a9e-scan-id-\\U0001f3a7]",
+      "status": "passed",
+      "priority": "medium",
+      "duration_s": 0.412
+    },
+    {
+      "test_id": "SEL-0135",
+      "nodeid": "tests/test_error_handling.py::test_signup_extremely_long_email_rejected",
+      "module": "error_handling",
+      "test_name": "test_signup_extremely_long_email_rejected",
+      "status": "passed",
+      "priority": "medium",
+      "duration_s": 1.317
+    },
+    {
+      "test_id": "SEL-0136",
+      "nodeid": "tests/test_error_handling.py::test_login_extremely_long_password_does_not_crash_the_app",
+      "module": "error_handling",
+      "test_name": "test_login_extremely_long_password_does_not_crash_the_app",
+      "status": "passed",
+      "priority": "medium",
+      "duration_s": 0.499
+    },
+    {
+      "test_id": "SEL-0137",
+      "nodeid": "tests/test_help_feedback.py::test_help_center_renders_article_cards",
+      "module": "help_feedback",
+      "test_name": "test_help_center_renders_article_cards",
+      "status": "passed",
+      "priority": "low",
+      "duration_s": 0.546
+    },
+    {
+      "test_id": "SEL-0138",
+      "nodeid": "tests/test_help_feedback.py::test_help_center_search_filters_articles",
+      "module": "help_feedback",
+      "test_name": "test_help_center_search_filters_articles",
+      "status": "passed",
+      "priority": "low",
+      "duration_s": 0.534
+    },
+    {
+      "test_id": "SEL-0139",
+      "nodeid": "tests/test_help_feedback.py::test_help_center_search_with_no_matches_shows_empty_state",
+      "module": "help_feedback",
+      "test_name": "test_help_center_search_with_no_matches_shows_empty_state",
+      "status": "passed",
+      "priority": "low",
+      "duration_s": 0.537
+    },
+    {
+      "test_id": "SEL-0140",
+      "nodeid": "tests/test_help_feedback.py::test_help_article_page_renders_real_article",
+      "module": "help_feedback",
+      "test_name": "test_help_article_page_renders_real_article",
+      "status": "passed",
+      "priority": "low",
+      "duration_s": 0.355
+    },
+    {
+      "test_id": "SEL-0141",
+      "nodeid": "tests/test_help_feedback.py::test_help_article_page_shows_not_found_for_unknown_slug",
+      "module": "help_feedback",
+      "test_name": "test_help_article_page_shows_not_found_for_unknown_slug",
+      "status": "passed",
+      "priority": "low",
+      "duration_s": 0.353
+    },
+    {
+      "test_id": "SEL-0142",
+      "nodeid": "tests/test_help_feedback.py::test_feedback_form_rejects_message_below_minimum_length",
+      "module": "help_feedback",
+      "test_name": "test_feedback_form_rejects_message_below_minimum_length",
+      "status": "passed",
+      "priority": "low",
+      "duration_s": 0.526
+    },
+    {
+      "test_id": "SEL-0143",
+      "nodeid": "tests/test_help_feedback.py::test_feedback_form_rejects_message_one_char_below_minimum",
+      "module": "help_feedback",
+      "test_name": "test_feedback_form_rejects_message_one_char_below_minimum",
+      "status": "passed",
+      "priority": "low",
+      "duration_s": 0.527
+    },
+    {
+      "test_id": "SEL-0144",
+      "nodeid": "tests/test_help_feedback.py::test_feedback_form_rejects_message_over_maximum_length",
+      "module": "help_feedback",
+      "test_name": "test_feedback_form_rejects_message_over_maximum_length",
+      "status": "passed",
+      "priority": "low",
+      "duration_s": 9.127
+    },
+    {
+      "test_id": "SEL-0145",
+      "nodeid": "tests/test_help_feedback.py::test_feedback_form_accepts_message_at_exact_minimum_length",
+      "module": "help_feedback",
+      "test_name": "test_feedback_form_accepts_message_at_exact_minimum_length",
+      "status": "passed",
+      "priority": "low",
+      "duration_s": 0.676
+    },
+    {
+      "test_id": "SEL-0146",
+      "nodeid": "tests/test_help_feedback.py::test_feedback_scanid_query_param_preselects_incorrect_result_category",
+      "module": "help_feedback",
+      "test_name": "test_feedback_scanid_query_param_preselects_incorrect_result_category",
+      "status": "passed",
+      "priority": "low",
+      "duration_s": 0.421
+    },
+    {
+      "test_id": "SEL-0147",
+      "nodeid": "tests/test_help_feedback.py::test_feedback_without_scanid_query_param_defaults_to_general_category",
+      "module": "help_feedback",
+      "test_name": "test_feedback_without_scanid_query_param_defaults_to_general_category",
+      "status": "passed",
+      "priority": "low",
+      "duration_s": 0.385
+    },
+    {
+      "test_id": "SEL-0148",
+      "nodeid": "tests/test_help_feedback.py::test_feedback_form_submit_reaches_the_real_success_state",
+      "module": "help_feedback",
+      "test_name": "test_feedback_form_submit_reaches_the_real_success_state",
+      "status": "passed",
+      "priority": "low",
+      "duration_s": 0.679
+    },
+    {
+      "test_id": "SEL-0149",
+      "nodeid": "tests/test_help_feedback.py::test_feedback_category_radiogroup_shows_all_categories",
+      "module": "help_feedback",
+      "test_name": "test_feedback_category_radiogroup_shows_all_categories",
+      "status": "passed",
+      "priority": "low",
+      "duration_s": 0.414
+    },
+    {
+      "test_id": "SEL-0150",
+      "nodeid": "tests/test_help_feedback.py::test_feedback_message_textarea_reachable_directly_via_url",
+      "module": "help_feedback",
+      "test_name": "test_feedback_message_textarea_reachable_directly_via_url",
+      "status": "passed",
+      "priority": "low",
+      "duration_s": 0.369
+    },
+    {
+      "test_id": "SEL-0151",
+      "nodeid": "tests/test_help_feedback.py::test_help_center_search_is_case_insensitive",
+      "module": "help_feedback",
+      "test_name": "test_help_center_search_is_case_insensitive",
+      "status": "passed",
+      "priority": "low",
+      "duration_s": 0.535
+    },
+    {
+      "test_id": "SEL-0152",
+      "nodeid": "tests/test_help_feedback.py::test_help_center_category_filter_narrows_results",
+      "module": "help_feedback",
+      "test_name": "test_help_center_category_filter_narrows_results",
+      "status": "passed",
+      "priority": "low",
+      "duration_s": 1.635
+    },
+    {
+      "test_id": "SEL-0153",
+      "nodeid": "tests/test_help_feedback.py::test_help_center_all_topics_button_resets_category_filter",
+      "module": "help_feedback",
+      "test_name": "test_help_center_all_topics_button_resets_category_filter",
+      "status": "passed",
+      "priority": "low",
+      "duration_s": 1.999
+    },
+    {
+      "test_id": "SEL-0154",
+      "nodeid": "tests/test_help_feedback.py::test_help_article_page_has_back_to_help_link",
+      "module": "help_feedback",
+      "test_name": "test_help_article_page_has_back_to_help_link",
+      "status": "passed",
+      "priority": "low",
+      "duration_s": 0.348
+    },
+    {
+      "test_id": "SEL-0155",
+      "nodeid": "tests/test_help_feedback.py::test_help_article_not_found_has_back_to_help_link",
+      "module": "help_feedback",
+      "test_name": "test_help_article_not_found_has_back_to_help_link",
+      "status": "passed",
+      "priority": "low",
+      "duration_s": 0.328
+    },
+    {
+      "test_id": "SEL-0156",
+      "nodeid": "tests/test_help_feedback.py::test_help_center_give_feedback_link_navigates_to_feedback",
+      "module": "help_feedback",
+      "test_name": "test_help_center_give_feedback_link_navigates_to_feedback",
+      "status": "passed",
+      "priority": "low",
+      "duration_s": 0.481
+    },
+    {
+      "test_id": "SEL-0157",
+      "nodeid": "tests/test_history.py::test_history_page_title_renders",
+      "module": "history",
+      "test_name": "test_history_page_title_renders",
+      "status": "passed",
+      "priority": "medium",
+      "duration_s": 0.363
+    },
+    {
+      "test_id": "SEL-0158",
+      "nodeid": "tests/test_history.py::test_history_shows_empty_state_or_table",
+      "module": "history",
+      "test_name": "test_history_shows_empty_state_or_table",
+      "status": "passed",
+      "priority": "medium",
+      "duration_s": 0.41
+    },
+    {
+      "test_id": "SEL-0159",
+      "nodeid": "tests/test_history.py::test_history_new_scan_link_navigates_to_scan_new",
+      "module": "history",
+      "test_name": "test_history_new_scan_link_navigates_to_scan_new",
+      "status": "passed",
+      "priority": "medium",
+      "duration_s": 0.422
+    },
+    {
+      "test_id": "SEL-0160",
+      "nodeid": "tests/test_history.py::test_history_status_filter_defaults_to_all",
+      "module": "history",
+      "test_name": "test_history_status_filter_defaults_to_all",
+      "status": "passed",
+      "priority": "medium",
+      "duration_s": 7.438
+    },
+    {
+      "test_id": "SEL-0161",
+      "nodeid": "tests/test_history.py::test_history_status_filter_can_be_changed",
+      "module": "history",
+      "test_name": "test_history_status_filter_can_be_changed",
+      "status": "passed",
+      "priority": "medium",
+      "duration_s": 7.293
+    },
+    {
+      "test_id": "SEL-0162",
+      "nodeid": "tests/test_history.py::test_history_table_rows_have_accessible_row_role",
+      "module": "history",
+      "test_name": "test_history_table_rows_have_accessible_row_role",
+      "status": "passed",
+      "priority": "medium",
+      "duration_s": 7.394
+    },
+    {
+      "test_id": "SEL-0163",
+      "nodeid": "tests/test_history.py::test_history_reachable_directly_via_url",
+      "module": "history",
+      "test_name": "test_history_reachable_directly_via_url",
+      "status": "passed",
+      "priority": "medium",
+      "duration_s": 0.343
+    },
+    {
+      "test_id": "SEL-0164",
+      "nodeid": "tests/test_history.py::test_history_status_filter_has_all_documented_options",
+      "module": "history",
+      "test_name": "test_history_status_filter_has_all_documented_options",
+      "status": "passed",
+      "priority": "medium",
+      "duration_s": 7.414
+    },
+    {
+      "test_id": "SEL-0165",
+      "nodeid": "tests/test_history.py::test_history_page_title_is_an_h1",
+      "module": "history",
+      "test_name": "test_history_page_title_is_an_h1",
+      "status": "passed",
+      "priority": "medium",
+      "duration_s": 0.395
+    },
+    {
+      "test_id": "SEL-0166",
+      "nodeid": "tests/test_history.py::test_history_selecting_processing_filter_does_not_error",
+      "module": "history",
+      "test_name": "test_history_selecting_processing_filter_does_not_error",
+      "status": "passed",
+      "priority": "medium",
+      "duration_s": 7.43
+    },
+    {
+      "test_id": "SEL-0167",
+      "nodeid": "tests/test_history.py::test_history_selecting_queued_filter_does_not_error",
+      "module": "history",
+      "test_name": "test_history_selecting_queued_filter_does_not_error",
+      "status": "passed",
+      "priority": "medium",
+      "duration_s": 7.405
+    },
+    {
+      "test_id": "SEL-0168",
+      "nodeid": "tests/test_history.py::test_history_selecting_validation_failed_filter_does_not_error",
+      "module": "history",
+      "test_name": "test_history_selecting_validation_failed_filter_does_not_error",
+      "status": "passed",
+      "priority": "medium",
+      "duration_s": 7.494
+    },
+    {
+      "test_id": "SEL-0169",
+      "nodeid": "tests/test_history.py::test_history_selecting_failed_filter_does_not_error",
+      "module": "history",
+      "test_name": "test_history_selecting_failed_filter_does_not_error",
+      "status": "passed",
+      "priority": "medium",
+      "duration_s": 7.491
+    },
+    {
+      "test_id": "SEL-0170",
+      "nodeid": "tests/test_keyboard_navigation.py::test_login_form_real_fields_reachable_via_tab",
+      "module": "keyboard_navigation",
+      "test_name": "test_login_form_real_fields_reachable_via_tab",
+      "status": "passed",
+      "priority": "medium",
+      "duration_s": 0.699
+    },
+    {
+      "test_id": "SEL-0171",
+      "nodeid": "tests/test_keyboard_navigation.py::test_signup_form_real_fields_reachable_via_tab",
+      "module": "keyboard_navigation",
+      "test_name": "test_signup_form_real_fields_reachable_via_tab",
+      "status": "passed",
+      "priority": "medium",
+      "duration_s": 0.678
+    },
+    {
+      "test_id": "SEL-0172",
+      "nodeid": "tests/test_keyboard_navigation.py::test_password_field_uses_type_password_for_assistive_tech",
+      "module": "keyboard_navigation",
+      "test_name": "test_password_field_uses_type_password_for_assistive_tech",
+      "status": "passed",
+      "priority": "medium",
+      "duration_s": 0.302
+    },
+    {
+      "test_id": "SEL-0173",
+      "nodeid": "tests/test_keyboard_navigation.py::test_login_keyboard_only_fill_and_enter_submits",
+      "module": "keyboard_navigation",
+      "test_name": "test_login_keyboard_only_fill_and_enter_submits",
+      "status": "passed",
+      "priority": "medium",
+      "duration_s": 0.971
+    },
+    {
+      "test_id": "SEL-0174",
+      "nodeid": "tests/test_keyboard_navigation.py::test_global_search_opens_via_keyboard_shortcut",
+      "module": "keyboard_navigation",
+      "test_name": "test_global_search_opens_via_keyboard_shortcut",
+      "status": "passed",
+      "priority": "medium",
+      "duration_s": 0.501
+    },
+    {
+      "test_id": "SEL-0175",
+      "nodeid": "tests/test_keyboard_navigation.py::test_global_search_escape_key_closes_dialog",
+      "module": "keyboard_navigation",
+      "test_name": "test_global_search_escape_key_closes_dialog",
+      "status": "passed",
+      "priority": "medium",
+      "duration_s": 3.133
+    },
+    {
+      "test_id": "SEL-0176",
+      "nodeid": "tests/test_keyboard_navigation.py::test_notifications_tabs_reachable_and_activatable_via_keyboard",
+      "module": "keyboard_navigation",
+      "test_name": "test_notifications_tabs_reachable_and_activatable_via_keyboard",
+      "status": "passed",
+      "priority": "medium",
+      "duration_s": 0.512
+    },
+    {
+      "test_id": "SEL-0177",
+      "nodeid": "tests/test_keyboard_navigation.py::test_sidebar_nav_link_reachable_via_tab_on_desktop_viewport",
+      "module": "keyboard_navigation",
+      "test_name": "test_sidebar_nav_link_reachable_via_tab_on_desktop_viewport",
+      "status": "passed",
+      "priority": "medium",
+      "duration_s": 0.431
+    },
+    {
+      "test_id": "SEL-0178",
+      "nodeid": "tests/test_keyboard_navigation.py::test_forgot_password_form_reachable_via_tab",
+      "module": "keyboard_navigation",
+      "test_name": "test_forgot_password_form_reachable_via_tab",
+      "status": "passed",
+      "priority": "medium",
+      "duration_s": 0.369
+    },
+    {
+      "test_id": "SEL-0179",
+      "nodeid": "tests/test_keyboard_navigation.py::test_notification_bell_reachable_via_tab_and_activatable_via_enter",
+      "module": "keyboard_navigation",
+      "test_name": "test_notification_bell_reachable_via_tab_and_activatable_via_enter",
+      "status": "passed",
+      "priority": "medium",
+      "duration_s": 0.569
+    },
+    {
+      "test_id": "SEL-0180",
+      "nodeid": "tests/test_keyboard_navigation.py::test_theme_toggle_reachable_and_activatable_via_keyboard",
+      "module": "keyboard_navigation",
+      "test_name": "test_theme_toggle_reachable_and_activatable_via_keyboard",
+      "status": "passed",
+      "priority": "medium",
+      "duration_s": 0.467
+    },
+    {
+      "test_id": "SEL-0181",
+      "nodeid": "tests/test_keyboard_navigation.py::test_global_search_result_options_reachable_via_arrow_keys",
+      "module": "keyboard_navigation",
+      "test_name": "test_global_search_result_options_reachable_via_arrow_keys",
+      "status": "passed",
+      "priority": "medium",
+      "duration_s": 0.618
+    },
+    {
+      "test_id": "SEL-0182",
+      "nodeid": "tests/test_keyboard_navigation.py::test_signup_keyboard_only_tab_order_reaches_submit_button",
+      "module": "keyboard_navigation",
+      "test_name": "test_signup_keyboard_only_tab_order_reaches_submit_button",
+      "status": "passed",
+      "priority": "medium",
+      "duration_s": 0.518
+    },
+    {
+      "test_id": "SEL-0183",
+      "nodeid": "tests/test_navigation.py::test_sidebar_visible_on_desktop_viewport",
+      "module": "navigation",
+      "test_name": "test_sidebar_visible_on_desktop_viewport",
+      "status": "passed",
+      "priority": "medium",
+      "duration_s": 0.014
+    },
+    {
+      "test_id": "SEL-0184",
+      "nodeid": "tests/test_navigation.py::test_hamburger_hidden_on_desktop_viewport",
+      "module": "navigation",
+      "test_name": "test_hamburger_hidden_on_desktop_viewport",
+      "status": "passed",
+      "priority": "medium",
+      "duration_s": 3.086
+    },
+    {
+      "test_id": "SEL-0185",
+      "nodeid": "tests/test_navigation.py::test_breadcrumb_visible_on_desktop_viewport",
+      "module": "navigation",
+      "test_name": "test_breadcrumb_visible_on_desktop_viewport",
+      "status": "passed",
+      "priority": "medium",
+      "duration_s": 0.014
+    },
+    {
+      "test_id": "SEL-0186",
+      "nodeid": "tests/test_navigation.py::test_breadcrumb_shows_dashboard_root_and_current_page",
+      "module": "navigation",
+      "test_name": "test_breadcrumb_shows_dashboard_root_and_current_page",
+      "status": "passed",
+      "priority": "medium",
+      "duration_s": 0.4
+    },
+    {
+      "test_id": "SEL-0187",
+      "nodeid": "tests/test_navigation.py::test_sidebar_dashboard_link_active_on_dashboard",
+      "module": "navigation",
+      "test_name": "test_sidebar_dashboard_link_active_on_dashboard",
+      "status": "passed",
+      "priority": "medium",
+      "duration_s": 0.032
+    },
+    {
+      "test_id": "SEL-0188",
+      "nodeid": "tests/test_navigation.py::test_sidebar_history_link_navigates",
+      "module": "navigation",
+      "test_name": "test_sidebar_history_link_navigates",
+      "status": "passed",
+      "priority": "medium",
+      "duration_s": 0.113
+    },
+    {
+      "test_id": "SEL-0189",
+      "nodeid": "tests/test_navigation.py::test_sidebar_new_scan_link_navigates",
+      "module": "navigation",
+      "test_name": "test_sidebar_new_scan_link_navigates",
+      "status": "passed",
+      "priority": "medium",
+      "duration_s": 0.107
+    },
+    {
+      "test_id": "SEL-0190",
+      "nodeid": "tests/test_navigation.py::test_sidebar_help_center_link_navigates",
+      "module": "navigation",
+      "test_name": "test_sidebar_help_center_link_navigates",
+      "status": "passed",
+      "priority": "medium",
+      "duration_s": 0.149
+    },
+    {
+      "test_id": "SEL-0191",
+      "nodeid": "tests/test_navigation.py::test_sidebar_give_feedback_link_navigates",
+      "module": "navigation",
+      "test_name": "test_sidebar_give_feedback_link_navigates",
+      "status": "passed",
+      "priority": "medium",
+      "duration_s": 0.58
+    },
+    {
+      "test_id": "SEL-0192",
+      "nodeid": "tests/test_navigation.py::test_sidebar_settings_link_navigates",
+      "module": "navigation",
+      "test_name": "test_sidebar_settings_link_navigates",
+      "status": "passed",
+      "priority": "medium",
+      "duration_s": 0.228
+    },
+    {
+      "test_id": "SEL-0193",
+      "nodeid": "tests/test_navigation.py::test_sidebar_collapse_toggle_collapses_and_expands",
+      "module": "navigation",
+      "test_name": "test_sidebar_collapse_toggle_collapses_and_expands",
+      "status": "passed",
+      "priority": "medium",
+      "duration_s": 0.329
+    },
+    {
+      "test_id": "SEL-0194",
+      "nodeid": "tests/test_navigation.py::test_user_menu_opens_from_sidebar_and_shows_account_links",
+      "module": "navigation",
+      "test_name": "test_user_menu_opens_from_sidebar_and_shows_account_links",
+      "status": "passed",
+      "priority": "medium",
+      "duration_s": 0.182
+    },
+    {
+      "test_id": "SEL-0195",
+      "nodeid": "tests/test_navigation.py::test_user_menu_profile_link_navigates_to_settings_profile",
+      "module": "navigation",
+      "test_name": "test_user_menu_profile_link_navigates_to_settings_profile",
+      "status": "passed",
+      "priority": "medium",
+      "duration_s": 0.253
+    },
+    {
+      "test_id": "SEL-0196",
+      "nodeid": "tests/test_navigation.py::test_global_search_opens_via_desktop_trigger",
+      "module": "navigation",
+      "test_name": "test_global_search_opens_via_desktop_trigger",
+      "status": "passed",
+      "priority": "medium",
+      "duration_s": 0.116
+    },
+    {
+      "test_id": "SEL-0197",
+      "nodeid": "tests/test_navigation.py::test_global_search_shows_quick_actions_by_default",
+      "module": "navigation",
+      "test_name": "test_global_search_shows_quick_actions_by_default",
+      "status": "passed",
+      "priority": "medium",
+      "duration_s": 0.216
+    },
+    {
+      "test_id": "SEL-0198",
+      "nodeid": "tests/test_navigation.py::test_global_search_filters_results_by_query",
+      "module": "navigation",
+      "test_name": "test_global_search_filters_results_by_query",
+      "status": "passed",
+      "priority": "medium",
+      "duration_s": 0.237
+    },
+    {
+      "test_id": "SEL-0199",
+      "nodeid": "tests/test_navigation.py::test_global_search_no_results_for_gibberish_query",
+      "module": "navigation",
+      "test_name": "test_global_search_no_results_for_gibberish_query",
+      "status": "passed",
+      "priority": "medium",
+      "duration_s": 0.272
+    },
+    {
+      "test_id": "SEL-0200",
+      "nodeid": "tests/test_navigation.py::test_global_search_select_result_navigates_and_closes",
+      "module": "navigation",
+      "test_name": "test_global_search_select_result_navigates_and_closes",
+      "status": "passed",
+      "priority": "medium",
+      "duration_s": 2.8
+    },
+    {
+      "test_id": "SEL-0201",
+      "nodeid": "tests/test_navigation.py::test_global_search_close_button_closes_without_navigating",
+      "module": "navigation",
+      "test_name": "test_global_search_close_button_closes_without_navigating",
+      "status": "passed",
+      "priority": "medium",
+      "duration_s": 9.764
+    },
+    {
+      "test_id": "SEL-0202",
+      "nodeid": "tests/test_navigation.py::test_notification_center_opens_via_bell",
+      "module": "navigation",
+      "test_name": "test_notification_center_opens_via_bell",
+      "status": "passed",
+      "priority": "medium",
+      "duration_s": 0.186
+    },
+    {
+      "test_id": "SEL-0203",
+      "nodeid": "tests/test_navigation.py::test_notification_center_closes_via_close_button",
+      "module": "navigation",
+      "test_name": "test_notification_center_closes_via_close_button",
+      "status": "passed",
+      "priority": "medium",
+      "duration_s": 9.844
+    },
+    {
+      "test_id": "SEL-0204",
+      "nodeid": "tests/test_navigation.py::test_notification_center_view_all_navigates_to_notifications_page",
+      "module": "navigation",
+      "test_name": "test_notification_center_view_all_navigates_to_notifications_page",
+      "status": "passed",
+      "priority": "medium",
+      "duration_s": 0.257
+    },
+    {
+      "test_id": "SEL-0205",
+      "nodeid": "tests/test_navigation.py::test_theme_toggle_cycles_theme",
+      "module": "navigation",
+      "test_name": "test_theme_toggle_cycles_theme",
+      "status": "passed",
+      "priority": "medium",
+      "duration_s": 0.104
+    },
+    {
+      "test_id": "SEL-0206",
+      "nodeid": "tests/test_navigation.py::test_sidebar_collapse_state_persists_across_navigation",
+      "module": "navigation",
+      "test_name": "test_sidebar_collapse_state_persists_across_navigation",
+      "status": "passed",
+      "priority": "medium",
+      "duration_s": 0.472
+    },
+    {
+      "test_id": "SEL-0207",
+      "nodeid": "tests/test_navigation.py::test_sidebar_notifications_link_navigates",
+      "module": "navigation",
+      "test_name": "test_sidebar_notifications_link_navigates",
+      "status": "passed",
+      "priority": "medium",
+      "duration_s": 0.104
+    },
+    {
+      "test_id": "SEL-0208",
+      "nodeid": "tests/test_navigation.py::test_sidebar_dashboard_link_navigates_back_from_another_page",
+      "module": "navigation",
+      "test_name": "test_sidebar_dashboard_link_navigates_back_from_another_page",
+      "status": "passed",
+      "priority": "medium",
+      "duration_s": 0.198
+    },
+    {
+      "test_id": "SEL-0209",
+      "nodeid": "tests/test_navigation.py::test_sidebar_history_link_active_on_history_page",
+      "module": "navigation",
+      "test_name": "test_sidebar_history_link_active_on_history_page",
+      "status": "passed",
+      "priority": "medium",
+      "duration_s": 0.15
+    },
+    {
+      "test_id": "SEL-0210",
+      "nodeid": "tests/test_navigation.py::test_breadcrumb_shows_settings_section_on_settings_pages",
+      "module": "navigation",
+      "test_name": "test_breadcrumb_shows_settings_section_on_settings_pages",
+      "status": "passed",
+      "priority": "medium",
+      "duration_s": 0.403
+    },
+    {
+      "test_id": "SEL-0211",
+      "nodeid": "tests/test_navigation.py::test_user_menu_appearance_link_navigates_to_settings_appearance",
+      "module": "navigation",
+      "test_name": "test_user_menu_appearance_link_navigates_to_settings_appearance",
+      "status": "passed",
+      "priority": "medium",
+      "duration_s": 0.236
+    },
+    {
+      "test_id": "SEL-0212",
+      "nodeid": "tests/test_navigation.py::test_user_menu_account_link_navigates_to_settings_account",
+      "module": "navigation",
+      "test_name": "test_user_menu_account_link_navigates_to_settings_account",
+      "status": "passed",
+      "priority": "medium",
+      "duration_s": 0.734
+    },
+    {
+      "test_id": "SEL-0213",
+      "nodeid": "tests/test_navigation.py::test_global_search_result_labels_include_settings",
+      "module": "navigation",
+      "test_name": "test_global_search_result_labels_include_settings",
+      "status": "passed",
+      "priority": "medium",
+      "duration_s": 2.823
+    },
+    {
+      "test_id": "SEL-0214",
+      "nodeid": "tests/test_navigation.py::test_global_search_input_clears_between_openings",
+      "module": "navigation",
+      "test_name": "test_global_search_input_clears_between_openings",
+      "status": "passed",
+      "priority": "medium",
+      "duration_s": 5.452
+    },
+    {
+      "test_id": "SEL-0215",
+      "nodeid": "tests/test_navigation.py::test_notification_center_panel_has_dialog_role_for_assistive_tech",
+      "module": "navigation",
+      "test_name": "test_notification_center_panel_has_dialog_role_for_assistive_tech",
+      "status": "passed",
+      "priority": "medium",
+      "duration_s": 2.738
+    },
+    {
+      "test_id": "SEL-0216",
+      "nodeid": "tests/test_notifications.py::test_notifications_page_shows_filter_tabs",
+      "module": "notifications",
+      "test_name": "test_notifications_page_shows_filter_tabs",
+      "status": "passed",
+      "priority": "medium",
+      "duration_s": 0.372
+    },
+    {
+      "test_id": "SEL-0217",
+      "nodeid": "tests/test_notifications.py::test_notifications_all_tab_selected_by_default",
+      "module": "notifications",
+      "test_name": "test_notifications_all_tab_selected_by_default",
+      "status": "passed",
+      "priority": "medium",
+      "duration_s": 0.361
+    },
+    {
+      "test_id": "SEL-0218",
+      "nodeid": "tests/test_notifications.py::test_notifications_can_switch_to_unread_tab",
+      "module": "notifications",
+      "test_name": "test_notifications_can_switch_to_unread_tab",
+      "status": "passed",
+      "priority": "medium",
+      "duration_s": 0.461
+    },
+    {
+      "test_id": "SEL-0219",
+      "nodeid": "tests/test_notifications.py::test_notifications_can_switch_to_read_tab",
+      "module": "notifications",
+      "test_name": "test_notifications_can_switch_to_read_tab",
+      "status": "passed",
+      "priority": "medium",
+      "duration_s": 0.497
+    },
+    {
+      "test_id": "SEL-0220",
+      "nodeid": "tests/test_notifications.py::test_notifications_tabs_have_tab_role_for_assistive_tech",
+      "module": "notifications",
+      "test_name": "test_notifications_tabs_have_tab_role_for_assistive_tech",
+      "status": "passed",
+      "priority": "medium",
+      "duration_s": 0.4
+    },
+    {
+      "test_id": "SEL-0221",
+      "nodeid": "tests/test_notifications.py::test_notifications_tablist_has_tablist_role",
+      "module": "notifications",
+      "test_name": "test_notifications_tablist_has_tablist_role",
+      "status": "passed",
+      "priority": "medium",
+      "duration_s": 0.382
+    },
+    {
+      "test_id": "SEL-0222",
+      "nodeid": "tests/test_notifications.py::test_notifications_page_reachable_directly_via_url",
+      "module": "notifications",
+      "test_name": "test_notifications_page_reachable_directly_via_url",
+      "status": "passed",
+      "priority": "medium",
+      "duration_s": 0.389
+    },
+    {
+      "test_id": "SEL-0223",
+      "nodeid": "tests/test_notifications.py::test_notifications_switching_tabs_does_not_change_url",
+      "module": "notifications",
+      "test_name": "test_notifications_switching_tabs_does_not_change_url",
+      "status": "passed",
+      "priority": "medium",
+      "duration_s": 0.502
+    },
+    {
+      "test_id": "SEL-0224",
+      "nodeid": "tests/test_notifications.py::test_notifications_unread_tab_label_starts_with_unread",
+      "module": "notifications",
+      "test_name": "test_notifications_unread_tab_label_starts_with_unread",
+      "status": "passed",
+      "priority": "medium",
+      "duration_s": 0.445
+    },
+    {
+      "test_id": "SEL-0225",
+      "nodeid": "tests/test_notifications.py::test_notifications_page_survives_switching_tabs_twice",
+      "module": "notifications",
+      "test_name": "test_notifications_page_survives_switching_tabs_twice",
+      "status": "passed",
+      "priority": "medium",
+      "duration_s": 1.373
+    },
+    {
+      "test_id": "SEL-0226",
+      "nodeid": "tests/test_notifications.py::test_notifications_only_one_tab_selected_at_a_time",
+      "module": "notifications",
+      "test_name": "test_notifications_only_one_tab_selected_at_a_time",
+      "status": "passed",
+      "priority": "medium",
+      "duration_s": 0.672
+    },
+    {
+      "test_id": "SEL-0227",
+      "nodeid": "tests/test_onboarding.py::test_onboarding_welcome_step_shown",
+      "module": "onboarding",
+      "test_name": "test_onboarding_welcome_step_shown",
+      "status": "passed",
+      "priority": "medium",
+      "duration_s": 0.334
+    },
+    {
+      "test_id": "SEL-0228",
+      "nodeid": "tests/test_onboarding.py::test_onboarding_advances_to_use_case_step",
+      "module": "onboarding",
+      "test_name": "test_onboarding_advances_to_use_case_step",
+      "status": "passed",
+      "priority": "medium",
+      "duration_s": 0.566
+    },
+    {
+      "test_id": "SEL-0229",
+      "nodeid": "tests/test_onboarding.py::test_onboarding_advances_to_privacy_step",
+      "module": "onboarding",
+      "test_name": "test_onboarding_advances_to_privacy_step",
+      "status": "passed",
+      "priority": "medium",
+      "duration_s": 0.888
+    },
+    {
+      "test_id": "SEL-0230",
+      "nodeid": "tests/test_onboarding.py::test_onboarding_finish_navigates_to_dashboard",
+      "module": "onboarding",
+      "test_name": "test_onboarding_finish_navigates_to_dashboard",
+      "status": "passed",
+      "priority": "medium",
+      "duration_s": 1.023
+    },
+    {
+      "test_id": "SEL-0231",
+      "nodeid": "tests/test_onboarding.py::test_onboarding_reachable_directly_via_url_when_authenticated",
+      "module": "onboarding",
+      "test_name": "test_onboarding_reachable_directly_via_url_when_authenticated",
+      "status": "passed",
+      "priority": "medium",
+      "duration_s": 0.276
+    },
+    {
+      "test_id": "SEL-0232",
+      "nodeid": "tests/test_onboarding.py::test_onboarding_use_case_step_shows_curiosity_option",
+      "module": "onboarding",
+      "test_name": "test_onboarding_use_case_step_shows_curiosity_option",
+      "status": "passed",
+      "priority": "medium",
+      "duration_s": 0.54
+    },
+    {
+      "test_id": "SEL-0233",
+      "nodeid": "tests/test_onboarding.py::test_onboarding_privacy_step_shows_a_real_list",
+      "module": "onboarding",
+      "test_name": "test_onboarding_privacy_step_shows_a_real_list",
+      "status": "passed",
+      "priority": "medium",
+      "duration_s": 0.875
+    },
+    {
+      "test_id": "SEL-0234",
+      "nodeid": "tests/test_password_recovery.py::test_forgot_password_page_renders",
+      "module": "password_recovery",
+      "test_name": "test_forgot_password_page_renders",
+      "status": "passed",
+      "priority": "high",
+      "duration_s": 0.268
+    },
+    {
+      "test_id": "SEL-0235",
+      "nodeid": "tests/test_password_recovery.py::test_forgot_password_empty_submit_blocked",
+      "module": "password_recovery",
+      "test_name": "test_forgot_password_empty_submit_blocked",
+      "status": "passed",
+      "priority": "high",
+      "duration_s": 0.34
+    },
+    {
+      "test_id": "SEL-0236",
+      "nodeid": "tests/test_password_recovery.py::test_forgot_password_invalid_email_blocked[not-an-email]",
+      "module": "password_recovery",
+      "test_name": "test_forgot_password_invalid_email_blocked[not-an-email]",
+      "status": "passed",
+      "priority": "high",
+      "duration_s": 0.372
+    },
+    {
+      "test_id": "SEL-0237",
+      "nodeid": "tests/test_password_recovery.py::test_forgot_password_invalid_email_blocked[missing-domain@]",
+      "module": "password_recovery",
+      "test_name": "test_forgot_password_invalid_email_blocked[missing-domain@]",
+      "status": "passed",
+      "priority": "high",
+      "duration_s": 0.374
+    },
+    {
+      "test_id": "SEL-0238",
+      "nodeid": "tests/test_password_recovery.py::test_forgot_password_invalid_email_blocked[@missing-local.com]",
+      "module": "password_recovery",
+      "test_name": "test_forgot_password_invalid_email_blocked[@missing-local.com]",
+      "status": "passed",
+      "priority": "high",
+      "duration_s": 0.381
+    },
+    {
+      "test_id": "SEL-0239",
+      "nodeid": "tests/test_password_recovery.py::test_forgot_password_submit_shows_check_email",
+      "module": "password_recovery",
+      "test_name": "test_forgot_password_submit_shows_check_email",
+      "status": "passed",
+      "priority": "high",
+      "duration_s": 0.387
+    },
+    {
+      "test_id": "SEL-0240",
+      "nodeid": "tests/test_password_recovery.py::test_reset_password_no_token_shows_invalid_link",
+      "module": "password_recovery",
+      "test_name": "test_reset_password_no_token_shows_invalid_link",
+      "status": "passed",
+      "priority": "high",
+      "duration_s": 0.279
+    },
+    {
+      "test_id": "SEL-0241",
+      "nodeid": "tests/test_password_recovery.py::test_reset_password_form_shown_when_token_present",
+      "module": "password_recovery",
+      "test_name": "test_reset_password_form_shown_when_token_present",
+      "status": "passed",
+      "priority": "high",
+      "duration_s": 0.285
+    },
+    {
+      "test_id": "SEL-0242",
+      "nodeid": "tests/test_password_recovery.py::test_reset_password_rejects_mismatched_passwords",
+      "module": "password_recovery",
+      "test_name": "test_reset_password_rejects_mismatched_passwords",
+      "status": "passed",
+      "priority": "high",
+      "duration_s": 0.551
+    },
+    {
+      "test_id": "SEL-0243",
+      "nodeid": "tests/test_password_recovery.py::test_reset_password_rejects_weak_password[no_digit]",
+      "module": "password_recovery",
+      "test_name": "test_reset_password_rejects_weak_password[no_digit]",
+      "status": "passed",
+      "priority": "high",
+      "duration_s": 0.518
+    },
+    {
+      "test_id": "SEL-0244",
+      "nodeid": "tests/test_password_recovery.py::test_reset_password_rejects_weak_password[no_lowercase]",
+      "module": "password_recovery",
+      "test_name": "test_reset_password_rejects_weak_password[no_lowercase]",
+      "status": "passed",
+      "priority": "high",
+      "duration_s": 0.5
+    },
+    {
+      "test_id": "SEL-0245",
+      "nodeid": "tests/test_password_recovery.py::test_reset_password_rejects_weak_password[no_special]",
+      "module": "password_recovery",
+      "test_name": "test_reset_password_rejects_weak_password[no_special]",
+      "status": "passed",
+      "priority": "high",
+      "duration_s": 0.526
+    },
+    {
+      "test_id": "SEL-0246",
+      "nodeid": "tests/test_password_recovery.py::test_reset_password_rejects_weak_password[no_uppercase]",
+      "module": "password_recovery",
+      "test_name": "test_reset_password_rejects_weak_password[no_uppercase]",
+      "status": "passed",
+      "priority": "high",
+      "duration_s": 1.396
+    },
+    {
+      "test_id": "SEL-0247",
+      "nodeid": "tests/test_password_recovery.py::test_reset_password_rejects_weak_password[too_short]",
+      "module": "password_recovery",
+      "test_name": "test_reset_password_rejects_weak_password[too_short]",
+      "status": "passed",
+      "priority": "high",
+      "duration_s": 0.498
+    },
+    {
+      "test_id": "SEL-0248",
+      "nodeid": "tests/test_password_recovery.py::test_reset_password_garbage_token_rejected_by_backend",
+      "module": "password_recovery",
+      "test_name": "test_reset_password_garbage_token_rejected_by_backend",
+      "status": "passed",
+      "priority": "high",
+      "duration_s": 0.675
+    },
+    {
+      "test_id": "SEL-0249",
+      "nodeid": "tests/test_password_recovery.py::test_reset_password_field_uses_password_input_type",
+      "module": "password_recovery",
+      "test_name": "test_reset_password_field_uses_password_input_type",
+      "status": "passed",
+      "priority": "high",
+      "duration_s": 0.327
+    },
+    {
+      "test_id": "SEL-0250",
+      "nodeid": "tests/test_password_recovery.py::test_forgot_password_email_field_uses_email_input_type",
+      "module": "password_recovery",
+      "test_name": "test_forgot_password_email_field_uses_email_input_type",
+      "status": "passed",
+      "priority": "high",
+      "duration_s": 0.292
+    },
+    {
+      "test_id": "SEL-0251",
+      "nodeid": "tests/test_password_recovery.py::test_reset_password_empty_submit_blocked",
+      "module": "password_recovery",
+      "test_name": "test_reset_password_empty_submit_blocked",
+      "status": "passed",
+      "priority": "high",
+      "duration_s": 0.361
+    },
+    {
+      "test_id": "SEL-0252",
+      "nodeid": "tests/test_performance_smoke.py::test_landing_page_navigation_timing_api_is_available",
+      "module": "performance_smoke",
+      "test_name": "test_landing_page_navigation_timing_api_is_available",
+      "status": "passed",
+      "priority": "low",
+      "duration_s": 0.399
+    },
+    {
+      "test_id": "SEL-0253",
+      "nodeid": "tests/test_performance_smoke.py::test_landing_page_dom_content_loaded_within_ceiling",
+      "module": "performance_smoke",
+      "test_name": "test_landing_page_dom_content_loaded_within_ceiling",
+      "status": "passed",
+      "priority": "low",
+      "duration_s": 0.402
+    },
+    {
+      "test_id": "SEL-0254",
+      "nodeid": "tests/test_performance_smoke.py::test_landing_page_full_load_within_ceiling",
+      "module": "performance_smoke",
+      "test_name": "test_landing_page_full_load_within_ceiling",
+      "status": "passed",
+      "priority": "low",
+      "duration_s": 0.405
+    },
+    {
+      "test_id": "SEL-0255",
+      "nodeid": "tests/test_performance_smoke.py::test_login_page_dom_content_loaded_within_ceiling",
+      "module": "performance_smoke",
+      "test_name": "test_login_page_dom_content_loaded_within_ceiling",
+      "status": "passed",
+      "priority": "low",
+      "duration_s": 0.261
+    },
+    {
+      "test_id": "SEL-0256",
+      "nodeid": "tests/test_performance_smoke.py::test_dashboard_dom_content_loaded_within_ceiling",
+      "module": "performance_smoke",
+      "test_name": "test_dashboard_dom_content_loaded_within_ceiling",
+      "status": "passed",
+      "priority": "low",
+      "duration_s": 0.356
+    },
+    {
+      "test_id": "SEL-0257",
+      "nodeid": "tests/test_performance_smoke.py::test_backend_first_byte_within_ceiling_on_dashboard",
+      "module": "performance_smoke",
+      "test_name": "test_backend_first_byte_within_ceiling_on_dashboard",
+      "status": "passed",
+      "priority": "low",
+      "duration_s": 0.352
+    },
+    {
+      "test_id": "SEL-0258",
+      "nodeid": "tests/test_performance_smoke.py::test_authenticated_route_dom_content_loaded_within_ceiling[/history]",
+      "module": "performance_smoke",
+      "test_name": "test_authenticated_route_dom_content_loaded_within_ceiling[/history]",
+      "status": "passed",
+      "priority": "low",
+      "duration_s": 0.34
+    },
+    {
+      "test_id": "SEL-0259",
+      "nodeid": "tests/test_performance_smoke.py::test_authenticated_route_dom_content_loaded_within_ceiling[/notifications]",
+      "module": "performance_smoke",
+      "test_name": "test_authenticated_route_dom_content_loaded_within_ceiling[/notifications]",
+      "status": "passed",
+      "priority": "low",
+      "duration_s": 0.358
+    },
+    {
+      "test_id": "SEL-0260",
+      "nodeid": "tests/test_performance_smoke.py::test_authenticated_route_dom_content_loaded_within_ceiling[/help]",
+      "module": "performance_smoke",
+      "test_name": "test_authenticated_route_dom_content_loaded_within_ceiling[/help]",
+      "status": "passed",
+      "priority": "low",
+      "duration_s": 0.337
+    },
+    {
+      "test_id": "SEL-0261",
+      "nodeid": "tests/test_performance_smoke.py::test_authenticated_route_dom_content_loaded_within_ceiling[/feedback]",
+      "module": "performance_smoke",
+      "test_name": "test_authenticated_route_dom_content_loaded_within_ceiling[/feedback]",
+      "status": "passed",
+      "priority": "low",
+      "duration_s": 0.332
+    },
+    {
+      "test_id": "SEL-0262",
+      "nodeid": "tests/test_performance_smoke.py::test_authenticated_route_dom_content_loaded_within_ceiling[/scan/new]",
+      "module": "performance_smoke",
+      "test_name": "test_authenticated_route_dom_content_loaded_within_ceiling[/scan/new]",
+      "status": "passed",
+      "priority": "low",
+      "duration_s": 0.352
+    },
+    {
+      "test_id": "SEL-0263",
+      "nodeid": "tests/test_performance_smoke.py::test_authenticated_route_dom_content_loaded_within_ceiling[/settings/profile]",
+      "module": "performance_smoke",
+      "test_name": "test_authenticated_route_dom_content_loaded_within_ceiling[/settings/profile]",
+      "status": "passed",
+      "priority": "low",
+      "duration_s": 0.345
+    },
+    {
+      "test_id": "SEL-0264",
+      "nodeid": "tests/test_performance_smoke.py::test_signup_page_dom_content_loaded_within_ceiling",
+      "module": "performance_smoke",
+      "test_name": "test_signup_page_dom_content_loaded_within_ceiling",
+      "status": "passed",
+      "priority": "low",
+      "duration_s": 0.286
+    },
+    {
+      "test_id": "SEL-0265",
+      "nodeid": "tests/test_performance_smoke.py::test_history_backend_first_byte_within_ceiling",
+      "module": "performance_smoke",
+      "test_name": "test_history_backend_first_byte_within_ceiling",
+      "status": "passed",
+      "priority": "low",
+      "duration_s": 0.333
+    },
+    {
+      "test_id": "SEL-0266",
+      "nodeid": "tests/test_performance_smoke.py::test_landing_page_response_start_within_ceiling",
+      "module": "performance_smoke",
+      "test_name": "test_landing_page_response_start_within_ceiling",
+      "status": "passed",
+      "priority": "low",
+      "duration_s": 0.409
+    },
+    {
+      "test_id": "SEL-0267",
+      "nodeid": "tests/test_public_pages.py::test_landing_page_loads",
+      "module": "public_pages",
+      "test_name": "test_landing_page_loads",
+      "status": "passed",
+      "priority": "medium",
+      "duration_s": 0.404
+    },
+    {
+      "test_id": "SEL-0268",
+      "nodeid": "tests/test_public_pages.py::test_landing_page_main_content_visible",
+      "module": "public_pages",
+      "test_name": "test_landing_page_main_content_visible",
+      "status": "passed",
+      "priority": "medium",
+      "duration_s": 0.4
+    },
+    {
+      "test_id": "SEL-0269",
+      "nodeid": "tests/test_public_pages.py::test_unknown_route_shows_404",
       "module": "public_pages",
       "test_name": "test_unknown_route_shows_404",
       "status": "passed",
-      "priority": "unspecified",
+      "priority": "medium",
+      "duration_s": 0.281
+    },
+    {
+      "test_id": "SEL-0270",
+      "nodeid": "tests/test_public_pages.py::test_404_page_has_return_home_link",
+      "module": "public_pages",
+      "test_name": "test_404_page_has_return_home_link",
+      "status": "passed",
+      "priority": "medium",
+      "duration_s": 0.258
+    },
+    {
+      "test_id": "SEL-0271",
+      "nodeid": "tests/test_public_pages.py::test_404_page_return_home_link_navigates_to_landing_page",
+      "module": "public_pages",
+      "test_name": "test_404_page_return_home_link_navigates_to_landing_page",
+      "status": "passed",
+      "priority": "medium",
+      "duration_s": 0.693
+    },
+    {
+      "test_id": "SEL-0272",
+      "nodeid": "tests/test_public_pages.py::test_404_page_shown_for_a_nested_unknown_route",
+      "module": "public_pages",
+      "test_name": "test_404_page_shown_for_a_nested_unknown_route",
+      "status": "passed",
+      "priority": "medium",
+      "duration_s": 0.278
+    },
+    {
+      "test_id": "SEL-0273",
+      "nodeid": "tests/test_public_pages.py::test_landing_page_analyze_audio_cta_navigates_to_signup",
+      "module": "public_pages",
+      "test_name": "test_landing_page_analyze_audio_cta_navigates_to_signup",
+      "status": "passed",
+      "priority": "medium",
       "duration_s": 0.444
+    },
+    {
+      "test_id": "SEL-0274",
+      "nodeid": "tests/test_public_pages.py::test_landing_page_sign_in_link_navigates_to_login",
+      "module": "public_pages",
+      "test_name": "test_landing_page_sign_in_link_navigates_to_login",
+      "status": "passed",
+      "priority": "medium",
+      "duration_s": 0.451
+    },
+    {
+      "test_id": "SEL-0275",
+      "nodeid": "tests/test_public_pages.py::test_landing_page_has_skip_to_content_link",
+      "module": "public_pages",
+      "test_name": "test_landing_page_has_skip_to_content_link",
+      "status": "passed",
+      "priority": "medium",
+      "duration_s": 0.415
+    },
+    {
+      "test_id": "SEL-0276",
+      "nodeid": "tests/test_public_pages.py::test_landing_page_has_a_document_title",
+      "module": "public_pages",
+      "test_name": "test_landing_page_has_a_document_title",
+      "status": "passed",
+      "priority": "medium",
+      "duration_s": 0.427
+    },
+    {
+      "test_id": "SEL-0277",
+      "nodeid": "tests/test_public_pages.py::test_landing_page_reachable_via_trailing_slash",
+      "module": "public_pages",
+      "test_name": "test_landing_page_reachable_via_trailing_slash",
+      "status": "passed",
+      "priority": "medium",
+      "duration_s": 0.665
+    },
+    {
+      "test_id": "SEL-0278",
+      "nodeid": "tests/test_public_pages.py::test_404_page_body_does_not_leak_stack_trace",
+      "module": "public_pages",
+      "test_name": "test_404_page_body_does_not_leak_stack_trace",
+      "status": "passed",
+      "priority": "medium",
+      "duration_s": 0.596
+    },
+    {
+      "test_id": "SEL-0279",
+      "nodeid": "tests/test_public_pages.py::test_unknown_route_with_hash_fragment_shows_404",
+      "module": "public_pages",
+      "test_name": "test_unknown_route_with_hash_fragment_shows_404",
+      "status": "passed",
+      "priority": "medium",
+      "duration_s": 0.721
+    },
+    {
+      "test_id": "SEL-0280",
+      "nodeid": "tests/test_registration.py::test_signup_page_renders_required_fields",
+      "module": "registration",
+      "test_name": "test_signup_page_renders_required_fields",
+      "status": "passed",
+      "priority": "high",
+      "duration_s": 0.324
+    },
+    {
+      "test_id": "SEL-0281",
+      "nodeid": "tests/test_registration.py::test_signup_form_accepts_input",
+      "module": "registration",
+      "test_name": "test_signup_form_accepts_input",
+      "status": "passed",
+      "priority": "high",
+      "duration_s": 0.362
+    },
+    {
+      "test_id": "SEL-0282",
+      "nodeid": "tests/test_registration.py::test_signup_empty_submit_blocked",
+      "module": "registration",
+      "test_name": "test_signup_empty_submit_blocked",
+      "status": "passed",
+      "priority": "high",
+      "duration_s": 0.355
+    },
+    {
+      "test_id": "SEL-0283",
+      "nodeid": "tests/test_registration.py::test_signup_rejects_mismatched_passwords",
+      "module": "registration",
+      "test_name": "test_signup_rejects_mismatched_passwords",
+      "status": "passed",
+      "priority": "high",
+      "duration_s": 0.73
+    },
+    {
+      "test_id": "SEL-0284",
+      "nodeid": "tests/test_registration.py::test_signup_rejects_weak_password[no_digit]",
+      "module": "registration",
+      "test_name": "test_signup_rejects_weak_password[no_digit]",
+      "status": "passed",
+      "priority": "high",
+      "duration_s": 1.136
+    },
+    {
+      "test_id": "SEL-0285",
+      "nodeid": "tests/test_registration.py::test_signup_rejects_weak_password[no_lowercase]",
+      "module": "registration",
+      "test_name": "test_signup_rejects_weak_password[no_lowercase]",
+      "status": "passed",
+      "priority": "high",
+      "duration_s": 0.743
+    },
+    {
+      "test_id": "SEL-0286",
+      "nodeid": "tests/test_registration.py::test_signup_rejects_weak_password[no_special]",
+      "module": "registration",
+      "test_name": "test_signup_rejects_weak_password[no_special]",
+      "status": "passed",
+      "priority": "high",
+      "duration_s": 0.711
+    },
+    {
+      "test_id": "SEL-0287",
+      "nodeid": "tests/test_registration.py::test_signup_rejects_weak_password[no_uppercase]",
+      "module": "registration",
+      "test_name": "test_signup_rejects_weak_password[no_uppercase]",
+      "status": "passed",
+      "priority": "high",
+      "duration_s": 0.666
+    },
+    {
+      "test_id": "SEL-0288",
+      "nodeid": "tests/test_registration.py::test_signup_rejects_weak_password[too_short]",
+      "module": "registration",
+      "test_name": "test_signup_rejects_weak_password[too_short]",
+      "status": "passed",
+      "priority": "high",
+      "duration_s": 0.622
+    },
+    {
+      "test_id": "SEL-0289",
+      "nodeid": "tests/test_registration.py::test_signup_rejects_invalid_email[not-an-email]",
+      "module": "registration",
+      "test_name": "test_signup_rejects_invalid_email[not-an-email]",
+      "status": "passed",
+      "priority": "high",
+      "duration_s": 0.686
+    },
+    {
+      "test_id": "SEL-0290",
+      "nodeid": "tests/test_registration.py::test_signup_rejects_invalid_email[missing-domain@]",
+      "module": "registration",
+      "test_name": "test_signup_rejects_invalid_email[missing-domain@]",
+      "status": "passed",
+      "priority": "high",
+      "duration_s": 0.695
+    },
+    {
+      "test_id": "SEL-0291",
+      "nodeid": "tests/test_registration.py::test_signup_rejects_invalid_email[@missing-local.com]",
+      "module": "registration",
+      "test_name": "test_signup_rejects_invalid_email[@missing-local.com]",
+      "status": "passed",
+      "priority": "high",
+      "duration_s": 0.691
+    },
+    {
+      "test_id": "SEL-0292",
+      "nodeid": "tests/test_registration.py::test_signup_rejects_invalid_display_names[disallowed_chars]",
+      "module": "registration",
+      "test_name": "test_signup_rejects_invalid_display_names[disallowed_chars]",
+      "status": "passed",
+      "priority": "high",
+      "duration_s": 0.702
+    },
+    {
+      "test_id": "SEL-0293",
+      "nodeid": "tests/test_registration.py::test_signup_rejects_invalid_display_names[too_long]",
+      "module": "registration",
+      "test_name": "test_signup_rejects_invalid_display_names[too_long]",
+      "status": "passed",
+      "priority": "high",
+      "duration_s": 0.739
+    },
+    {
+      "test_id": "SEL-0294",
+      "nodeid": "tests/test_registration.py::test_signup_duplicate_email_rejected",
+      "module": "registration",
+      "test_name": "test_signup_duplicate_email_rejected",
+      "status": "passed",
+      "priority": "high",
+      "duration_s": 0.702
+    },
+    {
+      "test_id": "SEL-0295",
+      "nodeid": "tests/test_registration.py::test_signup_success_shows_check_email",
+      "module": "registration",
+      "test_name": "test_signup_success_shows_check_email",
+      "status": "passed",
+      "priority": "high",
+      "duration_s": 1.696
+    },
+    {
+      "test_id": "SEL-0296",
+      "nodeid": "tests/test_registration.py::test_signup_password_field_uses_password_input_type",
+      "module": "registration",
+      "test_name": "test_signup_password_field_uses_password_input_type",
+      "status": "passed",
+      "priority": "high",
+      "duration_s": 0.333
+    },
+    {
+      "test_id": "SEL-0297",
+      "nodeid": "tests/test_registration.py::test_signup_confirm_password_field_uses_password_input_type",
+      "module": "registration",
+      "test_name": "test_signup_confirm_password_field_uses_password_input_type",
+      "status": "passed",
+      "priority": "high",
+      "duration_s": 0.345
+    },
+    {
+      "test_id": "SEL-0298",
+      "nodeid": "tests/test_registration.py::test_signup_email_field_uses_email_input_type",
+      "module": "registration",
+      "test_name": "test_signup_email_field_uses_email_input_type",
+      "status": "passed",
+      "priority": "high",
+      "duration_s": 0.319
+    },
+    {
+      "test_id": "SEL-0299",
+      "nodeid": "tests/test_registration.py::test_signup_whitespace_only_display_name_rejected",
+      "module": "registration",
+      "test_name": "test_signup_whitespace_only_display_name_rejected",
+      "status": "passed",
+      "priority": "high",
+      "duration_s": 0.713
+    },
+    {
+      "test_id": "SEL-0300",
+      "nodeid": "tests/test_registration.py::test_signup_form_retains_entered_email_after_client_side_rejection",
+      "module": "registration",
+      "test_name": "test_signup_form_retains_entered_email_after_client_side_rejection",
+      "status": "passed",
+      "priority": "high",
+      "duration_s": 0.948
+    },
+    {
+      "test_id": "SEL-0301",
+      "nodeid": "tests/test_registration.py::test_signup_login_link_navigates_to_login",
+      "module": "registration",
+      "test_name": "test_signup_login_link_navigates_to_login",
+      "status": "passed",
+      "priority": "high",
+      "duration_s": 0.355
+    },
+    {
+      "test_id": "SEL-0302",
+      "nodeid": "tests/test_responsive_breakpoints.py::test_sidebar_visible_at_lg_breakpoint",
+      "module": "responsive_breakpoints",
+      "test_name": "test_sidebar_visible_at_lg_breakpoint",
+      "status": "passed",
+      "priority": "medium",
+      "duration_s": 0.406
+    },
+    {
+      "test_id": "SEL-0303",
+      "nodeid": "tests/test_responsive_breakpoints.py::test_sidebar_hidden_below_lg_breakpoint",
+      "module": "responsive_breakpoints",
+      "test_name": "test_sidebar_hidden_below_lg_breakpoint",
+      "status": "passed",
+      "priority": "medium",
+      "duration_s": 0.43
+    },
+    {
+      "test_id": "SEL-0304",
+      "nodeid": "tests/test_responsive_breakpoints.py::test_mobile_hamburger_visible_below_lg_breakpoint",
+      "module": "responsive_breakpoints",
+      "test_name": "test_mobile_hamburger_visible_below_lg_breakpoint",
+      "status": "passed",
+      "priority": "medium",
+      "duration_s": 0.428
+    },
+    {
+      "test_id": "SEL-0305",
+      "nodeid": "tests/test_responsive_breakpoints.py::test_mobile_hamburger_hidden_at_lg_breakpoint",
+      "module": "responsive_breakpoints",
+      "test_name": "test_mobile_hamburger_hidden_at_lg_breakpoint",
+      "status": "passed",
+      "priority": "medium",
+      "duration_s": 0.375
+    },
+    {
+      "test_id": "SEL-0306",
+      "nodeid": "tests/test_responsive_breakpoints.py::test_desktop_search_trigger_visible_at_sm_breakpoint",
+      "module": "responsive_breakpoints",
+      "test_name": "test_desktop_search_trigger_visible_at_sm_breakpoint",
+      "status": "passed",
+      "priority": "medium",
+      "duration_s": 0.43
+    },
+    {
+      "test_id": "SEL-0307",
+      "nodeid": "tests/test_responsive_breakpoints.py::test_mobile_search_icon_visible_below_sm_breakpoint",
+      "module": "responsive_breakpoints",
+      "test_name": "test_mobile_search_icon_visible_below_sm_breakpoint",
+      "status": "passed",
+      "priority": "medium",
+      "duration_s": 0.428
+    },
+    {
+      "test_id": "SEL-0308",
+      "nodeid": "tests/test_responsive_breakpoints.py::test_landing_page_no_horizontal_overflow_at_narrow_width",
+      "module": "responsive_breakpoints",
+      "test_name": "test_landing_page_no_horizontal_overflow_at_narrow_width",
+      "status": "passed",
+      "priority": "medium",
+      "duration_s": 0.43
+    },
+    {
+      "test_id": "SEL-0309",
+      "nodeid": "tests/test_responsive_breakpoints.py::test_dashboard_no_horizontal_overflow_at_narrow_width",
+      "module": "responsive_breakpoints",
+      "test_name": "test_dashboard_no_horizontal_overflow_at_narrow_width",
+      "status": "passed",
+      "priority": "medium",
+      "duration_s": 0.475
+    },
+    {
+      "test_id": "SEL-0310",
+      "nodeid": "tests/test_responsive_breakpoints.py::test_no_horizontal_overflow_at_narrow_width[/history]",
+      "module": "responsive_breakpoints",
+      "test_name": "test_no_horizontal_overflow_at_narrow_width[/history]",
+      "status": "passed",
+      "priority": "medium",
+      "duration_s": 0.388
+    },
+    {
+      "test_id": "SEL-0311",
+      "nodeid": "tests/test_responsive_breakpoints.py::test_no_horizontal_overflow_at_narrow_width[/notifications]",
+      "module": "responsive_breakpoints",
+      "test_name": "test_no_horizontal_overflow_at_narrow_width[/notifications]",
+      "status": "passed",
+      "priority": "medium",
+      "duration_s": 0.431
+    },
+    {
+      "test_id": "SEL-0312",
+      "nodeid": "tests/test_responsive_breakpoints.py::test_no_horizontal_overflow_at_narrow_width[/help]",
+      "module": "responsive_breakpoints",
+      "test_name": "test_no_horizontal_overflow_at_narrow_width[/help]",
+      "status": "passed",
+      "priority": "medium",
+      "duration_s": 0.352
+    },
+    {
+      "test_id": "SEL-0313",
+      "nodeid": "tests/test_responsive_breakpoints.py::test_no_horizontal_overflow_at_narrow_width[/feedback]",
+      "module": "responsive_breakpoints",
+      "test_name": "test_no_horizontal_overflow_at_narrow_width[/feedback]",
+      "status": "passed",
+      "priority": "medium",
+      "duration_s": 0.379
+    },
+    {
+      "test_id": "SEL-0314",
+      "nodeid": "tests/test_responsive_breakpoints.py::test_no_horizontal_overflow_at_narrow_width[/scan/new]",
+      "module": "responsive_breakpoints",
+      "test_name": "test_no_horizontal_overflow_at_narrow_width[/scan/new]",
+      "status": "passed",
+      "priority": "medium",
+      "duration_s": 0.393
+    },
+    {
+      "test_id": "SEL-0315",
+      "nodeid": "tests/test_responsive_breakpoints.py::test_no_horizontal_overflow_at_narrow_width[/settings/profile]",
+      "module": "responsive_breakpoints",
+      "test_name": "test_no_horizontal_overflow_at_narrow_width[/settings/profile]",
+      "status": "passed",
+      "priority": "medium",
+      "duration_s": 0.393
+    },
+    {
+      "test_id": "SEL-0316",
+      "nodeid": "tests/test_responsive_breakpoints.py::test_no_horizontal_overflow_at_narrow_width[/settings/account]",
+      "module": "responsive_breakpoints",
+      "test_name": "test_no_horizontal_overflow_at_narrow_width[/settings/account]",
+      "status": "passed",
+      "priority": "medium",
+      "duration_s": 0.391
+    },
+    {
+      "test_id": "SEL-0317",
+      "nodeid": "tests/test_responsive_breakpoints.py::test_no_horizontal_overflow_at_narrow_width[/settings/appearance]",
+      "module": "responsive_breakpoints",
+      "test_name": "test_no_horizontal_overflow_at_narrow_width[/settings/appearance]",
+      "status": "passed",
+      "priority": "medium",
+      "duration_s": 0.392
+    },
+    {
+      "test_id": "SEL-0318",
+      "nodeid": "tests/test_responsive_breakpoints.py::test_guest_route_no_horizontal_overflow_at_narrow_width[/login]",
+      "module": "responsive_breakpoints",
+      "test_name": "test_guest_route_no_horizontal_overflow_at_narrow_width[/login]",
+      "status": "passed",
+      "priority": "medium",
+      "duration_s": 0.31
+    },
+    {
+      "test_id": "SEL-0319",
+      "nodeid": "tests/test_responsive_breakpoints.py::test_guest_route_no_horizontal_overflow_at_narrow_width[/signup]",
+      "module": "responsive_breakpoints",
+      "test_name": "test_guest_route_no_horizontal_overflow_at_narrow_width[/signup]",
+      "status": "passed",
+      "priority": "medium",
+      "duration_s": 0.317
+    },
+    {
+      "test_id": "SEL-0320",
+      "nodeid": "tests/test_responsive_breakpoints.py::test_guest_route_no_horizontal_overflow_at_narrow_width[/forgot-password]",
+      "module": "responsive_breakpoints",
+      "test_name": "test_guest_route_no_horizontal_overflow_at_narrow_width[/forgot-password]",
+      "status": "passed",
+      "priority": "medium",
+      "duration_s": 0.32
+    },
+    {
+      "test_id": "SEL-0321",
+      "nodeid": "tests/test_responsive_breakpoints.py::test_breadcrumb_hidden_below_sm_breakpoint",
+      "module": "responsive_breakpoints",
+      "test_name": "test_breadcrumb_hidden_below_sm_breakpoint",
+      "status": "passed",
+      "priority": "medium",
+      "duration_s": 0.395
+    },
+    {
+      "test_id": "SEL-0322",
+      "nodeid": "tests/test_responsive_breakpoints.py::test_breadcrumb_visible_at_sm_breakpoint",
+      "module": "responsive_breakpoints",
+      "test_name": "test_breadcrumb_visible_at_sm_breakpoint",
+      "status": "passed",
+      "priority": "medium",
+      "duration_s": 0.403
+    },
+    {
+      "test_id": "SEL-0323",
+      "nodeid": "tests/test_responsive_breakpoints.py::test_history_no_horizontal_overflow_at_sm_breakpoint",
+      "module": "responsive_breakpoints",
+      "test_name": "test_history_no_horizontal_overflow_at_sm_breakpoint",
+      "status": "passed",
+      "priority": "medium",
+      "duration_s": 0.394
+    },
+    {
+      "test_id": "SEL-0324",
+      "nodeid": "tests/test_responsive_breakpoints.py::test_sidebar_still_hidden_at_md_breakpoint",
+      "module": "responsive_breakpoints",
+      "test_name": "test_sidebar_still_hidden_at_md_breakpoint",
+      "status": "passed",
+      "priority": "medium",
+      "duration_s": 0.426
+    },
+    {
+      "test_id": "SEL-0325",
+      "nodeid": "tests/test_responsive_breakpoints.py::test_hamburger_still_visible_at_md_breakpoint",
+      "module": "responsive_breakpoints",
+      "test_name": "test_hamburger_still_visible_at_md_breakpoint",
+      "status": "passed",
+      "priority": "medium",
+      "duration_s": 0.526
+    },
+    {
+      "test_id": "SEL-0326",
+      "nodeid": "tests/test_responsive_breakpoints.py::test_desktop_search_trigger_visible_at_md_breakpoint",
+      "module": "responsive_breakpoints",
+      "test_name": "test_desktop_search_trigger_visible_at_md_breakpoint",
+      "status": "passed",
+      "priority": "medium",
+      "duration_s": 0.641
+    },
+    {
+      "test_id": "SEL-0327",
+      "nodeid": "tests/test_responsive_breakpoints.py::test_breadcrumb_visible_at_md_breakpoint",
+      "module": "responsive_breakpoints",
+      "test_name": "test_breadcrumb_visible_at_md_breakpoint",
+      "status": "passed",
+      "priority": "medium",
+      "duration_s": 1.082
+    },
+    {
+      "test_id": "SEL-0328",
+      "nodeid": "tests/test_responsive_breakpoints.py::test_settings_no_horizontal_overflow_at_narrow_width",
+      "module": "responsive_breakpoints",
+      "test_name": "test_settings_no_horizontal_overflow_at_narrow_width",
+      "status": "passed",
+      "priority": "medium",
+      "duration_s": 0.513
+    },
+    {
+      "test_id": "SEL-0329",
+      "nodeid": "tests/test_responsive_breakpoints.py::test_notifications_no_horizontal_overflow_at_md_breakpoint",
+      "module": "responsive_breakpoints",
+      "test_name": "test_notifications_no_horizontal_overflow_at_md_breakpoint",
+      "status": "passed",
+      "priority": "medium",
+      "duration_s": 0.465
+    },
+    {
+      "test_id": "SEL-0330",
+      "nodeid": "tests/test_scan_flow.py::test_new_scan_page_shows_upload_dropzone",
+      "module": "scan_flow",
+      "test_name": "test_new_scan_page_shows_upload_dropzone",
+      "status": "passed",
+      "priority": "high",
+      "duration_s": 0.355
+    },
+    {
+      "test_id": "SEL-0331",
+      "nodeid": "tests/test_scan_flow.py::test_scan_processing_without_id_redirects_to_new_scan",
+      "module": "scan_flow",
+      "test_name": "test_scan_processing_without_id_redirects_to_new_scan",
+      "status": "passed",
+      "priority": "high",
+      "duration_s": 0.36
+    },
+    {
+      "test_id": "SEL-0332",
+      "nodeid": "tests/test_scan_flow.py::test_scan_result_unknown_id_shows_not_found",
+      "module": "scan_flow",
+      "test_name": "test_scan_result_unknown_id_shows_not_found",
+      "status": "passed",
+      "priority": "high",
+      "duration_s": 0.413
+    },
+    {
+      "test_id": "SEL-0333",
+      "nodeid": "tests/test_scan_flow.py::test_scan_detail_unknown_id_shows_not_found",
+      "module": "scan_flow",
+      "test_name": "test_scan_detail_unknown_id_shows_not_found",
+      "status": "passed",
+      "priority": "high",
+      "duration_s": 0.388
+    },
+    {
+      "test_id": "SEL-0334",
+      "nodeid": "tests/test_scan_flow.py::test_upload_valid_audio_file_shows_file_card_and_starts_analysis",
+      "module": "scan_flow",
+      "test_name": "test_upload_valid_audio_file_shows_file_card_and_starts_analysis",
+      "status": "passed",
+      "priority": "high",
+      "duration_s": 1.63
+    },
+    {
+      "test_id": "SEL-0335",
+      "nodeid": "tests/test_scan_flow.py::test_uploading_duplicate_active_scan_is_rejected",
+      "module": "scan_flow",
+      "test_name": "test_uploading_duplicate_active_scan_is_rejected",
+      "status": "passed",
+      "priority": "high",
+      "duration_s": 1.098
+    },
+    {
+      "test_id": "SEL-0336",
+      "nodeid": "tests/test_scan_flow.py::test_uploaded_scan_appears_in_history",
+      "module": "scan_flow",
+      "test_name": "test_uploaded_scan_appears_in_history",
+      "status": "passed",
+      "priority": "high",
+      "duration_s": 0.4
+    },
+    {
+      "test_id": "SEL-0337",
+      "nodeid": "tests/test_scan_flow.py::test_uploaded_scan_result_page_reaches_a_real_state",
+      "module": "scan_flow",
+      "test_name": "test_uploaded_scan_result_page_reaches_a_real_state",
+      "status": "failed",
+      "priority": "high",
+      "duration_s": 51.946
+    },
+    {
+      "test_id": "SEL-0338",
+      "nodeid": "tests/test_scan_flow.py::test_uploaded_scan_detail_page_reaches_a_real_state",
+      "module": "scan_flow",
+      "test_name": "test_uploaded_scan_detail_page_reaches_a_real_state",
+      "status": "passed",
+      "priority": "high",
+      "duration_s": 7.374
+    },
+    {
+      "test_id": "SEL-0339",
+      "nodeid": "tests/test_scan_flow.py::test_new_scan_page_reachable_directly_via_url",
+      "module": "scan_flow",
+      "test_name": "test_new_scan_page_reachable_directly_via_url",
+      "status": "passed",
+      "priority": "high",
+      "duration_s": 0.376
+    },
+    {
+      "test_id": "SEL-0340",
+      "nodeid": "tests/test_scan_flow.py::test_new_scan_analyze_button_absent_before_file_selected",
+      "module": "scan_flow",
+      "test_name": "test_new_scan_analyze_button_absent_before_file_selected",
+      "status": "passed",
+      "priority": "high",
+      "duration_s": 2.315
+    },
+    {
+      "test_id": "SEL-0341",
+      "nodeid": "tests/test_scan_flow.py::test_new_scan_remove_or_cancel_control_absent_before_file_selected",
+      "module": "scan_flow",
+      "test_name": "test_new_scan_remove_or_cancel_control_absent_before_file_selected",
+      "status": "passed",
+      "priority": "high",
+      "duration_s": 17.4
+    },
+    {
+      "test_id": "SEL-0342",
+      "nodeid": "tests/test_scan_flow.py::test_scan_processing_with_id_stays_on_processing_page",
+      "module": "scan_flow",
+      "test_name": "test_scan_processing_with_id_stays_on_processing_page",
+      "status": "passed",
+      "priority": "high",
+      "duration_s": 0.386
+    },
+    {
+      "test_id": "SEL-0343",
+      "nodeid": "tests/test_scan_flow.py::test_scan_result_page_has_start_new_scan_link_when_not_found",
+      "module": "scan_flow",
+      "test_name": "test_scan_result_page_has_start_new_scan_link_when_not_found",
+      "status": "passed",
+      "priority": "high",
+      "duration_s": 0.513
+    },
+    {
+      "test_id": "SEL-0344",
+      "nodeid": "tests/test_scan_flow.py::test_scan_result_not_found_state_has_no_view_history_link",
+      "module": "scan_flow",
+      "test_name": "test_scan_result_not_found_state_has_no_view_history_link",
+      "status": "passed",
+      "priority": "high",
+      "duration_s": 2.404
+    },
+    {
+      "test_id": "SEL-0345",
+      "nodeid": "tests/test_scan_flow.py::test_scan_result_start_new_scan_link_navigates",
+      "module": "scan_flow",
+      "test_name": "test_scan_result_start_new_scan_link_navigates",
+      "status": "passed",
+      "priority": "high",
+      "duration_s": 0.484
+    },
+    {
+      "test_id": "SEL-0346",
+      "nodeid": "tests/test_scan_flow.py::test_scan_detail_back_to_history_link_navigates",
+      "module": "scan_flow",
+      "test_name": "test_scan_detail_back_to_history_link_navigates",
+      "status": "passed",
+      "priority": "high",
+      "duration_s": 0.443
+    },
+    {
+      "test_id": "SEL-0347",
+      "nodeid": "tests/test_scan_flow.py::test_new_scan_rejects_non_audio_file_client_side",
+      "module": "scan_flow",
+      "test_name": "test_new_scan_rejects_non_audio_file_client_side",
+      "status": "passed",
+      "priority": "high",
+      "duration_s": 0.423
+    },
+    {
+      "test_id": "SEL-0348",
+      "nodeid": "tests/test_scan_flow.py::test_duplicate_upload_rejection_can_be_triggered_more_than_once",
+      "module": "scan_flow",
+      "test_name": "test_duplicate_upload_rejection_can_be_triggered_more_than_once",
+      "status": "passed",
+      "priority": "high",
+      "duration_s": 1.047
+    },
+    {
+      "test_id": "SEL-0349",
+      "nodeid": "tests/test_session_guards.py::test_authguard_redirects_unauthenticated_user_to_login[/dashboard]",
+      "module": "session_guards",
+      "test_name": "test_authguard_redirects_unauthenticated_user_to_login[/dashboard]",
+      "status": "passed",
+      "priority": "critical",
+      "duration_s": 0.272
+    },
+    {
+      "test_id": "SEL-0350",
+      "nodeid": "tests/test_session_guards.py::test_authguard_redirects_unauthenticated_user_to_login[/history]",
+      "module": "session_guards",
+      "test_name": "test_authguard_redirects_unauthenticated_user_to_login[/history]",
+      "status": "passed",
+      "priority": "critical",
+      "duration_s": 0.277
+    },
+    {
+      "test_id": "SEL-0351",
+      "nodeid": "tests/test_session_guards.py::test_authguard_redirects_unauthenticated_user_to_login[/settings/profile]",
+      "module": "session_guards",
+      "test_name": "test_authguard_redirects_unauthenticated_user_to_login[/settings/profile]",
+      "status": "passed",
+      "priority": "critical",
+      "duration_s": 0.289
+    },
+    {
+      "test_id": "SEL-0352",
+      "nodeid": "tests/test_session_guards.py::test_authguard_redirects_unauthenticated_user_to_login[/feedback]",
+      "module": "session_guards",
+      "test_name": "test_authguard_redirects_unauthenticated_user_to_login[/feedback]",
+      "status": "passed",
+      "priority": "critical",
+      "duration_s": 0.281
+    },
+    {
+      "test_id": "SEL-0353",
+      "nodeid": "tests/test_session_guards.py::test_authguard_redirects_unauthenticated_user_to_login[/scan/new]",
+      "module": "session_guards",
+      "test_name": "test_authguard_redirects_unauthenticated_user_to_login[/scan/new]",
+      "status": "passed",
+      "priority": "critical",
+      "duration_s": 0.27
+    },
+    {
+      "test_id": "SEL-0354",
+      "nodeid": "tests/test_session_guards.py::test_authguard_redirects_unauthenticated_user_to_login[/scan/processing]",
+      "module": "session_guards",
+      "test_name": "test_authguard_redirects_unauthenticated_user_to_login[/scan/processing]",
+      "status": "passed",
+      "priority": "critical",
+      "duration_s": 0.267
+    },
+    {
+      "test_id": "SEL-0355",
+      "nodeid": "tests/test_session_guards.py::test_authguard_redirects_unauthenticated_user_to_login[/notifications]",
+      "module": "session_guards",
+      "test_name": "test_authguard_redirects_unauthenticated_user_to_login[/notifications]",
+      "status": "passed",
+      "priority": "critical",
+      "duration_s": 0.266
+    },
+    {
+      "test_id": "SEL-0356",
+      "nodeid": "tests/test_session_guards.py::test_authguard_redirects_unauthenticated_user_to_login[/help]",
+      "module": "session_guards",
+      "test_name": "test_authguard_redirects_unauthenticated_user_to_login[/help]",
+      "status": "passed",
+      "priority": "critical",
+      "duration_s": 0.289
+    },
+    {
+      "test_id": "SEL-0357",
+      "nodeid": "tests/test_session_guards.py::test_authguard_redirects_unauthenticated_user_to_login[/settings/account]",
+      "module": "session_guards",
+      "test_name": "test_authguard_redirects_unauthenticated_user_to_login[/settings/account]",
+      "status": "passed",
+      "priority": "critical",
+      "duration_s": 0.264
+    },
+    {
+      "test_id": "SEL-0358",
+      "nodeid": "tests/test_session_guards.py::test_authguard_redirects_unauthenticated_user_to_login[/settings/appearance]",
+      "module": "session_guards",
+      "test_name": "test_authguard_redirects_unauthenticated_user_to_login[/settings/appearance]",
+      "status": "passed",
+      "priority": "critical",
+      "duration_s": 0.271
+    },
+    {
+      "test_id": "SEL-0359",
+      "nodeid": "tests/test_session_guards.py::test_guestguard_redirects_authenticated_user_away[/login]",
+      "module": "session_guards",
+      "test_name": "test_guestguard_redirects_authenticated_user_away[/login]",
+      "status": "passed",
+      "priority": "critical",
+      "duration_s": 0.768
+    },
+    {
+      "test_id": "SEL-0360",
+      "nodeid": "tests/test_session_guards.py::test_guestguard_redirects_authenticated_user_away[/signup]",
+      "module": "session_guards",
+      "test_name": "test_guestguard_redirects_authenticated_user_away[/signup]",
+      "status": "passed",
+      "priority": "critical",
+      "duration_s": 0.728
+    },
+    {
+      "test_id": "SEL-0361",
+      "nodeid": "tests/test_session_guards.py::test_guestguard_redirects_authenticated_user_away[/forgot-password]",
+      "module": "session_guards",
+      "test_name": "test_guestguard_redirects_authenticated_user_away[/forgot-password]",
+      "status": "passed",
+      "priority": "critical",
+      "duration_s": 0.735
+    },
+    {
+      "test_id": "SEL-0362",
+      "nodeid": "tests/test_session_guards.py::test_guestguard_redirects_authenticated_user_away[/reset-password]",
+      "module": "session_guards",
+      "test_name": "test_guestguard_redirects_authenticated_user_away[/reset-password]",
+      "status": "passed",
+      "priority": "critical",
+      "duration_s": 0.88
+    },
+    {
+      "test_id": "SEL-0363",
+      "nodeid": "tests/test_session_guards.py::test_authguard_allows_authenticated_user_through[/dashboard]",
+      "module": "session_guards",
+      "test_name": "test_authguard_allows_authenticated_user_through[/dashboard]",
+      "status": "passed",
+      "priority": "critical",
+      "duration_s": 0.748
+    },
+    {
+      "test_id": "SEL-0364",
+      "nodeid": "tests/test_session_guards.py::test_authguard_allows_authenticated_user_through[/history]",
+      "module": "session_guards",
+      "test_name": "test_authguard_allows_authenticated_user_through[/history]",
+      "status": "passed",
+      "priority": "critical",
+      "duration_s": 0.691
+    },
+    {
+      "test_id": "SEL-0365",
+      "nodeid": "tests/test_session_guards.py::test_authguard_allows_authenticated_user_through[/settings/profile]",
+      "module": "session_guards",
+      "test_name": "test_authguard_allows_authenticated_user_through[/settings/profile]",
+      "status": "passed",
+      "priority": "critical",
+      "duration_s": 0.56
+    },
+    {
+      "test_id": "SEL-0366",
+      "nodeid": "tests/test_session_guards.py::test_authguard_allows_authenticated_user_through[/feedback]",
+      "module": "session_guards",
+      "test_name": "test_authguard_allows_authenticated_user_through[/feedback]",
+      "status": "passed",
+      "priority": "critical",
+      "duration_s": 0.329
+    },
+    {
+      "test_id": "SEL-0367",
+      "nodeid": "tests/test_session_guards.py::test_authguard_allows_authenticated_user_through[/scan/new]",
+      "module": "session_guards",
+      "test_name": "test_authguard_allows_authenticated_user_through[/scan/new]",
+      "status": "passed",
+      "priority": "critical",
+      "duration_s": 0.341
+    },
+    {
+      "test_id": "SEL-0368",
+      "nodeid": "tests/test_session_guards.py::test_authguard_allows_authenticated_user_through[/scan/processing]",
+      "module": "session_guards",
+      "test_name": "test_authguard_allows_authenticated_user_through[/scan/processing]",
+      "status": "passed",
+      "priority": "critical",
+      "duration_s": 0.332
+    },
+    {
+      "test_id": "SEL-0369",
+      "nodeid": "tests/test_session_guards.py::test_authguard_allows_authenticated_user_through[/notifications]",
+      "module": "session_guards",
+      "test_name": "test_authguard_allows_authenticated_user_through[/notifications]",
+      "status": "passed",
+      "priority": "critical",
+      "duration_s": 0.383
+    },
+    {
+      "test_id": "SEL-0370",
+      "nodeid": "tests/test_session_guards.py::test_authguard_allows_authenticated_user_through[/help]",
+      "module": "session_guards",
+      "test_name": "test_authguard_allows_authenticated_user_through[/help]",
+      "status": "passed",
+      "priority": "critical",
+      "duration_s": 0.322
+    },
+    {
+      "test_id": "SEL-0371",
+      "nodeid": "tests/test_session_guards.py::test_authguard_allows_authenticated_user_through[/settings/account]",
+      "module": "session_guards",
+      "test_name": "test_authguard_allows_authenticated_user_through[/settings/account]",
+      "status": "passed",
+      "priority": "critical",
+      "duration_s": 0.371
+    },
+    {
+      "test_id": "SEL-0372",
+      "nodeid": "tests/test_session_guards.py::test_authguard_allows_authenticated_user_through[/settings/appearance]",
+      "module": "session_guards",
+      "test_name": "test_authguard_allows_authenticated_user_through[/settings/appearance]",
+      "status": "passed",
+      "priority": "critical",
+      "duration_s": 0.332
+    },
+    {
+      "test_id": "SEL-0373",
+      "nodeid": "tests/test_session_guards.py::test_unguarded_route_reachable_without_login[/]",
+      "module": "session_guards",
+      "test_name": "test_unguarded_route_reachable_without_login[/]",
+      "status": "passed",
+      "priority": "critical",
+      "duration_s": 0.376
+    },
+    {
+      "test_id": "SEL-0374",
+      "nodeid": "tests/test_session_guards.py::test_unguarded_route_reachable_without_login[/verify-email]",
+      "module": "session_guards",
+      "test_name": "test_unguarded_route_reachable_without_login[/verify-email]",
+      "status": "passed",
+      "priority": "critical",
+      "duration_s": 0.257
+    },
+    {
+      "test_id": "SEL-0375",
+      "nodeid": "tests/test_session_guards.py::test_unguarded_route_reachable_while_authenticated[/]",
+      "module": "session_guards",
+      "test_name": "test_unguarded_route_reachable_while_authenticated[/]",
+      "status": "passed",
+      "priority": "critical",
+      "duration_s": 0.419
+    },
+    {
+      "test_id": "SEL-0376",
+      "nodeid": "tests/test_session_guards.py::test_unguarded_route_reachable_while_authenticated[/verify-email]",
+      "module": "session_guards",
+      "test_name": "test_unguarded_route_reachable_while_authenticated[/verify-email]",
+      "status": "passed",
+      "priority": "critical",
+      "duration_s": 0.264
+    },
+    {
+      "test_id": "SEL-0377",
+      "nodeid": "tests/test_session_guards.py::test_sign_out_clears_session_and_blocks_protected_routes",
+      "module": "session_guards",
+      "test_name": "test_sign_out_clears_session_and_blocks_protected_routes",
+      "status": "passed",
+      "priority": "critical",
+      "duration_s": 3.074
+    },
+    {
+      "test_id": "SEL-0378",
+      "nodeid": "tests/test_settings.py::test_profile_page_prefills_current_display_name",
+      "module": "settings",
+      "test_name": "test_profile_page_prefills_current_display_name",
+      "status": "passed",
+      "priority": "medium",
+      "duration_s": 0.405
+    },
+    {
+      "test_id": "SEL-0379",
+      "nodeid": "tests/test_settings.py::test_profile_save_button_disabled_until_dirty",
+      "module": "settings",
+      "test_name": "test_profile_save_button_disabled_until_dirty",
+      "status": "passed",
+      "priority": "medium",
+      "duration_s": 0.367
+    },
+    {
+      "test_id": "SEL-0380",
+      "nodeid": "tests/test_settings.py::test_profile_rejects_disallowed_display_name_characters",
+      "module": "settings",
+      "test_name": "test_profile_rejects_disallowed_display_name_characters",
+      "status": "passed",
+      "priority": "medium",
+      "duration_s": 0.609
+    },
+    {
+      "test_id": "SEL-0381",
+      "nodeid": "tests/test_settings.py::test_profile_rejects_display_name_too_long",
+      "module": "settings",
+      "test_name": "test_profile_rejects_display_name_too_long",
+      "status": "passed",
+      "priority": "medium",
+      "duration_s": 0.641
+    },
+    {
+      "test_id": "SEL-0382",
+      "nodeid": "tests/test_settings.py::test_account_page_shows_current_email",
+      "module": "settings",
+      "test_name": "test_account_page_shows_current_email",
+      "status": "passed",
+      "priority": "medium",
+      "duration_s": 0.37
+    },
+    {
+      "test_id": "SEL-0383",
+      "nodeid": "tests/test_settings.py::test_account_change_password_rejects_mismatched_confirmation",
+      "module": "settings",
+      "test_name": "test_account_change_password_rejects_mismatched_confirmation",
+      "status": "passed",
+      "priority": "medium",
+      "duration_s": 1.733
+    },
+    {
+      "test_id": "SEL-0384",
+      "nodeid": "tests/test_settings.py::test_account_change_password_rejects_weak_new_password[no_digit]",
+      "module": "settings",
+      "test_name": "test_account_change_password_rejects_weak_new_password[no_digit]",
+      "status": "passed",
+      "priority": "medium",
+      "duration_s": 0.85
+    },
+    {
+      "test_id": "SEL-0385",
+      "nodeid": "tests/test_settings.py::test_account_change_password_rejects_weak_new_password[no_lowercase]",
+      "module": "settings",
+      "test_name": "test_account_change_password_rejects_weak_new_password[no_lowercase]",
+      "status": "passed",
+      "priority": "medium",
+      "duration_s": 0.861
+    },
+    {
+      "test_id": "SEL-0386",
+      "nodeid": "tests/test_settings.py::test_account_change_password_rejects_weak_new_password[no_special]",
+      "module": "settings",
+      "test_name": "test_account_change_password_rejects_weak_new_password[no_special]",
+      "status": "passed",
+      "priority": "medium",
+      "duration_s": 0.838
+    },
+    {
+      "test_id": "SEL-0387",
+      "nodeid": "tests/test_settings.py::test_account_change_password_rejects_weak_new_password[no_uppercase]",
+      "module": "settings",
+      "test_name": "test_account_change_password_rejects_weak_new_password[no_uppercase]",
+      "status": "passed",
+      "priority": "medium",
+      "duration_s": 0.799
+    },
+    {
+      "test_id": "SEL-0388",
+      "nodeid": "tests/test_settings.py::test_account_change_password_rejects_weak_new_password[too_short]",
+      "module": "settings",
+      "test_name": "test_account_change_password_rejects_weak_new_password[too_short]",
+      "status": "passed",
+      "priority": "medium",
+      "duration_s": 0.747
+    },
+    {
+      "test_id": "SEL-0389",
+      "nodeid": "tests/test_settings.py::test_appearance_page_renders_theme_options",
+      "module": "settings",
+      "test_name": "test_appearance_page_renders_theme_options",
+      "status": "passed",
+      "priority": "medium",
+      "duration_s": 0.41
+    },
+    {
+      "test_id": "SEL-0390",
+      "nodeid": "tests/test_settings.py::test_appearance_theme_selection_updates_active_state",
+      "module": "settings",
+      "test_name": "test_appearance_theme_selection_updates_active_state",
+      "status": "passed",
+      "priority": "medium",
+      "duration_s": 0.449
+    },
+    {
+      "test_id": "SEL-0391",
+      "nodeid": "tests/test_settings.py::test_appearance_nav_density_toggle_is_idempotent",
+      "module": "settings",
+      "test_name": "test_appearance_nav_density_toggle_is_idempotent",
+      "status": "passed",
+      "priority": "medium",
+      "duration_s": 0.614
+    },
+    {
+      "test_id": "SEL-0392",
+      "nodeid": "tests/test_settings.py::test_settings_default_route_redirects_to_profile",
+      "module": "settings",
+      "test_name": "test_settings_default_route_redirects_to_profile",
+      "status": "passed",
+      "priority": "medium",
+      "duration_s": 0.378
+    },
+    {
+      "test_id": "SEL-0393",
+      "nodeid": "tests/test_settings.py::test_settings_tabs_nav_visible_on_profile_page",
+      "module": "settings",
+      "test_name": "test_settings_tabs_nav_visible_on_profile_page",
+      "status": "passed",
+      "priority": "medium",
+      "duration_s": 0.398
+    },
+    {
+      "test_id": "SEL-0394",
+      "nodeid": "tests/test_settings.py::test_settings_tabs_nav_visible_on_account_page",
+      "module": "settings",
+      "test_name": "test_settings_tabs_nav_visible_on_account_page",
+      "status": "passed",
+      "priority": "medium",
+      "duration_s": 0.352
+    },
+    {
+      "test_id": "SEL-0395",
+      "nodeid": "tests/test_settings.py::test_settings_tabs_nav_visible_on_appearance_page",
+      "module": "settings",
+      "test_name": "test_settings_tabs_nav_visible_on_appearance_page",
+      "status": "passed",
+      "priority": "medium",
+      "duration_s": 0.363
+    },
+    {
+      "test_id": "SEL-0396",
+      "nodeid": "tests/test_settings.py::test_account_change_password_wrong_current_password_returns_401_and_logs_out",
+      "module": "settings",
+      "test_name": "test_account_change_password_wrong_current_password_returns_401_and_logs_out",
+      "status": "passed",
+      "priority": "medium",
+      "duration_s": 3.38
+    },
+    {
+      "test_id": "SEL-0397",
+      "nodeid": "tests/test_settings.py::test_profile_display_name_input_has_real_value_attribute",
+      "module": "settings",
+      "test_name": "test_profile_display_name_input_has_real_value_attribute",
+      "status": "passed",
+      "priority": "medium",
+      "duration_s": 0.366
+    },
+    {
+      "test_id": "SEL-0398",
+      "nodeid": "tests/test_settings.py::test_appearance_light_theme_selection_updates_active_state",
+      "module": "settings",
+      "test_name": "test_appearance_light_theme_selection_updates_active_state",
+      "status": "passed",
+      "priority": "medium",
+      "duration_s": 0.524
+    },
+    {
+      "test_id": "SEL-0399",
+      "nodeid": "tests/test_settings.py::test_appearance_system_theme_selection_updates_active_state",
+      "module": "settings",
+      "test_name": "test_appearance_system_theme_selection_updates_active_state",
+      "status": "passed",
+      "priority": "medium",
+      "duration_s": 0.425
+    },
+    {
+      "test_id": "SEL-0400",
+      "nodeid": "tests/test_settings.py::test_account_new_password_and_confirm_fields_use_password_input_type",
+      "module": "settings",
+      "test_name": "test_account_new_password_and_confirm_fields_use_password_input_type",
+      "status": "passed",
+      "priority": "medium",
+      "duration_s": 0.38
+    },
+    {
+      "test_id": "SEL-0401",
+      "nodeid": "tests/test_settings.py::test_settings_tab_nav_link_from_profile_to_account",
+      "module": "settings",
+      "test_name": "test_settings_tab_nav_link_from_profile_to_account",
+      "status": "passed",
+      "priority": "medium",
+      "duration_s": 0.471
+    },
+    {
+      "test_id": "SEL-0402",
+      "nodeid": "tests/test_settings.py::test_settings_tab_nav_link_from_account_to_appearance",
+      "module": "settings",
+      "test_name": "test_settings_tab_nav_link_from_account_to_appearance",
+      "status": "passed",
+      "priority": "medium",
+      "duration_s": 0.399
+    },
+    {
+      "test_id": "SEL-0403",
+      "nodeid": "tests/test_settings.py::test_settings_tab_nav_link_from_appearance_to_profile",
+      "module": "settings",
+      "test_name": "test_settings_tab_nav_link_from_appearance_to_profile",
+      "status": "passed",
+      "priority": "medium",
+      "duration_s": 0.451
+    },
+    {
+      "test_id": "SEL-0404",
+      "nodeid": "tests/test_shared_result.py::test_shared_result_unknown_scan_shows_unavailable",
+      "module": "shared_result",
+      "test_name": "test_shared_result_unknown_scan_shows_unavailable",
+      "status": "passed",
+      "priority": "medium",
+      "duration_s": 0.445
+    },
+    {
+      "test_id": "SEL-0405",
+      "nodeid": "tests/test_shared_result.py::test_shared_result_go_to_voiceguard_link_navigates_home",
+      "module": "shared_result",
+      "test_name": "test_shared_result_go_to_voiceguard_link_navigates_home",
+      "status": "passed",
+      "priority": "medium",
+      "duration_s": 0.49
+    },
+    {
+      "test_id": "SEL-0406",
+      "nodeid": "tests/test_shared_result.py::test_shared_result_page_requires_no_login",
+      "module": "shared_result",
+      "test_name": "test_shared_result_page_requires_no_login",
+      "status": "passed",
+      "priority": "medium",
+      "duration_s": 0.354
+    },
+    {
+      "test_id": "SEL-0407",
+      "nodeid": "tests/test_shared_result.py::test_shared_result_reachable_while_authenticated_too",
+      "module": "shared_result",
+      "test_name": "test_shared_result_reachable_while_authenticated_too",
+      "status": "passed",
+      "priority": "medium",
+      "duration_s": 0.356
+    },
+    {
+      "test_id": "SEL-0408",
+      "nodeid": "tests/test_shared_result.py::test_shared_result_malformed_scan_id_still_shows_unavailable",
+      "module": "shared_result",
+      "test_name": "test_shared_result_malformed_scan_id_still_shows_unavailable",
+      "status": "passed",
+      "priority": "medium",
+      "duration_s": 0.398
+    },
+    {
+      "test_id": "SEL-0409",
+      "nodeid": "tests/test_shared_result.py::test_shared_result_go_to_voiceguard_link_has_href_to_root",
+      "module": "shared_result",
+      "test_name": "test_shared_result_go_to_voiceguard_link_has_href_to_root",
+      "status": "passed",
+      "priority": "medium",
+      "duration_s": 0.497
     }
   ],
-  "failed_tests": []
+  "failed_tests": [
+    {
+      "nodeid": "tests/test_auth.py::test_login_error_message_has_alert_role_for_assistive_tech",
+      "module": "auth",
+      "reason": null,
+      "duration_s": 0.843
+    },
+    {
+      "nodeid": "tests/test_error_handling.py::test_scan_detail_malformed_id_shows_not_found[aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa]",
+      "module": "error_handling",
+      "reason": null,
+      "duration_s": 0.369
+    },
+    {
+      "nodeid": "tests/test_error_handling.py::test_history_page_survives_direct_reload",
+      "module": "error_handling",
+      "reason": null,
+      "duration_s": 0.766
+    },
+    {
+      "nodeid": "tests/test_scan_flow.py::test_uploaded_scan_result_page_reaches_a_real_state",
+      "module": "scan_flow",
+      "reason": "authenticated_driver = <conftest.ResilientDriver object at 0x7fd8913fa300>\nbase_url = 'http://localhost:5173'\n\n    def test_uploaded_scan_result_page_reaches_a_real_state(authenticated_driver, base_url):\n        assert _state.get(\"scan_id\"), \"must run after test_upload_valid_audio_file_...\"\n        page = ScanResultPage(authenticated_driver, base_url)\n        # Inference timing/availability isn't something this suite controls\n        # (CPU-bound model, see project memory on LCNN CPU inference) \u2014 accept\n        # either real terminal outcome: a rendered verdict, or the page routing\n        # back to /scan/processing because it isn't complete yet.\n        #\n        # A single longer WebDriverWait after one goto_result() isn't the right\n        # tool here, and a real CI run proved it: useScanResult\n        # (frontend/src/pages/ScanResult/hooks/useScanResult.ts) queries with\n        # retry: false, and NotReadyFallback's own \"still processing -> redirect\n        # to /scan/processing\" check (ScanResult/index.tsx) only runs once, on\n        # mount -- neither polls, so waiting longer on the same page load can't\n        # surface a state that a one-shot check already missed. Re-navigating on\n        # a bounded interval instead re-triggers that one-shot check fresh each\n        # time, which is the correct way to ride out a momentary inconsistency\n        # between scan-status and result-endpoint availability right after\n        # upload.\n        deadline = time.monotonic() + 45\n        reached_real_state = False\n        while time.monotonic() < deadline:\n            page.goto_result(_state[\"scan_id\"])\n            try:\n                WebDriverWait(authenticated_driver, 5).until(\n                    lambda d: \"/scan/processing\" in d.current_url or page.is_visible(*page.VERDICT_HEADING, timeout=1)\n                )\n                reached_real_state = True\n                break\n            except TimeoutException:\n                continue\n>       assert reached_real_sta\u2026 (truncated)",
+      "duration_s": 51.946
+    }
+  ]
 }
