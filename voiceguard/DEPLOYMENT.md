@@ -63,6 +63,14 @@ you deploy loads cleanly under that restriction before relying on it in producti
   (`init_engine`/`init_redis` in the lifespan hook); a container that never reaches "ready" is
   almost always a DB/Redis connectivity issue, not an application bug.
 
+## Frontend (Vercel)
+
+The `frontend/` app auto-deploys to production on every push to `main`, via Vercel's GitHub
+integration (project root directory: `voiceguard/frontend`, since the repo is a monorepo).
+`vercel.json` in that directory rewrites `/api/*` to the Railway backend — no frontend build-time
+environment variables are required. To deploy manually instead (e.g. to bypass a broken CI run),
+run `vercel deploy --prod` from `voiceguard/frontend`.
+
 ## What this repo does not include
 
 - A CDN/object-storage backend for uploaded audio (`STORAGE_BACKEND` only supports `local` today
