@@ -148,6 +148,19 @@ def test_record_stop_analyze_reaches_result(authenticated_driver, base_url) -> N
     )
     assert result.find(*result.VERDICT_HEADING, timeout=30).text
 
+    # Real settle time, not an arbitrary sleep: this suite's local backend
+    # now runs a genuine CPU-bound LCNN forward pass per scan (the
+    # checkpoint-provisioning fix above), and this is the *second* one this
+    # session (the first was the file-upload test) -- on the CI runner's
+    # shared vCPUs that pass competes directly with the emulator process
+    # itself. A real CI run traced two of the next three tests' navigation
+    # timeouts to this exact window: retrying the clicks with generous
+    # per-attempt timeouts still failed every attempt, consistent with
+    # sustained CPU contention rather than a one-off dropped tap. Give it a
+    # few real seconds to fully finish (including the backend's own
+    # post-inference bookkeeping) before the next UI-heavy tests run.
+    time.sleep(5)
+
 
 def test_history_shows_the_new_scan(authenticated_driver, base_url) -> None:
     chrome = AppChrome(authenticated_driver, base_url)
