@@ -160,9 +160,23 @@ def test_history_shows_the_new_scan(authenticated_driver, base_url) -> None:
 
 def test_appearance_theme_toggle(authenticated_driver, base_url) -> None:
     chrome = AppChrome(authenticated_driver, base_url)
-    drawer = chrome.open_mobile_drawer()
-    drawer.go_to("Settings")
-    WebDriverWait(authenticated_driver, 15).until(EC.url_contains("/settings"))
+    # A real CI run hit a genuine TimeoutException waiting for /settings
+    # after a single drawer.go_to("Settings") -- MobileDrawer.nav_link()
+    # already waits for the link to be clickable, but under CI's heavier
+    # contention a dispatched tap can still occasionally not register a
+    # navigation at all (same real flake this session's forgot-password
+    # verification hit on a plain login link, fixed there with a retry).
+    # Retry the whole open-drawer-and-navigate sequence instead of just the
+    # click, since a failed attempt can leave the drawer closed again.
+    for attempt in range(3):
+        drawer = chrome.open_mobile_drawer()
+        drawer.go_to("Settings")
+        try:
+            WebDriverWait(authenticated_driver, 8).until(EC.url_contains("/settings"))
+            break
+        except TimeoutException:
+            if attempt == 2:
+                raise
 
     _click(authenticated_driver, '//nav[@aria-label="Settings sections"]//a[normalize-space()="Appearance"]')
     appearance = AppearancePage(authenticated_driver, base_url)
@@ -195,13 +209,25 @@ def test_logout_returns_to_guest_area(authenticated_driver, base_url) -> None:
     driver = authenticated_driver
     chrome = AppChrome(driver, base_url)
     drawer = chrome.open_mobile_drawer()
-    trigger = next(
-        el
-        for el in driver.find_elements(
+
+    # A raw driver.find_elements() call (no wait) raced the drawer's own
+    # slide-in transition on a real CI run -- open_mobile_drawer() only
+    # waits for the hamburger button itself to be clickable, not for the
+    # drawer's animation to finish, so the very next instant the button
+    # matching FIXTURE_USER's display name could still be pre-animation
+    # (not yet .is_displayed()), raising StopIteration on an empty
+    # generator instead of the two-buttons case the comment above already
+    # accounts for. Poll for the same displayed-element condition instead
+    # of checking it once.
+    def _visible_trigger(d):
+        for el in d.find_elements(
             By.XPATH, f'//button[.//p[normalize-space()="{FIXTURE_USER["display_name"]}"]]'
-        )
-        if el.is_displayed()
-    )
+        ):
+            if el.is_displayed():
+                return el
+        return False
+
+    trigger = WebDriverWait(driver, 15).until(_visible_trigger)
     trigger.click()
     user_menu = UserMenu(driver, base_url)
     user_menu.sign_out()
