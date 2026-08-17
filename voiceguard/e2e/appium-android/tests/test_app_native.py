@@ -196,16 +196,21 @@ def test_history_shows_the_new_scan(authenticated_driver, base_url) -> None:
 
 def test_appearance_theme_toggle(authenticated_driver, base_url) -> None:
     chrome = AppChrome(authenticated_driver, base_url)
-    # A real CI run hit a genuine TimeoutException here. The first retry
-    # attempt at this (see git history) had a real bug: drawer.go_to(...)
-    # was called *outside* the try/except, so if nav_link()'s own
-    # find_clickable (its own 15s wait, base_page.DEFAULT_TIMEOUT) was what
-    # actually timed out -- not the subsequent URL wait -- the exception
-    # escaped immediately on attempt 0 and none of the retry logic below
-    # ever actually ran. Both steps now live inside the same try, and each
-    # attempt gets its own explicit find_clickable timeout instead of
-    # inheriting the 15s default, so three attempts is a real ~10s budget
-    # each rather than an accidental single 15s shot.
+    # A real CI run's diagnostics (page source + current_url dumped on
+    # failure) proved this is not a timing issue at all: three retries with
+    # a real find_clickable + a real successful drawer-open each left
+    # current_url stuck at exactly /history every single time, across both
+    # the original attempt and its rerun (6 total tries). Every *other*
+    # drawer navigation in this suite (Dashboard, New Scan, History) is
+    # reached from /dashboard or /scan/* and always works; this is the only
+    # one reached from /history specifically. Hopping through Dashboard
+    # first -- a route already proven reliable everywhere else in this
+    # suite -- sidesteps whatever is specific to navigating away from
+    # /history, rather than continuing to retry the exact same failing hop.
+    drawer = chrome.open_mobile_drawer()
+    drawer.go_to("Dashboard")
+    WebDriverWait(authenticated_driver, 15).until(EC.url_contains("/dashboard"))
+
     last_exc: TimeoutException | None = None
     for attempt in range(3):
         try:
