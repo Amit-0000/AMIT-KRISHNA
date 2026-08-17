@@ -223,6 +223,23 @@ jobs:
           npm install -g appium@3.6.0
           appium driver install uiautomator2@8.2.2
 
+      - name: Install matching Chromedriver for the emulator's stock Chrome
+        # Same real problem qa-suite.yml's appium-tests job already solved
+        # (see its identical step): Appium's chromedriverAutodownload
+        # capability only resolves against the newer Chrome-for-Testing
+        # endpoint, which has no entries before Chrome 115 -- and the
+        # api-level 33 google_apis image ships a stock Chrome 109.0.5414, so
+        # autodownload silently finds nothing and every test fails with "No
+        # Chromedriver found that can automate Chrome '109.0.5414'" (a real
+        # CI run of this exact job hit precisely that). A matching driver
+        # exists on the legacy chromedriver.storage.googleapis.com endpoint
+        # -- fetch it explicitly and point Appium straight at it, same as
+        # conftest.py's CHROMEDRIVER_EXECUTABLE support already expects.
+        run: |
+          curl -sL -o "${{ github.workspace }}/chromedriver-109.zip" https://chromedriver.storage.googleapis.com/109.0.5414.74/chromedriver_linux64.zip
+          unzip -o "${{ github.workspace }}/chromedriver-109.zip" -d "${{ github.workspace }}/chromedriver-109"
+          chmod +x "${{ github.workspace }}/chromedriver-109/chromedriver"
+
       - name: Start Appium server
         run: |
           nohup appium --log-timestamp > "${{ github.workspace }}/appium.log" 2>&1 &
@@ -253,6 +270,7 @@ jobs:
         env:
           APPIUM_SERVER_URL: http://127.0.0.1:4723
           VOICEGUARD_APK_PATH: ${{ github.workspace }}/voiceguard/frontend/android/app/build/outputs/apk/debug/app-debug.apk
+          CHROMEDRIVER_EXECUTABLE: ${{ github.workspace }}/chromedriver-109/chromedriver
         continue-on-error: true
 
       - name: Parse Appium results
