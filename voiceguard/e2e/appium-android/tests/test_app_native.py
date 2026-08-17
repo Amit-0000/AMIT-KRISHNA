@@ -173,23 +173,29 @@ def test_history_shows_the_new_scan(authenticated_driver, base_url) -> None:
 
 def test_appearance_theme_toggle(authenticated_driver, base_url) -> None:
     chrome = AppChrome(authenticated_driver, base_url)
-    # A real CI run hit a genuine TimeoutException waiting for /settings
-    # after a single drawer.go_to("Settings") -- MobileDrawer.nav_link()
-    # already waits for the link to be clickable, but under CI's heavier
-    # contention a dispatched tap can still occasionally not register a
-    # navigation at all (same real flake this session's forgot-password
-    # verification hit on a plain login link, fixed there with a retry).
-    # Retry the whole open-drawer-and-navigate sequence instead of just the
-    # click, since a failed attempt can leave the drawer closed again.
+    # A real CI run hit a genuine TimeoutException here. The first retry
+    # attempt at this (see git history) had a real bug: drawer.go_to(...)
+    # was called *outside* the try/except, so if nav_link()'s own
+    # find_clickable (its own 15s wait, base_page.DEFAULT_TIMEOUT) was what
+    # actually timed out -- not the subsequent URL wait -- the exception
+    # escaped immediately on attempt 0 and none of the retry logic below
+    # ever actually ran. Both steps now live inside the same try, and each
+    # attempt gets its own explicit find_clickable timeout instead of
+    # inheriting the 15s default, so three attempts is a real ~10s budget
+    # each rather than an accidental single 15s shot.
+    last_exc: TimeoutException | None = None
     for attempt in range(3):
-        drawer = chrome.open_mobile_drawer()
-        drawer.go_to("Settings")
         try:
-            WebDriverWait(authenticated_driver, 8).until(EC.url_contains("/settings"))
+            drawer = chrome.open_mobile_drawer()
+            drawer.tap(drawer.find_clickable(By.XPATH, '//nav[@aria-label="Mobile navigation"]//a[normalize-space()="Settings"]', timeout=10))
+            WebDriverWait(authenticated_driver, 10).until(EC.url_contains("/settings"))
             break
-        except TimeoutException:
-            if attempt == 2:
-                raise
+        except TimeoutException as exc:
+            last_exc = exc
+            print(f"[diag] theme_toggle attempt {attempt} failed, current_url={authenticated_driver.current_url}", flush=True)
+    else:
+        assert last_exc is not None
+        raise last_exc
 
     _click(authenticated_driver, '//nav[@aria-label="Settings sections"]//a[normalize-space()="Appearance"]')
     appearance = AppearancePage(authenticated_driver, base_url)
