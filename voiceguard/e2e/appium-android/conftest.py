@@ -214,3 +214,25 @@ def pytest_runtest_makereport(item, call):
         drv.save_screenshot(str(SCREENSHOTS_DIR / f"{safe_name}.png"))
     except WebDriverException:
         pass
+    # Diagnostic-only, not a functional assertion: a screenshot alone can't
+    # distinguish "navigation genuinely didn't happen" from "current_url
+    # just hasn't caught up yet" -- dump the real DOM/URL/console state
+    # alongside it so a real CI failure can be root-caused from the
+    # uploaded artifact instead of guessed at.
+    try:
+        (SCREENSHOTS_DIR / f"{safe_name}.html").write_text(drv.page_source, encoding="utf-8")
+    except WebDriverException:
+        pass
+    try:
+        diag = (
+            f"current_url={drv.current_url}\n"
+            f"contexts={drv.contexts}\n"
+            f"current_context={drv.current_context}\n"
+        )
+        try:
+            diag += f"window.location.href={drv.execute_script('return window.location.href')}\n"
+        except WebDriverException:
+            pass
+        (SCREENSHOTS_DIR / f"{safe_name}.diag.txt").write_text(diag, encoding="utf-8")
+    except WebDriverException:
+        pass
