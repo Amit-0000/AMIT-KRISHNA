@@ -188,6 +188,24 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v4
 
+      - name: Provision the real LCNN checkpoint for this job's backend
+        # checkpoints/ is gitignored on purpose (large binary, meant to be
+        # mounted at runtime, not committed -- see .gitignore) and no CI job
+        # in this repo has ever provisioned one, so every scan through this
+        # job's local backend has always genuinely failed with "No active
+        # model version available" (confirmed via a real CI run's failure
+        # screenshot). This specific checkpoint is small (2.8MB) and is
+        # committed as a test fixture at e2e/appium-android/fixtures/ for
+        # exactly this purpose -- copied into the real (still-gitignored)
+        # checkpoints/ path docker-compose.yml mounts read-only into the
+        # backend container, so appium-android-tests can exercise a real
+        # completed inference instead of only ever hitting the model's
+        # absence.
+        working-directory: voiceguard
+        run: |
+          mkdir -p checkpoints
+          cp e2e/appium-android/fixtures/lcnn-ci-checkpoint.pt checkpoints/best.pt
+
       - name: Bring up isolated backend (postgres, redis, backend only)
         working-directory: voiceguard
         run: docker compose up -d --build postgres redis backend
