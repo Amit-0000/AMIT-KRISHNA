@@ -58,15 +58,20 @@ services:
       retries: 10
       start_period: 180s
 
-  # Development-only SMTP capture (see mailpit service below): verification
-  # and password-reset emails land in Mailpit's web UI (http://localhost:8025)
-  # instead of a real inbox, so they're visible without a domain, Resend
-  # account, or a mailbox that supports app-passwords. This is purely a
-  # docker-compose default — production sets EMAIL_PROVIDER=resend or
-  # EMAIL_PROVIDER=smtp against a real provider (see api/core/config.py's
-  # Settings and api/.env.example), and neither of those depends on Mailpit
-  # existing. Override EMAIL_PROVIDER=console here (or in a local env file)
-  # to go back to log-only emails instead.
+  # Optional development-only SMTP capture: verification and password-reset
+  # emails land in Mailpit's web UI (http://localhost:8025) instead of a real
+  # inbox, so they're visible without a domain, Resend account, or a mailbox
+  # that supports app-passwords. Opt in with
+  # EMAIL_PROVIDER=smtp docker compose up -d backend — the backend's default
+  # below stays EMAIL_PROVIDER=console (a real regression this session found
+  # the hard way: automated_test/setup_env.py, and every CI job that calls
+  # it — selenium-tests/appium-tests/security-assessment/this suite's own
+  # appium-android-tests — reads verification tokens straight out of the
+  # backend container's console log, and breaks if the default ever routes
+  # mail through Mailpit/SMTP instead). Production sets EMAIL_PROVIDER=resend
+  # or EMAIL_PROVIDER=smtp against a real provider (see api/core/config.py's
+  # Settings and api/.env.example) independently of this — neither of those
+  # depends on Mailpit existing.
   mailpit:
     image: axllent/mailpit:latest
     ports:
@@ -91,12 +96,15 @@ services:
       APP_BASE_URL: http://localhost:5173
       CLAMD_HOST: clamav
       CLAMD_PORT: "3310"
-      # Mailpit — see the mailpit service's comment above. No SMTP_USERNAME/
-      # SMTP_PASSWORD: Mailpit's SMTP listener doesn't require auth, and
-      # SmtpEmailProvider already skips smtp.login() when they're unset (see
-      # api/core/email.py), so leaving them out is the correct, not merely
-      # convenient, way to express "no auth" here.
-      EMAIL_PROVIDER: smtp
+      # Mailpit — see the mailpit service's comment above. Defaults to
+      # console (CI/automated_test/setup_env.py-compatible); pass
+      # EMAIL_PROVIDER=smtp on the host shell to route through Mailpit
+      # instead. No SMTP_USERNAME/SMTP_PASSWORD: Mailpit's SMTP listener
+      # doesn't require auth, and SmtpEmailProvider already skips
+      # smtp.login() when they're unset (see api/core/email.py), so leaving
+      # them out is the correct, not merely convenient, way to express "no
+      # auth" here.
+      EMAIL_PROVIDER: ${EMAIL_PROVIDER:-console}
       SMTP_HOST: mailpit
       SMTP_PORT: "1025"
       SMTP_USE_TLS: "false"
