@@ -24,8 +24,13 @@ const ACCEPTED_MIME: Record<string, string> = {
   'audio/m4a': 'M4A',
   'audio/x-m4a': 'M4A',
   'video/mp4': 'M4A',
+  // Raw AAC/ADTS — what the Android app's native microphone recorder
+  // actually produces (see api/core/audio_formats.py's matching entry).
+  'audio/aac': 'AAC',
+  'audio/aacp': 'AAC',
+  'audio/x-aac': 'AAC',
 }
-const ACCEPTED_EXT = /\.(wav|mp3|ogg|flac|aiff|m4a)$/i
+const ACCEPTED_EXT = /\.(wav|mp3|ogg|flac|aiff|m4a|aac)$/i
 const MAX_SIZE = 10 * 1024 * 1024    // 10 MB — matches MAX_UPLOAD_SIZE_BYTES
 const MAX_DURATION = 600              // 10 minutes — client-side courtesy check only; not server-enforced in this slice
 
@@ -273,6 +278,10 @@ export function useFileUpload() {
     state,
     handleDrop,
     handleBrowse,
+    // Feeds a microphone recording (see useAudioRecorder) into the exact
+    // same validate -> preview -> upload pipeline as a browsed/dropped file,
+    // rather than a parallel mobile-only path.
+    handleRecordedFile: processFile,
     clearFile,
     startUpload,
     cancelUpload,

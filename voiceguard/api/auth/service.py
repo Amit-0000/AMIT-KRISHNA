@@ -9,7 +9,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from api.auth import repository
 from api.core.audit import AuditEventType, AuditOutcome, write_audit_log
 from api.core.config import get_settings
-from api.core.email import send_password_changed_email, send_password_reset_email, send_verification_email
+from api.core.email import send_password_changed_email, try_send_password_reset_email, try_send_verification_email
 from api.core.exceptions import (
     EmailAlreadyExistsError,
     EmailNotVerifiedError,
@@ -94,7 +94,19 @@ async def _issue_session(
 
 async def register_user(
     db: AsyncSession, *, email: str, password: str, display_name: str, ip_hash: str | None
-) -> User:
+) -> tuple[User, bool]:
+    """Returns (user, email_sent). The user + verification-token rows are
+    committed *before* the verification email is attempted (see the commit
+    call below) — production diagnostic 2026-08-15 found Resend's
+    sandbox-sender rejecting a non-owner recipient (SMTP 550) was raising
+    out of this function, which api.core.database.get_db's rollback-on-
+    exception then used to roll back the just-created account along with
+    it, turning a delivery problem into a total registration failure
+    (HTTP 500, no account, same shape as _fail_and_persist's reasoning in
+    api/scans/service.py). Committing first makes the two concerns
+    independent: the account always survives, and email delivery becomes a
+    best-effort follow-up the caller can report and the user can retry via
+    /auth/resend-verification."""
     email_normalized = email.lower().strip()
 
     errors = validate_password_strength(password, email=email_normalized)
@@ -124,12 +136,17 @@ async def register_user(
         expires_at=datetime.now(timezone.utc) + EMAIL_VERIFICATION_TTL,
         email_address=email_normalized,
     )
+    await write_audit_log(db, event_type=AuditEventType.USER_REGISTERED, outcome=AuditOutcome.SUCCESS, user_id=user.id, ip_address=None)
+
+    # Durable commit boundary — everything above this line survives even if
+    # the email send below fails. The router does not commit again for this
+    # endpoint (see api/auth/router.py's register handler).
+    await db.commit()
+
     settings = get_settings()
     verification_url = f"{settings.APP_BASE_URL}/verify-email?token={raw_token}"
-    await send_verification_email(to=email_normalized, verification_url=verification_url)
-
-    await write_audit_log(db, event_type=AuditEventType.USER_REGISTERED, outcome=AuditOutcome.SUCCESS, user_id=user.id, ip_address=None)
-    return user
+    email_sent = await try_send_verification_email(to=email_normalized, verification_url=verification_url)
+    return user, email_sent
 
 
 async def login_user(
@@ -236,9 +253,20 @@ async def resend_verification(db: AsyncSession, *, email: str) -> None:
         expires_at=datetime.now(timezone.utc) + EMAIL_VERIFICATION_TTL,
         email_address=email_normalized,
     )
+
+    # Same durable-commit-before-send reasoning as register_user above: the
+    # new token must survive even if this send fails, so a subsequent call
+    # to this same endpoint can retry delivery. Router does not commit
+    # again for this endpoint (see api/auth/router.py).
+    await db.commit()
+
     settings = get_settings()
     verification_url = f"{settings.APP_BASE_URL}/verify-email?token={raw_token}"
-    await send_verification_email(to=email_normalized, verification_url=verification_url)
+    # Failure is intentionally not surfaced here (same reasoning as the
+    # enumeration-resistant early-return above: this endpoint's response
+    # shape must not vary with what happened server-side) — the user can
+    # just call resend-verification again.
+    await try_send_verification_email(to=email_normalized, verification_url=verification_url)
 
 
 async def forgot_password(db: AsyncSession, *, email: str, ip_hash: str | None) -> None:
@@ -256,12 +284,21 @@ async def forgot_password(db: AsyncSession, *, email: str, ip_hash: str | None) 
         expires_at=datetime.now(timezone.utc) + PASSWORD_RESET_TTL,
         ip_hash=ip_hash,
     )
-    settings = get_settings()
-    reset_url = f"{settings.APP_BASE_URL}/reset-password?token={raw_token}"
-    await send_password_reset_email(to=email_normalized, reset_url=reset_url)
     await write_audit_log(
         db, event_type=AuditEventType.PASSWORD_RESET_REQUESTED, outcome=AuditOutcome.SUCCESS, user_id=user.id
     )
+
+    # Same durable-commit-before-send reasoning as register_user/
+    # resend_verification: the reset token must survive an email-provider
+    # failure so the request that failed to send doesn't ALSO roll back the
+    # token, and so a subsequent forgot-password retry has a clean state to
+    # work from. Router does not commit again for this endpoint (see
+    # api/auth/router.py).
+    await db.commit()
+
+    settings = get_settings()
+    reset_url = f"{settings.APP_BASE_URL}/reset-password?token={raw_token}"
+    await try_send_password_reset_email(to=email_normalized, reset_url=reset_url)
 
 
 async def reset_password(db: AsyncSession, *, raw_token: str, new_password: str) -> User:

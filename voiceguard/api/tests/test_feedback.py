@@ -5,8 +5,6 @@ from urllib.parse import parse_qs, urlparse
 import pytest
 from httpx import AsyncClient
 
-from api.auth import service as auth_service
-
 pytestmark = pytest.mark.asyncio
 
 
@@ -21,7 +19,11 @@ def captured_emails(monkeypatch: pytest.MonkeyPatch) -> dict[str, str]:
     async def fake_verification_email(*, to: str, verification_url: str) -> None:
         captured["verification_url"] = verification_url
 
-    monkeypatch.setattr(auth_service, "send_verification_email", fake_verification_email)
+    from api.core import email as email_service
+
+    # send_verification_email is called from api.core.email.try_send_verification_email
+    # (a same-module bare-name call), so it's patched here rather than on api.auth.service.
+    monkeypatch.setattr(email_service, "send_verification_email", fake_verification_email)
     return captured
 
 

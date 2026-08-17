@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">VoiceGuard</string>
+    <string name="title_activity_main">VoiceGuard</string>
+    <string name="package_name">com.voiceguard.app</string>
+    <string name="custom_url_scheme">com.voiceguard.app</string>
+</resources>

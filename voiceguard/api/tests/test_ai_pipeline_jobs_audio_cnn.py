@@ -40,14 +40,14 @@ def _extract_token(url: str) -> str:
 
 @pytest.fixture
 def captured_emails(monkeypatch: pytest.MonkeyPatch) -> dict[str, str]:
-    from api.auth import service as auth_service
+    from api.core import email as email_service
 
     captured: dict[str, str] = {}
 
     async def fake_verification_email(*, to: str, verification_url: str) -> None:
         captured["verification_url"] = verification_url
 
-    monkeypatch.setattr(auth_service, "send_verification_email", fake_verification_email)
+    monkeypatch.setattr(email_service, "send_verification_email", fake_verification_email)
     return captured
 
 

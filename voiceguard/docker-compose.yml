@@ -58,6 +58,21 @@ services:
       retries: 10
       start_period: 180s
 
+  # Development-only SMTP capture (see mailpit service below): verification
+  # and password-reset emails land in Mailpit's web UI (http://localhost:8025)
+  # instead of a real inbox, so they're visible without a domain, Resend
+  # account, or a mailbox that supports app-passwords. This is purely a
+  # docker-compose default — production sets EMAIL_PROVIDER=resend or
+  # EMAIL_PROVIDER=smtp against a real provider (see api/core/config.py's
+  # Settings and api/.env.example), and neither of those depends on Mailpit
+  # existing. Override EMAIL_PROVIDER=console here (or in a local env file)
+  # to go back to log-only emails instead.
+  mailpit:
+    image: axllent/mailpit:latest
+    ports:
+      - "1025:1025" # SMTP capture
+      - "8025:8025" # Web UI — open this to read captured emails
+
   backend:
     build:
       context: .
@@ -67,10 +82,25 @@ services:
     environment:
       DATABASE_URL: postgresql+asyncpg://voiceguard:voiceguard@postgres:5432/voiceguard
       REDIS_URL: redis://redis:6379/0
-      ALLOWED_ORIGINS: http://localhost:5173
+      # https://localhost: the Capacitor Android app's WebView origin —
+      # needed so a debug build pointed at this local stack (frontend's
+      # VITE_API_BASE_URL=http://10.0.2.2:8000, see ANDROID_APP.md) isn't
+      # silently CORS-blocked client-side even though the server itself
+      # accepts and logs the request as 200 OK.
+      ALLOWED_ORIGINS: http://localhost:5173,https://localhost
       APP_BASE_URL: http://localhost:5173
       CLAMD_HOST: clamav
       CLAMD_PORT: "3310"
+      # Mailpit — see the mailpit service's comment above. No SMTP_USERNAME/
+      # SMTP_PASSWORD: Mailpit's SMTP listener doesn't require auth, and
+      # SmtpEmailProvider already skips smtp.login() when they're unset (see
+      # api/core/email.py), so leaving them out is the correct, not merely
+      # convenient, way to express "no auth" here.
+      EMAIL_PROVIDER: smtp
+      SMTP_HOST: mailpit
+      SMTP_PORT: "1025"
+      SMTP_USE_TLS: "false"
+      EMAIL_FROM_ADDRESS: noreply@voiceguard.local
       # Passed through from the host shell so load tests (and CI's
       # performance-smoke-test job) can raise the per-IP login limit for a
       # test run without editing .env — defaults to the real, secure value.
@@ -85,6 +115,8 @@ services:
       redis:
         condition: service_healthy
       clamav:
+        condition: service_started
+      mailpit:
         condition: service_started
     volumes:
       - ./checkpoints:/app/checkpoints:ro

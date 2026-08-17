@@ -1,6 +1,10 @@
 import { useEffect } from 'react'
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { Toaster, toast } from 'sonner'
+import { Capacitor } from '@capacitor/core'
+import { App as CapacitorApp } from '@capacitor/app'
+import { StatusBar, Style } from '@capacitor/status-bar'
+import { SplashScreen } from '@capacitor/splash-screen'
 import { LandingPage } from '@/pages/LandingPage'
 import { AppShell } from '@/components/layout/AppShell'
 import { AuthGuard } from '@/guards/AuthGuard'
@@ -35,6 +39,39 @@ function AppInit() {
   const checkSession = useAuthStore((s) => s.checkSession)
   useEffect(() => { checkSession() }, [checkSession])
 
+  // Android hardware back button (Phase 14). Registering a listener replaces
+  // the plugin's default handler (bare exitApp/webview-back), so this is
+  // responsible for the whole policy: close an open Radix dialog first (they
+  // don't push history entries, so browser back can't reach them), otherwise
+  // fall back to the SPA's own navigation history, and only exit at a true
+  // root with nothing left to go back to.
+  useEffect(() => {
+    if (!Capacitor.isNativePlatform()) return
+    const listenerPromise = CapacitorApp.addListener('backButton', ({ canGoBack }) => {
+      const openDialog = document.querySelector(
+        '[role="dialog"][data-state="open"], [role="alertdialog"][data-state="open"]'
+      )
+      if (openDialog) {
+        openDialog.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true, cancelable: true }))
+        return
+      }
+      if (canGoBack) {
+        window.history.back()
+      } else {
+        CapacitorApp.exitApp()
+      }
+    })
+    return () => { void listenerPromise.then((handle) => handle.remove()) }
+  }, [])
+
+  // Splash screen (Phase 15): capacitor.config.ts sets launchAutoHide: false
+  // so the native splash stays up through the session-check network round
+  // trip above, instead of flashing a blank/loading WebView first.
+  useEffect(() => {
+    if (!Capacitor.isNativePlatform()) return
+    void SplashScreen.hide()
+  }, [])
+
   // api.ts dispatches this on every 429 (login/register/scan-create/etc. all
   // have per-route rate limits — see api/core/rate_limit.py); mounted here,
   // globally and unconditionally, since a 429 can happen on pre-auth routes
@@ -58,6 +95,22 @@ function AppInit() {
 
 // ─── Root ─────────────────────────────────────────────────────────────────────
 
+// Phase 15: keep the status bar icons legible against the app's own
+// header/background instead of the OS default, and let the WebView lay out
+// below the status bar (setOverlaysWebView(false)) rather than auditing
+// every screen for safe-area-inset padding by hand.
+function NativeStatusBar() {
+  const resolvedTheme = useResolvedTheme()
+
+  useEffect(() => {
+    if (!Capacitor.isNativePlatform()) return
+    void StatusBar.setOverlaysWebView({ overlay: false })
+    void StatusBar.setStyle({ style: resolvedTheme === 'dark' ? Style.Dark : Style.Light })
+  }, [resolvedTheme])
+
+  return null
+}
+
 function ThemedToaster() {
   const resolvedTheme = useResolvedTheme()
   return (
@@ -77,6 +130,7 @@ export default function App() {
   return (
     <BrowserRouter>
       <AppInit />
+      <NativeStatusBar />
 
       <Routes>
         {/* ── Public routes ─────────────────────────────────── */}

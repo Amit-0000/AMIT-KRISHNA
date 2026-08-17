@@ -30,8 +30,15 @@ def captured_emails(monkeypatch: pytest.MonkeyPatch) -> dict[str, str]:
     async def fake_changed_email(*, to: str) -> None:
         captured["password_changed_to"] = to
 
-    monkeypatch.setattr(auth_service, "send_verification_email", fake_verification_email)
-    monkeypatch.setattr(auth_service, "send_password_reset_email", fake_reset_email)
+    from api.core import email as email_service
+
+    # send_verification_email / send_password_reset_email are now called from
+    # api.core.email's try_send_* wrappers (same-module bare-name calls), so
+    # they must be patched on that module, not auth_service.
+    # send_password_changed_email is still called directly from auth_service,
+    # so it stays patched there.
+    monkeypatch.setattr(email_service, "send_verification_email", fake_verification_email)
+    monkeypatch.setattr(email_service, "send_password_reset_email", fake_reset_email)
     monkeypatch.setattr(auth_service, "send_password_changed_email", fake_changed_email)
     return captured
 
@@ -45,8 +52,109 @@ async def _register(client: AsyncClient, email: str = "person@example.com", pass
 
 
 async def test_register_success(client: AsyncClient, captured_emails: dict[str, str]) -> None:
-    await _register(client)
+    resp = await client.post(
+        "/api/v1/auth/register",
+        json={"email": "person@example.com", "password": "Str0ng!Pass", "display_name": "Person One"},
+    )
+    assert resp.status_code == 201, resp.text
+    assert resp.json()["data"]["email_delivery"] == "sent"
     assert "verification_url" in captured_emails
+
+
+async def test_register_email_provider_failure_does_not_roll_back(
+    client: AsyncClient, monkeypatch: pytest.MonkeyPatch, db_session: AsyncSession
+) -> None:
+    """Production diagnostic 2026-08-15: Resend's sandbox sender rejects any
+    recipient but the account owner with SMTP 550, which used to raise out
+    of register_user() and roll back the just-created account via
+    api.core.database.get_db's rollback-on-exception, turning a delivery
+    problem into a total registration failure. register_user() now commits
+    the user + verification token before attempting the email, so the
+    account must survive an email-provider outage — this proves it end to
+    end, including that the token committed before the failed send is
+    still valid and usable."""
+    from api.core import email as email_service
+    from api.user.models import User
+
+    captured: dict[str, str] = {}
+
+    async def failing_verification_email(*, to: str, verification_url: str) -> None:
+        captured["verification_url"] = verification_url
+        raise ConnectionRefusedError("simulated SMTP provider outage — smtp.resend.com:2587 unreachable")
+
+    monkeypatch.setattr(email_service, "send_verification_email", failing_verification_email)
+
+    resp = await client.post(
+        "/api/v1/auth/register",
+        json={"email": "emailfail@example.com", "password": "Str0ng!Pass", "display_name": "Email Fail"},
+    )
+
+    # (b) registration does NOT roll back — still a clean success, not a 500
+    assert resp.status_code == 201, resp.text
+    body = resp.json()["data"]
+    assert body["email_delivery"] == "failed"
+
+    # (c) user remains unverified
+    assert body["user"]["email_verified"] is False
+
+    # (e) the provider's exception text never reaches the client
+    assert "simulated SMTP provider outage" not in resp.text
+    assert "ConnectionRefusedError" not in resp.text
+    assert "smtp.resend.com" not in resp.text
+
+    # (b) continued — the user row genuinely persisted (this session's own
+    # query, independent of whatever session the request used)
+    result = await db_session.execute(select(User).where(User.email == "emailfail@example.com"))
+    user = result.scalar_one()
+    assert user.email_verified is False
+
+    # (d) the verification token committed before the failed send is still
+    # valid and usable — proves the token isn't silently invalidated or lost
+    assert "verification_url" in captured
+    token = _extract_token(captured["verification_url"])
+    verify_resp = await client.post("/api/v1/auth/verify-email", json={"token": token})
+    assert verify_resp.status_code == 200, verify_resp.text
+    assert verify_resp.json()["data"]["user"]["email_verified"] is True
+
+
+async def test_resend_verification_recovers_after_initial_email_failure(
+    client: AsyncClient, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """Requirement: a user whose registration email failed to send must be
+    able to use POST /auth/resend-verification to get a working link. Also
+    covers /auth/resend-verification itself, which had no test coverage
+    before this change."""
+    from api.core import email as email_service
+
+    async def failing_verification_email(*, to: str, verification_url: str) -> None:
+        raise ConnectionRefusedError("simulated SMTP provider outage")
+
+    monkeypatch.setattr(email_service, "send_verification_email", failing_verification_email)
+
+    resp = await client.post(
+        "/api/v1/auth/register",
+        json={"email": "retryme@example.com", "password": "Str0ng!Pass", "display_name": "Retry Me"},
+    )
+    assert resp.status_code == 201, resp.text
+    assert resp.json()["data"]["email_delivery"] == "failed"
+
+    captured: dict[str, str] = {}
+
+    async def working_verification_email(*, to: str, verification_url: str) -> None:
+        captured["verification_url"] = verification_url
+
+    monkeypatch.setattr(email_service, "send_verification_email", working_verification_email)
+
+    resend_resp = await client.post("/api/v1/auth/resend-verification", json={"email": "retryme@example.com"})
+    assert resend_resp.status_code == 200, resend_resp.text
+    # enumeration-resistant response shape — must not vary with what happened
+    assert resend_resp.json()["data"] == {}
+    assert "verification_url" in captured
+
+    token = _extract_token(captured["verification_url"])
+    verify_resp = await client.post("/api/v1/auth/verify-email", json={"token": token})
+    assert verify_resp.status_code == 200, verify_resp.text
+    assert verify_resp.json()["data"]["user"]["email_verified"] is True
 
 
 async def test_register_duplicate_email_conflicts(client: AsyncClient, captured_emails: dict[str, str]) -> None:
@@ -145,6 +253,63 @@ async def test_full_register_verify_login_me_refresh_logout_flow(
     assert me_after_logout.status_code == 401
 
 
+async def test_mobile_client_gets_bearer_tokens_and_can_authenticate_without_cookies(
+    client: AsyncClient, captured_emails: dict[str, str]
+) -> None:
+    """The Capacitor Android app's WebView origin (https://localhost) is
+    cross-site from this API's perspective, so SameSite=Strict cookies never
+    come back on its later requests even though login sets them. Confirms
+    the additive bearer-token path: origin=https://localhost gets raw tokens
+    in the body, and a request with only Authorization (no cookies at all)
+    still authenticates and can refresh/logout via a body-supplied token."""
+    await _register(client)
+    token = _extract_token(captured_emails["verification_url"])
+    await client.post("/api/v1/auth/verify-email", json={"token": token})
+
+    login_resp = await client.post(
+        "/api/v1/auth/login",
+        json={"email": "person@example.com", "password": "Str0ng!Pass"},
+        headers={"origin": "https://localhost"},
+    )
+    assert login_resp.status_code == 200
+    body = login_resp.json()["data"]
+    access_token = body["access_token"]
+    refresh_token = body["refresh_token"]
+    assert access_token and refresh_token
+
+    # A non-mobile-origin login must NOT get raw tokens in the body — only
+    # the cookie flow, unchanged.
+    other_login = await client.post(
+        "/api/v1/auth/login", json={"email": "person@example.com", "password": "Str0ng!Pass"}
+    )
+    assert "access_token" not in other_login.json()["data"]
+
+    client.cookies.clear()
+    me_resp = await client.get("/api/v1/auth/me", headers={"Authorization": f"Bearer {access_token}"})
+    assert me_resp.status_code == 200
+    assert me_resp.json()["data"]["user"]["email"] == "person@example.com"
+
+    # No cookies, no Authorization header at all -> unauthenticated.
+    assert (await client.get("/api/v1/auth/me")).status_code == 401
+
+    refresh_resp = await client.post(
+        "/api/v1/auth/refresh",
+        json={"refresh_token": refresh_token},
+        headers={"origin": "https://localhost"},
+    )
+    assert refresh_resp.status_code == 200
+    new_access = refresh_resp.json()["data"]["access_token"]
+    assert new_access and new_access != access_token
+
+    logout_resp = await client.post("/api/v1/auth/logout", json={"refresh_token": refresh_token})
+    assert logout_resp.status_code == 200
+
+    # The refresh token logout revoked was already rotated by the refresh
+    # call above, so this just confirms logout didn't error without cookies
+    # to fall back on — reuse-detection behavior is covered by
+    # test_refresh_token_reuse_revokes_all_sessions.
+
+
 async def test_logout_revokes_refresh_token_server_side(
     client: AsyncClient, captured_emails: dict[str, str]
 ) -> None:
@@ -194,6 +359,44 @@ async def test_refresh_token_reuse_revokes_all_sessions(client: AsyncClient, cap
     client.cookies.set("refresh_token", first_rotation.cookies.get("refresh_token"))
     second_replay = await client.post("/api/v1/auth/refresh")
     assert second_replay.status_code == 401
+
+
+async def test_forgot_password_email_failure_does_not_break_reset_token(
+    client: AsyncClient, captured_emails: dict[str, str], monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """forgot_password() had the same commit-after-send bug register_user()
+    was fixed for on 2026-08-15 — the reset-token row would roll back along
+    with a failed send. Fixed the same way (commit before send); this proves
+    the token survives a provider outage and is still usable."""
+    await _register(client)
+    verify_token = _extract_token(captured_emails["verification_url"])
+    await client.post("/api/v1/auth/verify-email", json={"token": verify_token})
+
+    from api.core import email as email_service
+
+    captured: dict[str, str] = {}
+
+    async def failing_reset_email(*, to: str, reset_url: str) -> None:
+        captured["reset_url"] = reset_url
+        raise ConnectionRefusedError("simulated SMTP provider outage")
+
+    monkeypatch.setattr(email_service, "send_password_reset_email", failing_reset_email)
+
+    resp = await client.post("/api/v1/auth/forgot-password", json={"email": "person@example.com"})
+    assert resp.status_code == 200, resp.text
+    assert resp.json()["data"] == {}
+    assert "simulated SMTP provider outage" not in resp.text
+
+    reset_token = _extract_token(captured["reset_url"])
+    reset_resp = await client.post(
+        "/api/v1/auth/reset-password", json={"token": reset_token, "password": "NewStr0ng!Pass"}
+    )
+    assert reset_resp.status_code == 200, reset_resp.text
+
+    new_login = await client.post(
+        "/api/v1/auth/login", json={"email": "person@example.com", "password": "NewStr0ng!Pass"}
+    )
+    assert new_login.status_code == 200
 
 
 async def test_forgot_password_always_returns_success(client: AsyncClient, captured_emails: dict[str, str]) -> None:

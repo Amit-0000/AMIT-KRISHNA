@@ -38,6 +38,18 @@ async def get_current_user_optional(
     request: Request, response: Response, db: AsyncSession = Depends(get_db)
 ) -> User | None:
     access_token = request.cookies.get(auth_service.ACCESS_COOKIE_NAME)
+
+    # The Capacitor Android app calls this API cross-origin (its WebView runs
+    # on https://localhost, not the API's own origin), so the SameSite=Strict
+    # cookies above are never sent back to us from that client even though
+    # the browser accepted and stored them at login. It authenticates via
+    # Authorization: Bearer instead — see ANDROID_APP.md and auth/router.py's
+    # _is_mobile_client. Web never sends this header, so this is additive.
+    if not access_token:
+        auth_header = request.headers.get("authorization", "")
+        if auth_header.lower().startswith("bearer "):
+            access_token = auth_header[7:].strip()
+
     if not access_token:
         return await _try_silent_refresh(request, response, db)
 

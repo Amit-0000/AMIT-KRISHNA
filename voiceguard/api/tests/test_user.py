@@ -24,7 +24,11 @@ def captured_emails(monkeypatch: pytest.MonkeyPatch) -> dict[str, str]:
     async def fake_changed_email(*, to: str) -> None:
         captured["password_changed_to"] = to
 
-    monkeypatch.setattr(auth_service, "send_verification_email", fake_verification_email)
+    from api.core import email as email_service
+
+    # send_verification_email is now called from api.core.email.try_send_verification_email
+    # (a same-module bare-name call), so it must be patched on that module, not auth_service.
+    monkeypatch.setattr(email_service, "send_verification_email", fake_verification_email)
     monkeypatch.setattr(auth_service, "send_password_changed_email", fake_changed_email)
     return captured
 

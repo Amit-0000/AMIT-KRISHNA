@@ -31,18 +31,53 @@ from api.user.schemas import UserResponse
 
 router = APIRouter(prefix="/auth", tags=["auth"])
 
+# Origins the Capacitor Android app's WebView runs on. Requests from these
+# origins are cross-site from the API's perspective, so the SameSite=Strict
+# session cookies below reach the client but never come back on later
+# requests — these clients need the raw tokens in the JSON body instead, to
+# hold themselves and send back as Authorization: Bearer (see
+# core/deps.py::get_current_user_optional). Web origins never match this, so
+# exposing the tokens here doesn't add exposure for the web app: production
+# CORS (api/core/config.py's ALLOWED_ORIGINS) must also list these origins or
+# the browser/WebView blocks the response before this ever matters.
+_MOBILE_APP_ORIGINS = frozenset({"https://localhost", "capacitor://localhost"})
+
+
+def _is_mobile_client(request: Request) -> bool:
+    return request.headers.get("origin") in _MOBILE_APP_ORIGINS
+
+
+async def _body_refresh_token(request: Request) -> str | None:
+    """Mobile clients have no refresh cookie to read (see _MOBILE_APP_ORIGINS
+    above), so they send the refresh token they were issued at login/refresh
+    back in the JSON body instead. Web never sends a body here, so this is a
+    pure fallback — try/except because an empty or non-JSON body is the
+    normal web-client case, not an error."""
+    try:
+        body = await request.json()
+    except Exception:
+        return None
+    return body.get("refresh_token") if isinstance(body, dict) else None
+
 
 @router.post("/register", status_code=status.HTTP_201_CREATED, dependencies=[Depends(require_register_rate_limit)])
 async def register(payload: RegisterRequest, request: Request, db: AsyncSession = Depends(get_db)):
-    user = await auth_service.register_user(
+    # register_user commits internally (user + token must survive even if
+    # the verification email fails to send) — no db.commit() here, see
+    # api/auth/service.py's register_user docstring.
+    user, email_sent = await auth_service.register_user(
         db,
         email=payload.email,
         password=payload.password,
         display_name=payload.display_name,
         ip_hash=hash_ip(client_ip(request)),
     )
-    await db.commit()
-    return success_envelope({"user": UserResponse.from_user(user).model_dump(mode="json")})
+    return success_envelope(
+        {
+            "user": UserResponse.from_user(user).model_dump(mode="json"),
+            "email_delivery": "sent" if email_sent else "failed",
+        }
+    )
 
 
 @router.post("/login", dependencies=[Depends(require_login_rate_limit)])
@@ -56,7 +91,11 @@ async def login(payload: LoginRequest, request: Request, response: Response, db:
     )
     await db.commit()
     auth_service.set_session_cookies(response, access_token=access_token, refresh_token_raw=refresh_token_raw)
-    return success_envelope({"user": UserResponse.from_user(user).model_dump(mode="json")})
+    data = {"user": UserResponse.from_user(user).model_dump(mode="json")}
+    if _is_mobile_client(request):
+        data["access_token"] = access_token
+        data["refresh_token"] = refresh_token_raw
+    return success_envelope(data)
 
 
 @router.post("/logout")
@@ -66,7 +105,7 @@ async def logout(
     db: AsyncSession = Depends(get_db),
     user: User | None = Depends(get_current_user_optional),
 ):
-    refresh_raw = request.cookies.get(auth_service.REFRESH_COOKIE_NAME)
+    refresh_raw = request.cookies.get(auth_service.REFRESH_COOKIE_NAME) or await _body_refresh_token(request)
     await auth_service.logout(db, refresh_token_raw=refresh_raw, user_id=user.id if user else None)
     await db.commit()
     auth_service.clear_session_cookies(response)
@@ -75,7 +114,7 @@ async def logout(
 
 @router.post("/refresh")
 async def refresh(request: Request, response: Response, db: AsyncSession = Depends(get_db)):
-    refresh_raw = request.cookies.get(auth_service.REFRESH_COOKIE_NAME)
+    refresh_raw = request.cookies.get(auth_service.REFRESH_COOKIE_NAME) or await _body_refresh_token(request)
     if not refresh_raw:
         raise SessionExpiredError("Session expired, please log in again")
 
@@ -87,7 +126,11 @@ async def refresh(request: Request, response: Response, db: AsyncSession = Depen
     )
     await db.commit()
     auth_service.set_session_cookies(response, access_token=access_token, refresh_token_raw=refresh_token_new)
-    return success_envelope({"user": UserResponse.from_user(user).model_dump(mode="json")})
+    data = {"user": UserResponse.from_user(user).model_dump(mode="json")}
+    if _is_mobile_client(request):
+        data["access_token"] = access_token
+        data["refresh_token"] = refresh_token_new
+    return success_envelope(data)
 
 
 @router.post("/verify-email", dependencies=[Depends(require_verify_email_rate_limit)])
@@ -99,15 +142,18 @@ async def verify_email(payload: VerifyEmailRequest, db: AsyncSession = Depends(g
 
 @router.post("/resend-verification", dependencies=[Depends(require_resend_verification_rate_limit)])
 async def resend_verification(payload: ResendVerificationRequest, db: AsyncSession = Depends(get_db)):
+    # resend_verification commits internally, same reasoning as register's
+    # handler above — no db.commit() here.
     await auth_service.resend_verification(db, email=payload.email)
-    await db.commit()
     return success_envelope({})
 
 
 @router.post("/forgot-password", dependencies=[Depends(require_forgot_password_rate_limit)])
 async def forgot_password(payload: ForgotPasswordRequest, request: Request, db: AsyncSession = Depends(get_db)):
+    # forgot_password commits internally (reset token must survive an
+    # email-provider failure), same reasoning as register/resend-verification
+    # above — no db.commit() here.
     await auth_service.forgot_password(db, email=payload.email, ip_hash=hash_ip(client_ip(request)))
-    await db.commit()
     return success_envelope({})
 
 

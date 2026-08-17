@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Debug-build-type-only override (Gradle only merges src/debug/ into the
+  debug build type, never release — see android/app/build.gradle's
+  buildTypes block). Exists so a local debug build pointed at a plain-HTTP
+  backend (VITE_API_BASE_URL=http://10.0.2.2:8000 or a LAN IP, see
+  ANDROID_APP.md) isn't blocked by Android's default cleartext-traffic
+  restriction. The production Railway backend is HTTPS regardless, and the
+  real (release) manifest has no such exemption — Phase 16's "no insecure
+  HTTP" requirement is about what ships, not local dev/CI builds.
+-->
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <application android:usesCleartextTraffic="true" />
+</manifest>
