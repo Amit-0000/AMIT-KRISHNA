@@ -67,7 +67,18 @@ class MobileDrawer(BasePage):
         # SIDEBAR_SECTIONS/SETTINGS_NAV item labels, e.g. "Dashboard", "New
         # Scan", "History", "Notifications", "Help Center", "Give Feedback",
         # "Settings" (nav-config.ts) -- exact visible link text.
-        return self.find(By.XPATH, f'//nav[@aria-label="Mobile navigation"]//a[normalize-space()="{label}"]')
+        #
+        # find_clickable, not find: a real Android CI run (android-app.yml's
+        # appium-android-tests) hit a genuine TimeoutException navigating to
+        # Settings here -- the link is visible (drawer slide-in animation
+        # already resolved by is_open()'s own wait above) slightly before
+        # it's actually hit-testable, same framer-motion timing class this
+        # file already works around elsewhere (open_mobile_drawer,
+        # open_user_menu, close all already use find_clickable; this was the
+        # one call site still on the weaker visibility-only wait).
+        return self.find_clickable(
+            By.XPATH, f'//nav[@aria-label="Mobile navigation"]//a[normalize-space()="{label}"]'
+        )
 
     def go_to(self, label: str) -> None:
         self.tap(self.nav_link(label))
