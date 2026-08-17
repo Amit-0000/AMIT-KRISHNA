@@ -82,36 +82,59 @@ def test_native_new_scan_shows_upload_and_record_toggle(authenticated_driver, ba
 def test_microphone_permission_and_recording_flow(authenticated_driver, base_url) -> None:
     driver = authenticated_driver
     _click(driver, '//button[normalize-space()="Record Audio"]')
-    # 30s, not the default 15s: a real android-app.yml CI run hit a genuine
-    # TimeoutException here twice in a row (original attempt + rerun) --
-    # this click follows the Upload<->Record AnimatePresence swap
-    # (NewScan/index.tsx), the same transition-timing class _click already
-    # works around elsewhere, just needing more headroom under CI's shared
-    # emulator load than a local run ever does (same reasoning already
-    # documented on MobileDrawer.is_open()'s 5s->10s bump).
-    _click(driver, '//button[normalize-space()="Start Recording"]', timeout=30)
 
-    # Android's real runtime-permission dialog for RECORD_AUDIO is a
-    # *different app* (PermissionController), reachable only from the
-    # NATIVE_APP context — this is the one thing in the whole suite that
-    # can't be driven through the WebView at all.
-    webview_ctx = driver.current_context
-    driver.switch_to.context("NATIVE_APP")
-    try:
+    # A real CI run's failure screenshot caught the *actual* cause behind
+    # what looked like a "Start Recording never became clickable" timeout:
+    # a real first attempt at the OS permission dialog was genuinely denied
+    # (RecordAudioPanel's own "Microphone permission is required / Try
+    # Again" fallback was on screen), and useAudioRecorder.ts's
+    # deniedOnceRef then keeps that denied state across a rerun's fresh
+    # "Start Recording" click, which naturally never finds that exact text
+    # again -- a real, if intermittent, first-request denial, not a UI
+    # timing bug. Retries the whole click+dialog cycle via the app's own
+    # "Try Again" recovery affordance instead of assuming the first request
+    # always gets Allow.
+    for attempt in range(3):
+        # 30s, not the default 15s: this click follows the Upload<->Record
+        # AnimatePresence swap (NewScan/index.tsx) under CI's shared
+        # emulator load, the same transition-timing class _click already
+        # works around elsewhere (MobileDrawer.is_open()'s 5s->10s bump).
+        _click(driver, '//button[normalize-space()="Start Recording"]', timeout=30)
+
+        # Android's real runtime-permission dialog for RECORD_AUDIO is a
+        # *different app* (PermissionController), reachable only from the
+        # NATIVE_APP context -- this is the one thing in the whole suite
+        # that can't be driven through the WebView at all.
+        webview_ctx = driver.current_context
+        driver.switch_to.context("NATIVE_APP")
         try:
-            allow = WebDriverWait(driver, 10).until(
-                EC.element_to_be_clickable(
-                    (By.ID, "com.android.permissioncontroller:id/permission_allow_foreground_only_button")
+            try:
+                allow = WebDriverWait(driver, 10).until(
+                    EC.element_to_be_clickable(
+                        (By.ID, "com.android.permissioncontroller:id/permission_allow_foreground_only_button")
+                    )
                 )
-            )
+            except TimeoutException:
+                # Older/alternate dialog layout — plain two-button Allow/Deny.
+                allow = WebDriverWait(driver, 5).until(
+                    EC.element_to_be_clickable((By.ID, "com.android.permissioncontroller:id/permission_allow_button"))
+                )
+            allow.click()
         except TimeoutException:
-            # Older/alternate dialog layout — plain two-button Allow/Deny.
-            allow = WebDriverWait(driver, 5).until(
-                EC.element_to_be_clickable((By.ID, "com.android.permissioncontroller:id/permission_allow_button"))
+            pass  # no dialog appeared at all this attempt; fall through to the state check below
+        finally:
+            driver.switch_to.context(webview_ctx)
+
+        try:
+            WebDriverWait(driver, 5).until(
+                EC.visibility_of_element_located((By.XPATH, '//button[normalize-space()="Stop Recording"]'))
             )
-        allow.click()
-    finally:
-        driver.switch_to.context(webview_ctx)
+            break  # real recording actually started
+        except TimeoutException:
+            if attempt == 2:
+                raise
+            print(f"[diag] mic permission attempt {attempt} did not reach recording, retrying via Try Again", flush=True)
+            _click(driver, '//button[normalize-space()="Try Again"]', timeout=10)
 
     time.sleep(2)  # a couple of seconds of real recorded audio, not a placeholder file
     _click(driver, '//button[normalize-space()="Stop Recording"]')
