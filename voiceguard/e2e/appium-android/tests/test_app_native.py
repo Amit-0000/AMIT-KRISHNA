@@ -82,7 +82,14 @@ def test_native_new_scan_shows_upload_and_record_toggle(authenticated_driver, ba
 def test_microphone_permission_and_recording_flow(authenticated_driver, base_url) -> None:
     driver = authenticated_driver
     _click(driver, '//button[normalize-space()="Record Audio"]')
-    _click(driver, '//button[normalize-space()="Start Recording"]')
+    # 30s, not the default 15s: a real android-app.yml CI run hit a genuine
+    # TimeoutException here twice in a row (original attempt + rerun) --
+    # this click follows the Upload<->Record AnimatePresence swap
+    # (NewScan/index.tsx), the same transition-timing class _click already
+    # works around elsewhere, just needing more headroom under CI's shared
+    # emulator load than a local run ever does (same reasoning already
+    # documented on MobileDrawer.is_open()'s 5s->10s bump).
+    _click(driver, '//button[normalize-space()="Start Recording"]', timeout=30)
 
     # Android's real runtime-permission dialog for RECORD_AUDIO is a
     # *different app* (PermissionController), reachable only from the
