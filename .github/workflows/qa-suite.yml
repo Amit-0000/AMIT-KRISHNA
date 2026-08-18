@@ -892,8 +892,8 @@ jobs:
         run: |
           mkdir -p automated_test/results voiceguard/performance voiceguard/e2e/results
           find artifacts -name unit_test_report.json -exec cp {} automated_test/ \;
-          find artifacts/dast-report -name report.json -exec cp {} automated_test/ \;
-          find artifacts/dast-report -path "*/results/*.json" -exec cp {} automated_test/results/ \;
+          find artifacts/security-report -name report.json -exec cp {} automated_test/ \;
+          find artifacts/security-report -path "*/results/*.json" -exec cp {} automated_test/results/ \;
           find artifacts -name baseline_results.json -exec cp {} voiceguard/performance/ \;
           find artifacts -name selenium_report.json -exec cp {} voiceguard/e2e/results/ \;
           find artifacts -name selenium_summary.json -exec cp {} voiceguard/e2e/results/ \; || true
