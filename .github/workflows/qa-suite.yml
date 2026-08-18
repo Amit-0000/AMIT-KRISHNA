@@ -53,6 +53,15 @@ jobs:
       - name: Build (tsc -b && vite build)
         run: npm run build
 
+      - name: Upload web build artifact
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: web-build
+          path: voiceguard/frontend/dist
+          retention-days: 30
+          if-no-files-found: warn
+
   unit-tests:
     name: Unit tests (pytest)
     runs-on: ubuntu-latest
@@ -131,18 +140,42 @@ jobs:
         working-directory: automated_test
         run: python run_all.py
 
+      - name: Trivy filesystem scan (dependency CVEs)
+        uses: aquasecurity/trivy-action@v0.36.0
+        with:
+          scan-type: fs
+          scan-ref: voiceguard
+          format: sarif
+          output: trivy-fs-results.sarif
+          severity: CRITICAL,HIGH,MEDIUM
+          exit-code: "0"
+
+      - name: Build backend image for container scan
+        run: docker build -f api/Dockerfile.ml -t voiceguard-backend:ci .
+
+      - name: Trivy image scan
+        uses: aquasecurity/trivy-action@v0.36.0
+        with:
+          image-ref: voiceguard-backend:ci
+          format: sarif
+          output: trivy-image-results.sarif
+          severity: CRITICAL,HIGH,MEDIUM
+          exit-code: "0"
+
       - name: Dump backend logs on failure
         if: failure()
         run: docker compose logs backend --tail 300
 
-      - name: Upload DAST report
+      - name: Upload security report
         if: always()
         uses: actions/upload-artifact@v7
         with:
-          name: dast-report
+          name: security-report
           path: |
             automated_test/report.json
             automated_test/results/
+            trivy-fs-results.sarif
+            trivy-image-results.sarif
           retention-days: 30
           if-no-files-found: warn
 
@@ -221,7 +254,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v7
         with:
-          name: load-test-report
+          name: load-report
           path: |
             voiceguard/performance/baseline_results.json
             voiceguard/performance/baseline_results.csv
